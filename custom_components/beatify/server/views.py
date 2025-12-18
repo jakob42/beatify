@@ -25,6 +25,11 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 
+def _read_file(path: Path) -> str:
+    """Read file contents (runs in executor)."""
+    return path.read_text(encoding="utf-8")
+
+
 class AdminView(HomeAssistantView):
     """Serve the admin page."""
 
@@ -44,7 +49,7 @@ class AdminView(HomeAssistantView):
             _LOGGER.error("Admin page not found: %s", html_path)
             return web.Response(text="Admin page not found", status=500)
 
-        html_content = html_path.read_text(encoding="utf-8")
+        html_content = await self.hass.async_add_executor_job(_read_file, html_path)
         return web.Response(text=html_content, content_type="text/html")
 
 
@@ -169,7 +174,11 @@ class StartGameView(HomeAssistantView):
                     warnings.append(f"Playlist not found: {playlist_path}")
                     continue
 
-                playlist_data = json.loads(full_path.read_text(encoding="utf-8"))
+                # Read file in executor to avoid blocking event loop
+                file_content = await self.hass.async_add_executor_job(
+                    _read_file, full_path
+                )
+                playlist_data = json.loads(file_content)
 
                 for song in playlist_data.get("songs", []):
                     if "year" in song and "uri" in song:
@@ -273,7 +282,7 @@ class PlayerView(HomeAssistantView):
             _LOGGER.error("Player page not found: %s", html_path)
             return web.Response(text="Player page not found", status=500)
 
-        html_content = html_path.read_text(encoding="utf-8")
+        html_content = await self.hass.async_add_executor_job(_read_file, html_path)
         return web.Response(text=html_content, content_type="text/html")
 
 
