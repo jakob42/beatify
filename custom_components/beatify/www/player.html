@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beatify - Join Game</title>
+    <link rel="stylesheet" href="/beatify/static/css/styles.css">
+</head>
+<body>
+    <main class="player-container">
+        <!-- Loading state -->
+        <div id="loading-view" class="view">
+            <div class="spinner"></div>
+            <p>Connecting to game...</p>
+        </div>
+
+        <!-- Error: Game not found -->
+        <div id="not-found-view" class="view hidden">
+            <div class="error-icon">🎵</div>
+            <h1>Game Not Found</h1>
+            <p>This game doesn't exist or the link is incorrect.</p>
+            <p class="hint">Scan a new QR code from the host's screen.</p>
+            <button id="refresh-btn" class="btn btn-primary">Try Again</button>
+        </div>
+
+        <!-- Error: Game ended -->
+        <div id="ended-view" class="view hidden">
+            <div class="error-icon">🎉</div>
+            <h1>Game Has Ended</h1>
+            <p>Thanks for playing Beatify!</p>
+            <p class="hint">Ask the host to start a new game.</p>
+        </div>
+
+        <!-- Error: Game in progress (can't join mid-reveal) -->
+        <div id="in-progress-view" class="view hidden">
+            <div class="error-icon">⏳</div>
+            <h1>Game In Progress</h1>
+            <p>The game is currently in a round. Try again in a moment.</p>
+            <button id="retry-btn" class="btn btn-primary">Try Again</button>
+        </div>
+
+        <!-- Join form (stub for Epic 3) -->
+        <div id="join-view" class="view hidden">
+            <h1>Join Beatify</h1>
+            <p>Enter your name to join the game</p>
+            <!-- Full implementation in Story 3.2 -->
+            <p class="coming-soon">Name entry coming in next update...</p>
+        </div>
+    </main>
+
+    <script src="/beatify/static/js/player.js"></script>
+</body>
+</html>

@@ -181,3 +181,320 @@ class TestFactoryIntegration:
 
         assert len(game_state.players) == 1
         assert game_state.players[0]["name"] == "TestPlayer"
+
+
+# =============================================================================
+# GAME SESSION TESTS (Story 2.3)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestGameSessionCreation:
+    """Tests for game session creation (Story 2.3)."""
+
+    def test_create_game_returns_valid_game_id(self):
+        """Game creation returns URL-safe game_id."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        result = state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://192.168.1.100:8123",
+        )
+
+        # Game ID should be 11 characters (8 bytes base64url encoded)
+        assert len(result["game_id"]) == 11
+        # URL-safe characters only
+        assert all(c.isalnum() or c in "-_" for c in result["game_id"])
+
+    def test_create_game_sets_lobby_phase(self):
+        """Initial phase is LOBBY after create_game."""
+        from custom_components.beatify.game.state import GamePhase, GameState
+
+        state = GameState()
+        result = state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://192.168.1.100:8123",
+        )
+
+        assert result["phase"] == "LOBBY"
+        assert state.phase == GamePhase.LOBBY
+
+    def test_create_game_unique_ids(self):
+        """Game_id is unique across multiple creations."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        ids = set()
+
+        for _ in range(100):
+            result = state.create_game(
+                playlists=["playlist1.json"],
+                songs=[{"year": 1985, "uri": "spotify:track:test"}],
+                media_player="media_player.test",
+                base_url="http://test.local:8123",
+            )
+            ids.add(result["game_id"])
+
+        # All 100 game IDs should be unique
+        assert len(ids) == 100
+
+    def test_create_game_stores_playlists(self):
+        """Playlists are stored correctly."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        playlists = ["playlist1.json", "playlist2.json"]
+
+        state.create_game(
+            playlists=playlists,
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        assert state.playlists == playlists
+
+    def test_create_game_stores_media_player(self):
+        """Media_player is stored correctly."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        media_player = "media_player.living_room"
+
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player=media_player,
+            base_url="http://test.local:8123",
+        )
+
+        assert state.media_player == media_player
+
+    def test_create_game_constructs_join_url(self):
+        """Join_url is constructed correctly."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        base_url = "http://192.168.1.100:8123"
+
+        result = state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url=base_url,
+        )
+
+        expected_url = f"{base_url}/beatify/play?game={result['game_id']}"
+        assert result["join_url"] == expected_url
+        assert state.join_url == expected_url
+
+    def test_create_game_returns_song_count(self):
+        """Song_count is returned correctly."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        songs = [
+            {"year": 1985, "uri": "spotify:track:1"},
+            {"year": 1990, "uri": "spotify:track:2"},
+            {"year": 1995, "uri": "spotify:track:3"},
+        ]
+
+        result = state.create_game(
+            playlists=["playlist1.json"],
+            songs=songs,
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        assert result["song_count"] == 3
+
+
+@pytest.mark.unit
+class TestGameSessionState:
+    """Tests for get_state method (Story 2.3)."""
+
+    def test_get_state_returns_none_when_no_game(self):
+        """get_state returns None when no game is active."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        assert state.get_state() is None
+
+    def test_get_state_returns_game_data(self):
+        """get_state returns correct game data."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        result = state.get_state()
+
+        assert result is not None
+        assert "game_id" in result
+        assert result["phase"] == "LOBBY"
+        assert result["player_count"] == 0
+        assert "join_url" in result
+
+    def test_get_state_player_count(self):
+        """get_state returns correct player count."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        # Add some players
+        state.players = {
+            "player1": {"score": 0},
+            "player2": {"score": 0},
+            "player3": {"score": 0},
+        }
+
+        result = state.get_state()
+        assert result["player_count"] == 3
+
+
+@pytest.mark.unit
+class TestGameSessionEnd:
+    """Tests for end_game method (Story 2.3)."""
+
+    def test_end_game_clears_game_id(self):
+        """end_game clears the game_id."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        state.end_game()
+
+        assert state.game_id is None
+
+    def test_end_game_resets_all_state(self):
+        """end_game resets all state."""
+        from custom_components.beatify.game.state import GamePhase, GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.players = {"player1": {"score": 100}}
+
+        state.end_game()
+
+        assert state.game_id is None
+        assert state.phase == GamePhase.LOBBY
+        assert state.playlists == []
+        assert state.songs == []
+        assert state.media_player is None
+        assert state.join_url is None
+        assert state.players == {}
+
+    def test_end_game_get_state_returns_none(self):
+        """get_state returns None after end_game."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        state.end_game()
+
+        assert state.get_state() is None
+
+
+# =============================================================================
+# WEBSOCKET BROADCAST STATE TESTS (Story 2.3 Task 11.6)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestWebSocketBroadcastState:
+    """Tests for WebSocket state broadcast format."""
+
+    def test_get_state_returns_websocket_broadcast_format(self):
+        """get_state returns format suitable for WebSocket broadcast."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://192.168.1.100:8123",
+        )
+
+        result = state.get_state()
+
+        # Verify all required fields for WebSocket broadcast
+        assert "game_id" in result
+        assert "phase" in result
+        assert "player_count" in result
+        assert "join_url" in result
+
+        # Verify phase is string (not enum) for JSON serialization
+        assert isinstance(result["phase"], str)
+        assert result["phase"] == "LOBBY"
+
+    def test_get_state_phase_is_serializable(self):
+        """Phase value should be JSON-serializable string."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        result = state.get_state()
+
+        # Should be able to serialize to JSON without error
+        import json
+
+        json_str = json.dumps(result)
+        assert '"phase": "LOBBY"' in json_str
+
+    def test_broadcast_state_includes_join_url_for_qr(self):
+        """Broadcast state includes join_url for QR code generation."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        result = state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://192.168.1.100:8123",
+        )
+
+        broadcast_state = state.get_state()
+
+        # join_url should match what was returned from create_game
+        assert broadcast_state["join_url"] == result["join_url"]
+        assert "/beatify/play?game=" in broadcast_state["join_url"]

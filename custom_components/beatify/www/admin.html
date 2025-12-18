@@ -20,17 +20,58 @@
         <section id="media-players" class="card-section">
             <h2>Media Players</h2>
             <div id="media-players-list">Loading...</div>
+            <p id="media-player-validation-msg" class="status-error hidden" style="margin-top: 12px;">Select a media player</p>
         </section>
 
         <section id="playlists" class="card-section">
             <h2>Playlists</h2>
             <div id="playlists-list">Loading...</div>
+            <div id="playlist-summary" class="selection-summary hidden">
+                Selected: <span id="selected-count">0</span> playlists,
+                <span id="total-songs">0</span> songs
+            </div>
         </section>
 
         <!-- Game controls added in Epic 2 -->
         <section id="game-controls" class="card-section hidden">
             <h2>Game Controls</h2>
+            <p id="playlist-validation-msg" class="status-error" style="margin-bottom: 12px;">Select at least one playlist</p>
             <button id="start-game" class="btn btn-primary" disabled>Start Game</button>
+        </section>
+
+        <!-- Lobby view (Story 2.3) -->
+        <section id="lobby-section" class="card-section hidden">
+            <h2>Game Lobby</h2>
+            <div class="qr-print-area">
+                <div class="qr-container">
+                    <div id="qr-code" aria-label="QR code to join Beatify game"></div>
+                </div>
+                <p class="qr-instruction">Scan to Play Beatify!</p>
+                <p id="join-url" class="join-url"></p>
+            </div>
+            <div class="lobby-controls no-print">
+                <button id="print-qr" class="btn btn-secondary">Print QR Code</button>
+            </div>
+            <div id="lobby-players" class="player-list">
+                <p class="empty-state">Waiting for players to join...</p>
+            </div>
+            <div class="game-controls-bar no-print">
+                <button id="end-game-lobby" class="btn btn-secondary">End Game</button>
+            </div>
+        </section>
+
+        <!-- Existing game view (Story 2.3) -->
+        <section id="existing-game-section" class="card-section hidden">
+            <h2>Game In Progress</h2>
+            <div class="game-info">
+                <p><strong>Game ID:</strong> <span id="existing-game-id"></span></p>
+                <p><strong>Phase:</strong> <span id="existing-game-phase"></span></p>
+                <p><strong>Players:</strong> <span id="existing-game-players"></span></p>
+            </div>
+            <div class="game-controls-bar">
+                <button id="rejoin-game" class="btn btn-primary">Rejoin Game</button>
+                <button id="end-game" class="btn btn-secondary">End Current Game</button>
+            </div>
         </section>
     </main>
 
@@ -38,6 +79,7 @@
         <p>Beatify v0.0.1</p>
     </footer>
 
+    <script src="/beatify/static/js/vendor/qrcode.min.js"></script>
     <script src="/beatify/static/js/admin.js"></script>
 </body>
 </html>

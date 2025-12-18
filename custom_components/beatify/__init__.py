@@ -15,8 +15,17 @@ from .game.playlist import (
     async_discover_playlists,
     async_ensure_playlist_directory,
 )
+from .game.state import GameState
 from .server import async_register_static_paths
-from .server.views import AdminView, StatusView
+from .server.views import (
+    AdminView,
+    EndGameView,
+    GameStatusView,
+    PlayerView,
+    StartGameView,
+    StatusView,
+)
+from .server.websocket import BeatifyWebSocketHandler
 from .services.media_player import async_get_media_players
 
 if TYPE_CHECKING:
@@ -46,17 +55,32 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         len(playlists),
     )
 
-    # Store discovery results
+    # Initialize game state
+    game_state = GameState()
+
+    # Initialize WebSocket handler
+    ws_handler = BeatifyWebSocketHandler(hass)
+
+    # Store discovery results and game infrastructure
     hass.data[DOMAIN] = {
         "entry_id": entry.entry_id,
         "media_players": media_players,
         "playlists": playlists,
         "playlist_dir": str(playlist_dir),
+        "game": game_state,
+        "ws_handler": ws_handler,
     }
 
     # Register HTTP views
     hass.http.register_view(AdminView(hass))
     hass.http.register_view(StatusView(hass))
+    hass.http.register_view(StartGameView(hass))
+    hass.http.register_view(EndGameView(hass))
+    hass.http.register_view(PlayerView(hass))
+    hass.http.register_view(GameStatusView(hass))
+
+    # Register WebSocket endpoint
+    hass.http.app.router.add_get("/beatify/ws", ws_handler.handle)
 
     # Register static file paths
     await async_register_static_paths(hass)

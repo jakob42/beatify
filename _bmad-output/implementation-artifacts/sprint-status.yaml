@@ -48,11 +48,11 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Game Session Creation
-  epic-2: backlog
-  2-1-select-playlists-for-game: backlog
-  2-2-select-media-player: backlog
-  2-3-start-game-and-create-lobby: backlog
-  2-4-qr-code-generation-and-display: backlog
+  epic-2: in-progress
+  2-1-select-playlists-for-game: done
+  2-2-select-media-player: done
+  2-3-start-game-and-create-lobby: done
+  2-4-qr-code-generation-and-display: done
   epic-2-retrospective: optional
 
   # Epic 3: Player Onboarding & Lobby

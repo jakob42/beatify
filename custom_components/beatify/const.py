@@ -26,6 +26,8 @@ ERR_INVALID_ACTION = "INVALID_ACTION"
 
 # External URLs
 MA_SETUP_URL = "https://music-assistant.io/getting-started/"
+PLAYLIST_DOCS_URL = "https://github.com/mholzi/beatify/wiki/Creating-Playlists"
+MEDIA_PLAYER_DOCS_URL = "https://www.home-assistant.io/integrations/#media-player"
 
 # Playlist configuration
 PLAYLIST_DIR = "beatify/playlists"
