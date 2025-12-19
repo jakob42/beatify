@@ -144,13 +144,26 @@ class GameState:
         return True
 
     async def _timer_countdown(self, delay_seconds: float) -> None:
-        """Wait for round to end, then trigger reveal."""
+        """Wait for round to end, then trigger reveal.
+
+        IMPORTANT: This task may be cancelled by:
+        - Admin advancing to next round early
+        - All players submitting (if auto_advance enabled)
+        - Game pause/end
+
+        Always handle CancelledError gracefully.
+        """
         try:
             await asyncio.sleep(delay_seconds)
-            _LOGGER.info("Round timer expired, transitioning to REVEAL")
-            await self.end_round()
+            # Check we're still in PLAYING phase (could have changed)
+            if self.phase == GamePhase.PLAYING:
+                _LOGGER.info("Round timer expired, transitioning to REVEAL")
+                await self.end_round()
+            else:
+                _LOGGER.debug("Timer expired but phase already changed to %s", self.phase)
         except asyncio.CancelledError:
             _LOGGER.debug("Timer task cancelled")
+            # Re-raise to properly complete cancellation
             raise
 
     async def end_round(self) -> None:
@@ -363,21 +376,35 @@ def pause_game(self, reason: str) -> None:
     self.pause_reason = reason
     self.transition_to(GamePhase.PAUSED)
 
-def resume_game(self) -> None:
-    """Resume paused game."""
-    if self._previous_phase:
-        self.transition_to(self._previous_phase)
-        self.pause_reason = None
-        self._previous_phase = None
+async def resume_game(self) -> None:
+    """Resume paused game.
 
-        # Restart timer if resuming PLAYING phase
-        if self.phase == GamePhase.PLAYING and self.deadline:
-            now_ms = int(self._now() * 1000)
-            if self.deadline > now_ms:
-                delay = (self.deadline - now_ms) / 1000.0
-                self._timer_task = asyncio.create_task(
-                    self._timer_countdown(delay)
-                )
+    NOTE: This is async because we may need to restart timer task.
+    If deadline has passed during pause, immediately trigger end_round.
+    """
+    if not self._previous_phase:
+        _LOGGER.warning("Cannot resume: no previous phase stored")
+        return
+
+    previous = self._previous_phase
+    self._previous_phase = None
+    self.pause_reason = None
+    self.transition_to(previous)
+
+    # Handle timer restart if resuming PLAYING phase
+    if previous == GamePhase.PLAYING and self.deadline:
+        now_ms = int(self._now() * 1000)
+        if self.deadline > now_ms:
+            # Time remaining - restart countdown
+            delay = (self.deadline - now_ms) / 1000.0
+            _LOGGER.info("Resuming with %.1f seconds remaining", delay)
+            self._timer_task = asyncio.create_task(
+                self._timer_countdown(delay)
+            )
+        else:
+            # Deadline already passed during pause - end round immediately
+            _LOGGER.info("Deadline passed during pause, ending round")
+            await self.end_round()
 ```
 
 ### Architecture Compliance

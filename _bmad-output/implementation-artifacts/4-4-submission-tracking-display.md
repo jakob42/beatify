@@ -56,7 +56,8 @@ so that **I feel the social pressure and excitement of the game**.
   - [ ] 6.1 In GameState, add `all_submitted() -> bool` method
   - [ ] 6.2 After each submission, check if all submitted
   - [ ] 6.3 If all submitted AND auto_advance enabled, trigger reveal
-  - [ ] 6.4 Add `auto_advance_on_all_submitted: bool` config option
+  - [ ] 6.4 Add `auto_advance_on_all_submitted: bool` to GameState (default: False for MVP)
+  - [ ] 6.5 **NOTE:** Auto-advance is OPTIONAL for MVP. Timer expiry (Story 4.5) is primary trigger.
 
 - [ ] **Task 7: Visual feedback on new submission** (AC: #1)
   - [ ] 7.1 Add animation when player indicator changes to submitted
@@ -292,17 +293,26 @@ function renderSubmissionTracker(players) {
 
 function getInitials(name) {
     if (!name) return '?';
-    const parts = name.trim().split(/\s+/);
+    const trimmed = name.trim();
+    if (!trimmed) return '?';
+
+    // Handle hyphenated names: "Mary-Jane" -> "MJ"
+    const parts = trimmed.split(/[\s-]+/).filter(Boolean);
     if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    return name.slice(0, 2).toUpperCase();
+    // Single word: take first 2 chars, or 1 if single char name
+    return trimmed.slice(0, Math.min(2, trimmed.length)).toUpperCase();
 }
 
+// Simple and efficient HTML escaping
 function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }
 
 // Update updateGameView to include tracker

@@ -101,6 +101,23 @@ so that **I have visual context and know how much time I have to guess**.
 
 ## Dev Notes
 
+### Existing Codebase Context
+
+**CRITICAL:** Before implementing, understand these existing components:
+
+| File | Current State | Action |
+|------|---------------|--------|
+| `www/player.html` | Has `#game-view` placeholder from Epic 3 | Replace placeholder content |
+| `www/js/player.js` | Has `showView()` function from Epic 3 | Extend with game view handling |
+| `www/css/styles.css` | Has base styles from Epic 3 | Add game-specific styles |
+| `www/img/no-artwork.svg` | **Must create** if not exists | Placeholder for missing album art |
+
+### Static Asset Path
+
+Album art fallback path: `/beatify/static/img/no-artwork.svg`
+- Stored at: `www/img/no-artwork.svg`
+- Served via HA static path at `/beatify/static/`
+
 ### Files to Modify
 
 | File | Action |
@@ -276,14 +293,14 @@ so that **I have visual context and know how much time I have to guess**.
 
 ```javascript
 // player.js - Add to IIFE
+// NOTE: Using setInterval for 1-second updates is more efficient than
+// requestAnimationFrame which runs at 60fps unnecessarily for a timer.
 
 let countdownInterval = null;
 
 function startCountdown(deadline) {
     // Clear any existing countdown
-    if (countdownInterval) {
-        cancelAnimationFrame(countdownInterval);
-    }
+    stopCountdown();
 
     const timerElement = document.getElementById('timer');
     if (!timerElement) return;
@@ -308,19 +325,22 @@ function startCountdown(deadline) {
             timerElement.classList.remove('timer--warning', 'timer--critical');
         }
 
-        // Continue countdown if time remains
-        if (remaining > 0) {
-            countdownInterval = requestAnimationFrame(updateCountdown);
+        // Stop countdown when reaching 0
+        if (remaining <= 0) {
+            stopCountdown();
         }
     }
 
-    // Start the countdown
-    countdownInterval = requestAnimationFrame(updateCountdown);
+    // Initial update immediately
+    updateCountdown();
+
+    // Then update every second
+    countdownInterval = setInterval(updateCountdown, 1000);
 }
 
 function stopCountdown() {
     if (countdownInterval) {
-        cancelAnimationFrame(countdownInterval);
+        clearInterval(countdownInterval);
         countdownInterval = null;
     }
 }

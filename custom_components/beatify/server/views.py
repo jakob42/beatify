@@ -9,11 +9,9 @@ from typing import TYPE_CHECKING, Any
 
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
-from homeassistant.config_entries import ConfigEntryState
 
 from custom_components.beatify.const import (
     DOMAIN,
-    MA_SETUP_URL,
     MEDIA_PLAYER_DOCS_URL,
     PLAYLIST_DOCS_URL,
 )
@@ -78,19 +76,12 @@ class StatusView(HomeAssistantView):
             "media_players": data.get("media_players", []),
             "playlists": data.get("playlists", []),
             "playlist_dir": data.get("playlist_dir", ""),
-            "ma_configured": await self._check_ma_status(),
-            "ma_setup_url": MA_SETUP_URL,
             "playlist_docs_url": PLAYLIST_DOCS_URL,
             "media_player_docs_url": MEDIA_PLAYER_DOCS_URL,
             "active_game": active_game,
         }
 
         return web.json_response(status)
-
-    async def _check_ma_status(self) -> bool:
-        """Check if Music Assistant is configured and loaded."""
-        entries = self.hass.config_entries.async_entries("music_assistant")
-        return any(e.state == ConfigEntryState.LOADED for e in entries)
 
 
 class StartGameView(HomeAssistantView):

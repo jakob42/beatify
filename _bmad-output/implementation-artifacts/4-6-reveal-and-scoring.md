@@ -14,7 +14,7 @@ so that **I get the satisfying payoff of finding out how I did**.
 
 2. **AC2:** Given player submitted a guess, When reveal displays, Then player sees their personal result (FR31): their guessed year, the correct year, how many years off they were, and points earned this round
 
-3. **AC3:** Given player's guess is evaluated, When score is calculated (FR32), Then accuracy scoring applies: exact match = 10 points, within ±3 years = 5 points, within ±5 years = 1 point, more than 5 years off = 0 points
+3. **AC3:** Given player's guess is evaluated, When score is calculated (FR32), Then **MVP accuracy scoring** applies: exact match = 10 points, within ±3 years = 5 points, within ±5 years = 1 point, more than 5 years off = 0 points. **NOTE:** This is Epic 4 MVP scoring. Advanced scoring (speed bonus, streak bonus, bet multiplier) is implemented in Epic 5.
 
 4. **AC4:** Given player did not submit, When reveal displays, Then player sees "No guess - 0 points"
 
@@ -110,6 +110,30 @@ so that **I get the satisfying payoff of finding out how I did**.
   - [ ] 13.3 Test full round flow end-to-end
 
 ## Dev Notes
+
+### Existing Codebase Context
+
+**CRITICAL:** Before implementing, understand these existing components:
+
+| File | Current State | Action |
+|------|---------------|--------|
+| `www/player.html` | Has `#reveal-view` placeholder from Epic 3 setup | Replace placeholder content |
+| `www/js/player.js` | Has `showView()` and `handleServerMessage()` from previous stories | Extend with reveal handling |
+| `game/player.py` | Has `round_score`, `years_off`, `missed_round` fields from Story 4.3 | Use these fields |
+| `game/state.py` | Has `end_round()` stub from Story 4.5 | Integrate scoring logic |
+
+### Scoring Clarification
+
+**Epic 4 (This Story):** MVP accuracy scoring only (FR32)
+- Exact match: 10 points
+- Within ±3 years: 5 points
+- Within ±5 years: 1 point
+- More than 5 years off: 0 points
+
+**Epic 5 (Future):** Advanced scoring adds:
+- Speed bonus multiplier (FR33)
+- Streak tracking and bonuses (FR34, FR35)
+- Betting mechanic (FR36, FR37)
 
 ### New Files to Create
 
@@ -210,7 +234,10 @@ async def end_round(self) -> None:
             player.years_off = abs(player.current_guess - correct_year)
             player.missed_round = False
 
-            # Update streak (scoring = continuing streak)
+            # Update streak
+            # NOTE: Streak increments when player earns ANY points (>0)
+            # This means even 1 point (within ±5 years) continues the streak
+            # Epic 5 may refine this to "within ±3 years" for streak
             if player.round_score > 0:
                 player.streak += 1
             else:
@@ -235,16 +262,19 @@ async def end_round(self) -> None:
 
 ### PlayerSession Additions
 
+**NOTE:** These fields are already added in Story 4.3. Verify they exist before implementing this story:
+
 ```python
-# game/player.py
+# game/player.py - Fields should already exist from Story 4.3
 
 @dataclass
 class PlayerSession:
     # ... existing fields ...
 
-    # Round results
+    # Round results (added in Story 4.3)
     round_score: int = 0
     years_off: int | None = None
+    missed_round: bool = False
 ```
 
 ### State Broadcast for REVEAL
@@ -642,7 +672,7 @@ function renderPersonalResult(player, correctYear) {
     `;
 }
 
-// Add event listener for next round button
+// Add event listener for next round button with debounce
 document.addEventListener('DOMContentLoaded', function() {
     const nextRoundBtn = document.getElementById('next-round-btn');
     if (nextRoundBtn) {
@@ -650,12 +680,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Debounce state to prevent rapid clicks
+let nextRoundPending = false;
+const NEXT_ROUND_DEBOUNCE_MS = 2000;
+
 function handleNextRound() {
+    // Prevent rapid clicks
+    if (nextRoundPending) {
+        console.log('Next round already pending, ignoring click');
+        return;
+    }
+
     if (ws && ws.readyState === WebSocket.OPEN) {
+        nextRoundPending = true;
+        const btn = document.getElementById('next-round-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
+        }
+
         ws.send(JSON.stringify({
             type: 'admin',
             action: 'next_round'
         }));
+
+        // Reset after debounce period (server state change will also update UI)
+        setTimeout(() => {
+            nextRoundPending = false;
+            if (btn) btn.disabled = false;
+        }, NEXT_ROUND_DEBOUNCE_MS);
     }
 }
 ```

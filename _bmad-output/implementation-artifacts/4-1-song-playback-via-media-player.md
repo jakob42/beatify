@@ -124,6 +124,17 @@ so that **everyone in the room experiences the same audio together**.
 
 ## Dev Notes
 
+### Existing Codebase Context
+
+**CRITICAL:** Before implementing, understand these existing components:
+
+| File | Current State | Extend/Modify |
+|------|---------------|---------------|
+| `game/state.py:43-277` | GameState class with `create_game()`, `get_state()`, `add_player()` | **Extend** - add round tracking fields and `start_round()` method |
+| `game/state.py:33-41` | GamePhase enum already has PAUSED | **Use existing** - just add pause_reason handling |
+| `game/state.py:56` | `self.songs: list[dict]` already populated by `create_game()` | **Use existing** - PlaylistManager wraps this |
+| `const.py:9` | `DEFAULT_ROUND_DURATION = 30` already exists | **No change needed** |
+
 ### New Files to Create
 
 | File | Purpose |
@@ -134,10 +145,10 @@ so that **everyone in the room experiences the same audio together**.
 
 | File | Action |
 |------|--------|
-| `game/state.py` | Add round tracking, start_round(), PAUSED handling |
-| `game/playlist.py` | Add PlaylistManager class |
+| `game/state.py` | Add round tracking fields, `start_round()`, pause handling |
+| `game/playlist.py` | Add PlaylistManager class (wraps existing songs list) |
 | `server/websocket.py` | Handle start_game action, call start_round |
-| `const.py` | Add DEFAULT_ROUND_DURATION, ERR_NO_SONGS_REMAINING |
+| `const.py` | Add `ERR_NO_SONGS_REMAINING = "NO_SONGS_REMAINING"` |
 
 ### MediaPlayerService Implementation
 
@@ -178,6 +189,7 @@ class MediaPlayerService:
                     "media_content_id": uri,
                     "media_content_type": "music",
                 },
+                blocking=True,  # Wait for service call to complete
             )
             return True
         except Exception as err:
@@ -303,17 +315,17 @@ class PlaylistManager:
 ### GameState Round Fields
 
 ```python
-# game/state.py - Add to GameState class
+# game/state.py - Add to existing GameState class (lines 43-277)
+# These are NEW FIELDS and METHODS to add, not a replacement
 
-from dataclasses import field
-import time
-from typing import TYPE_CHECKING
+import asyncio
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-from ..const import DEFAULT_ROUND_DURATION
-from ..services.media_player import MediaPlayerService
+from .const import DEFAULT_ROUND_DURATION
+from .services.media_player import MediaPlayerService
 from .playlist import PlaylistManager
 
 @dataclass

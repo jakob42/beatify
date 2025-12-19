@@ -113,6 +113,17 @@ so that **I can compete by guessing when the song was released**.
 
 ## Dev Notes
 
+### Existing Codebase Context
+
+**CRITICAL:** Before implementing, understand these existing components:
+
+| File | Current State | Action |
+|------|---------------|--------|
+| `game/player.py` | PlayerSession dataclass with name, ws, score, streak, is_admin, joined_late | **Extend** - add submission fields |
+| `server/websocket.py` | Has `_handle_message()` pattern for join messages | **Extend** - add submit message handler |
+| `const.py:14-25` | Has error codes but missing submission ones | **Add** new error codes |
+| `www/js/player.js` | Has WebSocket send pattern from Epic 3 | **Extend** - add submission logic |
+
 ### Files to Modify
 
 | File | Action |
@@ -121,9 +132,18 @@ so that **I can compete by guessing when the song was released**.
 | `www/js/player.js` | Add slider interaction, submission logic |
 | `www/css/styles.css` | Add slider and submission styles |
 | `server/websocket.py` | Handle submit message |
-| `game/player.py` | Add submission fields |
-| `game/state.py` | Add submit_guess method |
-| `const.py` | Add ERR_ROUND_EXPIRED, ERR_ALREADY_SUBMITTED |
+| `game/player.py` | Add submission fields to existing PlayerSession |
+| `const.py` | Add `ERR_ROUND_EXPIRED`, `ERR_ALREADY_SUBMITTED`, `ERR_NOT_IN_GAME` |
+
+### Year Range Configuration
+
+The year range (1950-2025) is reasonable for most music but could be made configurable in future. For MVP, hardcode these values but use constants:
+
+```javascript
+const YEAR_MIN = 1950;
+const YEAR_MAX = 2025;
+const YEAR_DEFAULT = 1990;
+```
 
 ### HTML Year Selector
 
@@ -551,7 +571,8 @@ async def _handle_submit(
 ### PlayerSession Submission Fields
 
 ```python
-# game/player.py - Update PlayerSession
+# game/player.py - Update existing PlayerSession dataclass
+# Add these fields and methods to the existing class
 
 @dataclass
 class PlayerSession:
@@ -566,10 +587,15 @@ class PlayerSession:
     joined_late: bool = False
     joined_at: float = field(default_factory=time.time)
 
-    # Submission tracking
+    # Submission tracking (NEW for Story 4.3)
     submitted: bool = False
     current_guess: int | None = None
     submission_time: float | None = None
+
+    # Round results (NEW - needed by Story 4.6)
+    round_score: int = 0
+    years_off: int | None = None
+    missed_round: bool = False
 
     def submit_guess(self, year: int, timestamp: float) -> None:
         """Record a guess submission."""
@@ -577,11 +603,14 @@ class PlayerSession:
         self.current_guess = year
         self.submission_time = timestamp
 
-    def reset_submission(self) -> None:
-        """Reset submission state for new round."""
+    def reset_round(self) -> None:
+        """Reset round-specific state for new round."""
         self.submitted = False
         self.current_guess = None
         self.submission_time = None
+        self.round_score = 0
+        self.years_off = None
+        self.missed_round = False
 ```
 
 ### const.py Additions
