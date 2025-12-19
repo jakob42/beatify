@@ -282,6 +282,268 @@
     }
 
     // ============================================
+    // Countdown Timer (Story 4.2)
+    // ============================================
+
+    let countdownInterval = null;
+
+    /**
+     * Start countdown timer
+     * @param {number} deadline - Server deadline timestamp in milliseconds
+     */
+    function startCountdown(deadline) {
+        // Clear any existing countdown
+        stopCountdown();
+
+        var timerElement = document.getElementById('timer');
+        if (!timerElement) return;
+
+        // Remove previous state classes
+        timerElement.classList.remove('timer--warning', 'timer--critical');
+
+        function updateCountdown() {
+            var now = Date.now();
+            var remaining = Math.max(0, Math.ceil((deadline - now) / 1000));
+
+            timerElement.textContent = remaining;
+
+            // Update timer color based on remaining time
+            if (remaining <= 5) {
+                timerElement.classList.remove('timer--warning');
+                timerElement.classList.add('timer--critical');
+            } else if (remaining <= 10) {
+                timerElement.classList.remove('timer--critical');
+                timerElement.classList.add('timer--warning');
+            } else {
+                timerElement.classList.remove('timer--warning', 'timer--critical');
+            }
+
+            // Stop countdown when reaching 0
+            if (remaining <= 0) {
+                stopCountdown();
+            }
+        }
+
+        // Initial update immediately
+        updateCountdown();
+
+        // Then update every second
+        countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    /**
+     * Stop countdown timer
+     */
+    function stopCountdown() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+    }
+
+    /**
+     * Update game view with round data
+     * @param {Object} data - State data from server
+     */
+    function updateGameView(data) {
+        // Update round indicator
+        var currentRound = document.getElementById('current-round');
+        var totalRounds = document.getElementById('total-rounds');
+        var lastRoundBanner = document.getElementById('last-round-banner');
+
+        if (currentRound) currentRound.textContent = data.round || 1;
+        if (totalRounds) totalRounds.textContent = data.total_rounds || 10;
+
+        // Show/hide last round banner
+        if (lastRoundBanner) {
+            if (data.last_round) {
+                lastRoundBanner.classList.remove('hidden');
+            } else {
+                lastRoundBanner.classList.add('hidden');
+            }
+        }
+
+        // Update album cover
+        var albumCover = document.getElementById('album-cover');
+        var albumLoading = document.getElementById('album-loading');
+
+        if (albumCover && data.song) {
+            // Show loading state
+            if (albumLoading) albumLoading.classList.remove('hidden');
+
+            var newSrc = data.song.album_art || '/beatify/static/img/no-artwork.svg';
+
+            // Handle image load
+            albumCover.onload = function() {
+                if (albumLoading) albumLoading.classList.add('hidden');
+            };
+
+            // Handle image error - fallback to placeholder
+            albumCover.onerror = function() {
+                albumCover.src = '/beatify/static/img/no-artwork.svg';
+                if (albumLoading) albumLoading.classList.add('hidden');
+            };
+
+            albumCover.src = newSrc;
+        }
+    }
+
+    // ============================================
+    // Year Selector & Submission (Story 4.3)
+    // ============================================
+
+    let hasSubmitted = false;
+
+    /**
+     * Initialize year selector interaction
+     */
+    function initYearSelector() {
+        var slider = document.getElementById('year-slider');
+        var yearDisplay = document.getElementById('selected-year');
+
+        if (!slider || !yearDisplay) return;
+
+        // Update display on slider change
+        slider.addEventListener('input', function() {
+            yearDisplay.textContent = this.value;
+        });
+
+        // Submit button handler
+        var submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', handleSubmitGuess);
+        }
+    }
+
+    /**
+     * Handle guess submission
+     */
+    function handleSubmitGuess() {
+        if (hasSubmitted) return;
+
+        var slider = document.getElementById('year-slider');
+        var submitBtn = document.getElementById('submit-btn');
+
+        if (!slider || !submitBtn) return;
+
+        var year = parseInt(slider.value, 10);
+
+        // Disable and show loading
+        submitBtn.disabled = true;
+        submitBtn.classList.add('is-loading');
+
+        // Send submission via WebSocket
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'submit',
+                year: year
+            }));
+        } else {
+            // WebSocket not connected
+            showSubmitError('Connection lost. Please refresh.');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('is-loading');
+        }
+    }
+
+    /**
+     * Handle server acknowledgment of submission
+     */
+    function handleSubmitAck() {
+        hasSubmitted = true;
+
+        var yearSelector = document.getElementById('year-selector');
+        var submitBtn = document.getElementById('submit-btn');
+        var confirmation = document.getElementById('submitted-confirmation');
+
+        if (yearSelector) {
+            yearSelector.classList.add('is-submitted');
+        }
+
+        if (submitBtn) {
+            submitBtn.classList.add('hidden');
+        }
+
+        if (confirmation) {
+            confirmation.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Handle submission error
+     * @param {Object} data - Error data from server
+     */
+    function handleSubmitError(data) {
+        var submitBtn = document.getElementById('submit-btn');
+
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('is-loading');
+        }
+
+        if (data.code === 'ROUND_EXPIRED') {
+            showSubmitError("Time's up!");
+            // Disable further attempts
+            hasSubmitted = true;
+            if (submitBtn) submitBtn.disabled = true;
+        } else if (data.code === 'ALREADY_SUBMITTED') {
+            // Already submitted, update UI
+            handleSubmitAck();
+        } else {
+            showSubmitError(data.message || 'Submission failed');
+        }
+    }
+
+    /**
+     * Show error on submit button
+     * @param {string} message - Error message
+     */
+    function showSubmitError(message) {
+        var submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) {
+            submitBtn.textContent = message;
+            submitBtn.classList.add('is-error');
+            setTimeout(function() {
+                submitBtn.textContent = 'Submit Guess';
+                submitBtn.classList.remove('is-error');
+            }, 2000);
+        }
+    }
+
+    /**
+     * Reset submission state for new round
+     */
+    function resetSubmissionState() {
+        hasSubmitted = false;
+
+        var yearSelector = document.getElementById('year-selector');
+        var submitBtn = document.getElementById('submit-btn');
+        var confirmation = document.getElementById('submitted-confirmation');
+        var slider = document.getElementById('year-slider');
+
+        if (yearSelector) {
+            yearSelector.classList.remove('is-submitted');
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('hidden', 'is-loading', 'is-error');
+            submitBtn.textContent = 'Submit Guess';
+        }
+
+        if (confirmation) {
+            confirmation.classList.add('hidden');
+        }
+
+        // Reset slider to middle value
+        if (slider) {
+            slider.value = 1990;
+            var yearDisplay = document.getElementById('selected-year');
+            if (yearDisplay) yearDisplay.textContent = '1990';
+        }
+    }
+
+    // ============================================
     // Admin Controls (Story 3.5)
     // ============================================
 
@@ -425,6 +687,7 @@
 
         if (data.type === 'state') {
             if (data.phase === 'LOBBY') {
+                stopCountdown();
                 showView('lobby-view');
                 renderPlayerList(data.players || []);
                 // Render QR code with join URL
@@ -434,10 +697,18 @@
                 // Update admin controls visibility
                 updateAdminControls(data.players || []);
             } else if (data.phase === 'PLAYING') {
+                resetSubmissionState();  // Reset for new round
                 showView('game-view');
+                updateGameView(data);
+                if (data.deadline) {
+                    startCountdown(data.deadline);
+                }
+                initYearSelector();
             } else if (data.phase === 'REVEAL') {
+                stopCountdown();
                 showView('reveal-view');
             } else if (data.phase === 'END') {
+                stopCountdown();
                 showView('end-view');
             }
         } else if (data.type === 'error') {

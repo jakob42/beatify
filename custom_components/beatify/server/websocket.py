@@ -30,23 +30,27 @@ class BeatifyWebSocketHandler:
     """Handle WebSocket connections for Beatify."""
 
     def __init__(self, hass: HomeAssistant) -> None:
-        """Initialize handler.
+        """
+        Initialize handler.
 
         Args:
             hass: Home Assistant instance
+
         """
         self.hass = hass
         self.connections: set[web.WebSocketResponse] = set()
         self._pending_removals: dict[str, asyncio.Task] = {}
 
     async def handle(self, request: web.Request) -> web.WebSocketResponse:
-        """Handle WebSocket connection.
+        """
+        Handle WebSocket connection.
 
         Args:
             request: aiohttp request
 
         Returns:
             WebSocket response
+
         """
         ws = web.WebSocketResponse()
         await ws.prepare(request)
@@ -74,11 +78,13 @@ class BeatifyWebSocketHandler:
     async def _handle_message(
         self, ws: web.WebSocketResponse, data: dict
     ) -> None:
-        """Handle incoming WebSocket message.
+        """
+        Handle incoming WebSocket message.
 
         Args:
             ws: WebSocket connection
             data: Parsed message data
+
         """
         msg_type = data.get("type")
         game_state = self.hass.data.get(DOMAIN, {}).get("game")
@@ -177,10 +183,12 @@ class BeatifyWebSocketHandler:
             _LOGGER.warning("Unknown message type: %s", msg_type)
 
     async def broadcast(self, message: dict) -> None:
-        """Broadcast message to all connected clients.
+        """
+        Broadcast message to all connected clients.
 
         Args:
             message: Message to broadcast
+
         """
         for ws in list(self.connections):
             if not ws.closed:
@@ -201,10 +209,12 @@ class BeatifyWebSocketHandler:
             await self.broadcast(state_msg)
 
     async def _handle_disconnect(self, ws: web.WebSocketResponse) -> None:
-        """Handle WebSocket disconnection with grace period.
+        """
+        Handle WebSocket disconnection with grace period.
 
         Args:
             ws: Disconnected WebSocket
+
         """
         game_state = self.hass.data.get(DOMAIN, {}).get("game")
         if not game_state:
@@ -241,10 +251,12 @@ class BeatifyWebSocketHandler:
         self._pending_removals[player_name] = task
 
     def cancel_pending_removal(self, player_name: str) -> None:
-        """Cancel a pending player removal (on reconnect).
+        """
+        Cancel a pending player removal (on reconnect).
 
         Args:
             player_name: Name of reconnecting player
+
         """
         if player_name in self._pending_removals:
             self._pending_removals[player_name].cancel()

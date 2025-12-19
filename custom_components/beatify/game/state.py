@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import secrets
 import time
@@ -9,6 +10,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 from custom_components.beatify.const import (
+    DEFAULT_ROUND_DURATION,
     ERR_GAME_ALREADY_STARTED,
     ERR_GAME_ENDED,
     ERR_GAME_FULL,
@@ -21,11 +23,15 @@ from custom_components.beatify.const import (
 )
 
 from .player import PlayerSession
+from .playlist import PlaylistManager
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from aiohttp import web
+    from homeassistant.core import HomeAssistant
+
+    from custom_components.beatify.services.media_player import MediaPlayerService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,10 +50,12 @@ class GameState:
     """Manages game state and phase transitions."""
 
     def __init__(self, time_fn: Callable[[], float] | None = None) -> None:
-        """Initialize game state.
+        """
+        Initialize game state.
 
         Args:
             time_fn: Optional time function for testing. Defaults to time.time.
+
         """
         self._now = time_fn or time.time
         self.game_id: str | None = None
@@ -58,6 +66,21 @@ class GameState:
         self.join_url: str | None = None
         self.players: dict[str, PlayerSession] = {}
 
+        # Round tracking (Epic 4)
+        self.round: int = 0
+        self.total_rounds: int = 0
+        self.deadline: int | None = None
+        self.current_song: dict[str, Any] | None = None
+        self.last_round: bool = False
+
+        # Pause tracking (Epic 4)
+        self.pause_reason: str | None = None
+        self._previous_phase: GamePhase | None = None
+
+        # Services (Epic 4)
+        self._playlist_manager: PlaylistManager | None = None
+        self._media_player_service: MediaPlayerService | None = None
+
     def create_game(
         self,
         playlists: list[str],
@@ -65,7 +88,8 @@ class GameState:
         media_player: str,
         base_url: str,
     ) -> dict[str, Any]:
-        """Create a new game session.
+        """
+        Create a new game session.
 
         Args:
             playlists: List of playlist file paths
@@ -75,6 +99,7 @@ class GameState:
 
         Returns:
             dict with game_id, join_url, song_count, phase
+
         """
         self.game_id = secrets.token_urlsafe(8)
         self.phase = GamePhase.LOBBY
@@ -83,6 +108,18 @@ class GameState:
         self.media_player = media_player
         self.join_url = f"{base_url}/beatify/play?game={self.game_id}"
         self.players = {}
+
+        # Initialize PlaylistManager for song selection (Epic 4)
+        self._playlist_manager = PlaylistManager(songs)
+
+        # Reset round tracking for new game
+        self.round = 0
+        self.total_rounds = len(songs)
+        self.deadline = None
+        self.current_song = None
+        self.last_round = False
+        self.pause_reason = None
+        self._previous_phase = None
 
         _LOGGER.info("Game created: %s with %d songs", self.game_id, len(songs))
 
@@ -94,12 +131,14 @@ class GameState:
         }
 
     def get_state(self) -> dict[str, Any] | None:
-        """Get current game state for broadcast.
+        """
+        Get current game state for broadcast.
 
         Returns phase-specific data for each game phase.
 
         Returns:
             Game state dict or None if no active game
+
         """
         if not self.game_id:
             return None
@@ -117,31 +156,38 @@ class GameState:
 
         elif self.phase == GamePhase.PLAYING:
             state["join_url"] = self.join_url
-            # Round info - defaults for Epic 4
-            state["round"] = getattr(self, "round", 1)
-            state["total_rounds"] = getattr(self, "total_rounds", 10)
-            state["deadline"] = getattr(self, "deadline", None)
-            # Song info - Epic 4
-            current_song = getattr(self, "current_song", None)
-            if current_song:
+            state["round"] = self.round
+            state["total_rounds"] = self.total_rounds
+            state["deadline"] = self.deadline
+            state["last_round"] = self.last_round
+            state["songs_remaining"] = (
+                self._playlist_manager.get_remaining_count()
+                if self._playlist_manager
+                else 0
+            )
+            # Song info WITHOUT year during PLAYING (hidden until reveal)
+            if self.current_song:
                 state["song"] = {
-                    "artist": current_song.get("artist", "Unknown"),
-                    "title": current_song.get("title", "Unknown"),
-                    "album_art": current_song.get(
+                    "artist": self.current_song.get("artist", "Unknown"),
+                    "title": self.current_song.get("title", "Unknown"),
+                    "album_art": self.current_song.get(
                         "album_art", "/beatify/static/img/no-artwork.svg"
                     ),
                 }
 
         elif self.phase == GamePhase.REVEAL:
             state["join_url"] = self.join_url
-            state["round"] = getattr(self, "round", 1)
-            state["total_rounds"] = getattr(self, "total_rounds", 10)
-            # Full song info including year
-            current_song = getattr(self, "current_song", None)
-            if current_song:
-                state["song"] = current_song
+            state["round"] = self.round
+            state["total_rounds"] = self.total_rounds
+            state["last_round"] = self.last_round
+            # Full song info INCLUDING year and fun_fact during REVEAL
+            if self.current_song:
+                state["song"] = self.current_song
 
-        elif self.phase == GamePhase.END:
+        elif self.phase == GamePhase.PAUSED:
+            state["pause_reason"] = self.pause_reason
+
+        elif self.phase == GamePhase.END:  # noqa: SIM102
             # Include winner info
             if self.players:
                 winner = max(self.players.values(), key=lambda p: p.score)
@@ -160,8 +206,22 @@ class GameState:
         self.join_url = None
         self.players = {}
 
-    def add_player(self, name: str, ws: web.WebSocketResponse) -> tuple[bool, str | None]:
-        """Add a player to the game.
+        # Reset round tracking (Epic 4)
+        self.round = 0
+        self.total_rounds = 0
+        self.deadline = None
+        self.current_song = None
+        self.last_round = False
+        self.pause_reason = None
+        self._previous_phase = None
+        self._playlist_manager = None
+        self._media_player_service = None
+
+    def add_player(
+        self, name: str, ws: web.WebSocketResponse
+    ) -> tuple[bool, str | None]:
+        """
+        Add a player to the game.
 
         Allows joining during LOBBY, PLAYING, or REVEAL phases.
         Rejects during END phase.
@@ -172,6 +232,7 @@ class GameState:
 
         Returns:
             (success, error_code) - error_code is None on success
+
         """
         # Validate name
         name = name.strip()
@@ -206,31 +267,37 @@ class GameState:
         return True, None
 
     def get_player(self, name: str) -> PlayerSession | None:
-        """Get player by name.
+        """
+        Get player by name.
 
         Args:
             name: Player name
 
         Returns:
             PlayerSession or None if not found
+
         """
         return self.players.get(name)
 
     def remove_player(self, name: str) -> None:
-        """Remove player from game.
+        """
+        Remove player from game.
 
         Args:
             name: Player name to remove
+
         """
         if name in self.players:
             del self.players[name]
             _LOGGER.info("Player removed: %s", name)
 
     def get_players_state(self) -> list[dict[str, Any]]:
-        """Get player list for state broadcast.
+        """
+        Get player list for state broadcast.
 
         Returns:
             List of player dicts with name, score, connected, streak, is_admin
+
         """
         return [
             {
@@ -244,13 +311,15 @@ class GameState:
         ]
 
     def set_admin(self, name: str) -> bool:
-        """Mark a player as the admin.
+        """
+        Mark a player as the admin.
 
         Args:
             name: Player name to mark as admin
 
         Returns:
             True if successful, False if player not found
+
         """
         if name not in self.players:
             return False
@@ -259,10 +328,12 @@ class GameState:
         return True
 
     def start_game(self) -> tuple[bool, str | None]:
-        """Start the game, transitioning from LOBBY to PLAYING.
+        """
+        Start the game, transitioning from LOBBY to PLAYING.
 
         Returns:
             (success, error_code) - error_code is None on success
+
         """
         if self.phase != GamePhase.LOBBY:
             return False, ERR_GAME_ALREADY_STARTED
@@ -274,3 +345,90 @@ class GameState:
         # Round and song selection will be implemented in Epic 4
         _LOGGER.info("Game started: %d players", len(self.players))
         return True, None
+
+    async def start_round(self, hass: HomeAssistant) -> bool:
+        """
+        Start a new round with song playback.
+
+        Args:
+            hass: Home Assistant instance for media player control
+
+        Returns:
+            True if round started successfully, False otherwise
+
+        """
+        # Import here to avoid circular imports
+        from custom_components.beatify.services.media_player import (
+            MediaPlayerService,
+        )
+
+        if not self._playlist_manager:
+            _LOGGER.error("No playlist manager configured")
+            return False
+
+        # Get next song
+        song = self._playlist_manager.get_next_song()
+        if not song:
+            _LOGGER.info("All songs exhausted, ending game")
+            self.phase = GamePhase.END
+            return False
+
+        # Check if this is the last round (1 song remaining after this one)
+        self.last_round = self._playlist_manager.get_remaining_count() <= 1
+
+        # Create media player service if needed
+        if self.media_player and not self._media_player_service:
+            self._media_player_service = MediaPlayerService(hass, self.media_player)
+
+        # Play song via media player
+        if self._media_player_service:
+            success = await self._media_player_service.play_song(song["uri"])
+            if not success:
+                _LOGGER.warning("Failed to play song: %s", song["uri"])
+                self._playlist_manager.mark_played(song["uri"])
+                # Try next song recursively
+                return await self.start_round(hass)
+
+            # Wait for playback to start
+            await asyncio.sleep(0.5)
+
+            # Get metadata from media player
+            metadata = await self._media_player_service.get_metadata()
+        else:
+            # No media player (testing mode)
+            metadata = {
+                "artist": "Test Artist",
+                "title": "Test Song",
+                "album_art": "/beatify/static/img/no-artwork.svg",
+            }
+
+        # Mark song as played
+        self._playlist_manager.mark_played(song["uri"])
+
+        # Set current song (year and fun_fact from playlist, rest from metadata)
+        self.current_song = {
+            "year": song["year"],
+            "fun_fact": song.get("fun_fact", ""),
+            "uri": song["uri"],
+            **metadata,
+        }
+
+        # Update round tracking
+        self.round += 1
+        self.total_rounds = self._playlist_manager.get_total_count()
+        self.deadline = int((self._now() + DEFAULT_ROUND_DURATION) * 1000)
+
+        # Reset player submissions for new round
+        for player in self.players.values():
+            player.submitted = False
+            player.current_guess = None
+
+        # Transition to PLAYING
+        self.phase = GamePhase.PLAYING
+        _LOGGER.info(
+            "Round %d started: %s - %s",
+            self.round,
+            self.current_song.get("artist"),
+            self.current_song.get("title"),
+        )
+        return True

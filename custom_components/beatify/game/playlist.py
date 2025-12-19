@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import random
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -13,6 +14,80 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class PlaylistManager:
+    """Manages song selection and played tracking."""
+
+    def __init__(self, songs: list[dict[str, Any]]) -> None:
+        """
+        Initialize with list of songs from loaded playlists.
+
+        Each song dict must have: year, uri, fun_fact
+
+        Args:
+            songs: List of song dictionaries
+
+        """
+        self._songs = songs.copy()
+        self._played_uris: set[str] = set()
+
+    def get_next_song(self) -> dict[str, Any] | None:
+        """
+        Get random unplayed song.
+
+        Returns:
+            Song dict or None if all songs played
+
+        """
+        available = [s for s in self._songs if s["uri"] not in self._played_uris]
+        if not available:
+            return None
+        return random.choice(available)  # noqa: S311
+
+    def mark_played(self, uri: str) -> None:
+        """
+        Mark a song as played.
+
+        Args:
+            uri: Song URI to mark as played
+
+        """
+        self._played_uris.add(uri)
+
+    def reset(self) -> None:
+        """Reset played tracking for new game."""
+        self._played_uris.clear()
+
+    def is_exhausted(self) -> bool:
+        """
+        Check if all songs have been played.
+
+        Returns:
+            True if all songs have been played
+
+        """
+        return len(self._played_uris) >= len(self._songs)
+
+    def get_remaining_count(self) -> int:
+        """
+        Get count of unplayed songs.
+
+        Returns:
+            Number of songs not yet played
+
+        """
+        return len(self._songs) - len(self._played_uris)
+
+    def get_total_count(self) -> int:
+        """
+        Get total song count.
+
+        Returns:
+            Total number of songs in playlist
+
+        """
+        return len(self._songs)
 
 # Validation constants
 MIN_YEAR = 1900
@@ -32,7 +107,28 @@ async def async_ensure_playlist_directory(hass: HomeAssistant) -> Path:
         playlist_dir.mkdir(parents=True, exist_ok=True)
         _LOGGER.info("Created playlist directory: %s", playlist_dir)
 
+    # Copy sample playlist if directory is empty
+    existing_playlists = list(playlist_dir.glob("*.json"))
+    if not existing_playlists:
+        await _copy_sample_playlist(playlist_dir)
+
     return playlist_dir
+
+
+async def _copy_sample_playlist(dest_dir: Path) -> None:
+    """Copy sample playlist to destination directory."""
+    # Sample playlist is bundled with the integration
+    sample_dir = Path(__file__).parent.parent / "playlists"
+    sample_file = sample_dir / "greatest-hits-of-all-time.json"
+
+    if sample_file.exists():
+        dest_file = dest_dir / sample_file.name
+        try:
+            content = sample_file.read_text(encoding="utf-8")
+            dest_file.write_text(content, encoding="utf-8")
+            _LOGGER.info("Copied sample playlist to: %s", dest_file)
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.warning("Failed to copy sample playlist: %s", err)
 
 
 def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:

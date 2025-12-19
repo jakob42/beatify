@@ -93,11 +93,61 @@
             </div>
         </div>
 
-        <!-- Game view placeholder (Epic 4) -->
+        <!-- Game view (Epic 4) -->
         <div id="game-view" class="view hidden">
-            <div class="game-placeholder">
-                <h1>Game Started!</h1>
-                <p>Game functionality coming in Epic 4</p>
+            <div class="game-container">
+                <!-- Round Indicator -->
+                <div id="round-indicator" class="round-indicator">
+                    Round <span id="current-round">1</span> of <span id="total-rounds">10</span>
+                </div>
+                <div id="last-round-banner" class="last-round-banner hidden">
+                    Final Round!
+                </div>
+
+                <!-- Album Cover -->
+                <div class="album-cover-container">
+                    <img id="album-cover"
+                         src="/beatify/static/img/no-artwork.svg"
+                         alt="Album Cover"
+                         class="album-cover">
+                    <div id="album-loading" class="album-loading hidden">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Timer -->
+                <div class="timer-container">
+                    <div id="timer" class="timer">30</div>
+                </div>
+
+                <!-- Year Selector (Story 4.3) -->
+                <div id="year-selector-container" class="year-selector-container">
+                    <div id="year-selector" class="year-selector">
+                        <div class="year-display">
+                            <span id="selected-year">1990</span>
+                        </div>
+
+                        <div class="slider-container">
+                            <span class="slider-label slider-label--min">1950</span>
+                            <input type="range"
+                                   id="year-slider"
+                                   min="1950"
+                                   max="2025"
+                                   value="1990"
+                                   class="year-slider">
+                            <span class="slider-label slider-label--max">2025</span>
+                        </div>
+
+                        <button id="submit-btn" class="submit-btn">
+                            Submit Guess
+                        </button>
+
+                        <div id="submitted-confirmation" class="submitted-confirmation hidden">
+                            <span class="checkmark">✓</span>
+                            <span>Submitted!</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

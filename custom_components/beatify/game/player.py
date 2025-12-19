@@ -22,3 +22,5 @@ class PlayerSession:
     is_admin: bool = False
     joined_late: bool = False
     joined_at: float = field(default_factory=time.time)
+    submitted: bool = False
+    current_guess: int | None = None
