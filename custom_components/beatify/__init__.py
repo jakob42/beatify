@@ -22,6 +22,7 @@ from .server.views import (
     EndGameView,
     GameStatusView,
     PlayerView,
+    StartGameplayView,
     StartGameView,
     StatusView,
 )
@@ -78,6 +79,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.http.register_view(AdminView(hass))
     hass.http.register_view(StatusView(hass))
     hass.http.register_view(StartGameView(hass))
+    hass.http.register_view(StartGameplayView(hass))
     hass.http.register_view(EndGameView(hass))
     hass.http.register_view(PlayerView(hass))
     hass.http.register_view(GameStatusView(hass))

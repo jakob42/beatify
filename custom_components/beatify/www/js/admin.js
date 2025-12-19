@@ -22,6 +22,7 @@ const allViews = ['setup', 'lobby', 'existing-game'];
 document.addEventListener('DOMContentLoaded', async () => {
     // Wire event listeners
     document.getElementById('start-game')?.addEventListener('click', startGame);
+    document.getElementById('start-game-lobby')?.addEventListener('click', startGameplay);
     document.getElementById('print-qr')?.addEventListener('click', printQRCode);
     document.getElementById('rejoin-game')?.addEventListener('click', rejoinGame);
     document.getElementById('end-game')?.addEventListener('click', endGame);
@@ -508,6 +509,44 @@ async function startGame() {
         btn.disabled = false;
         btn.textContent = originalText;
         updateStartButtonState();
+    }
+}
+
+/**
+ * Start gameplay (transition from LOBBY to PLAYING)
+ */
+async function startGameplay() {
+    const btn = document.getElementById('start-game-lobby');
+    if (!btn) return;
+
+    btn.disabled = true;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="btn-icon">⏳</span> Starting...';
+
+    try {
+        const response = await fetch('/beatify/api/start-gameplay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            showError(data.message || 'Failed to start gameplay');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            return;
+        }
+
+        // Game started - show success state
+        btn.innerHTML = '<span class="btn-icon">✓</span> Game Started!';
+        // Button stays disabled since game is now running
+
+    } catch (err) {
+        showError('Network error. Please try again.');
+        console.error('Start gameplay error:', err);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
 

@@ -254,6 +254,56 @@ class EndGameView(HomeAssistantView):
         return web.json_response({"success": True})
 
 
+class StartGameplayView(HomeAssistantView):
+    """Handle start gameplay requests (transition LOBBY -> PLAYING)."""
+
+    url = "/beatify/api/start-gameplay"
+    name = "beatify:api:start-gameplay"
+    requires_auth = False
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize view."""
+        self.hass = hass
+
+    async def post(self, request: web.Request) -> web.Response:  # noqa: ARG002
+        """Start gameplay from lobby."""
+        from custom_components.beatify.game.state import GamePhase  # noqa: PLC0415
+
+        data = self.hass.data.get(DOMAIN, {})
+        game_state = data.get("game")
+
+        if not game_state or not game_state.game_id:
+            return web.json_response(
+                {"error": "GAME_NOT_STARTED", "message": "No active game"},
+                status=404,
+            )
+
+        if game_state.phase != GamePhase.LOBBY:
+            return web.json_response(
+                {"error": "INVALID_PHASE", "message": "Game already started"},
+                status=409,
+            )
+
+        # Set round end callback for broadcasting
+        ws_handler = data.get("ws_handler")
+        if ws_handler:
+            game_state.set_round_end_callback(ws_handler.broadcast_state)
+
+        # Start the first round
+        success = await game_state.start_round(self.hass)
+        if not success:
+            return web.json_response(
+                {"error": "START_FAILED", "message": "Failed to start - no songs"},
+                status=500,
+            )
+
+        # Broadcast state to all connected players
+        if ws_handler:
+            await ws_handler.broadcast_state()
+
+        return web.json_response({"success": True, "phase": game_state.phase.value})
+
+
 class PlayerView(HomeAssistantView):
     """Serve the player page."""
 
