@@ -16,6 +16,8 @@ State Machine (from architecture):
 
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 
 from tests.support.factories import create_player
@@ -357,12 +359,11 @@ class TestGameSessionState:
             base_url="http://test.local:8123",
         )
 
-        # Add some players
-        state.players = {
-            "player1": {"score": 0},
-            "player2": {"score": 0},
-            "player3": {"score": 0},
-        }
+        # Add some players via add_player (proper API)
+        mock_ws = MagicMock()
+        state.add_player("player1", mock_ws)
+        state.add_player("player2", mock_ws)
+        state.add_player("player3", mock_ws)
 
         result = state.get_state()
         assert result["player_count"] == 3

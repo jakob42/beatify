@@ -294,6 +294,10 @@ class BeatifyWebSocketHandler:
             })
             return
 
+        # Parse bet flag (Story 5.3)
+        bet = data.get("bet", False)
+        player.bet = bool(bet)
+
         # Record submission
         submission_time = time.time()
         player.submit_guess(year, submission_time)

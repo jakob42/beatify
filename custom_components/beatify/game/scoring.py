@@ -7,6 +7,8 @@ Advanced scoring (Epic 5) adds speed bonus, streaks, and betting.
 
 from __future__ import annotations
 
+from custom_components.beatify.const import STREAK_MILESTONES
+
 # Scoring thresholds (FR32)
 THRESHOLD_CLOSE = 3  # Within ±3 years = 5 points
 THRESHOLD_NEAR = 5  # Within ±5 years = 1 point
@@ -45,6 +47,108 @@ def calculate_accuracy_score(guess: int, actual: int) -> int:
     if diff <= THRESHOLD_NEAR:
         return POINTS_NEAR
     return POINTS_WRONG
+
+
+def calculate_speed_multiplier(elapsed_time: float, round_duration: float) -> float:
+    """
+    Calculate speed bonus multiplier based on submission timing.
+
+    Formula: speed_multiplier = 1.5 - (0.5 * submission_time_ratio)
+    - Instant submission (0s): 1.5x multiplier
+    - At deadline (30s): 1.0x multiplier (no bonus)
+
+    Args:
+        elapsed_time: Seconds elapsed since round started when player submitted
+        round_duration: Total round duration in seconds (default 30)
+
+    Returns:
+        Multiplier between 1.0 and 1.5
+
+    """
+    if round_duration <= 0:
+        return 1.0
+
+    # Calculate ratio (0.0 = instant, 1.0 = at deadline)
+    submission_time_ratio = elapsed_time / round_duration
+
+    # Clamp to valid range [0.0, 1.0]
+    submission_time_ratio = max(0.0, min(1.0, submission_time_ratio))
+
+    # Formula: 1.5x at instant, 1.0x at deadline (linear)
+    return 1.5 - (0.5 * submission_time_ratio)
+
+
+def calculate_round_score(
+    guess: int,
+    actual: int,
+    elapsed_time: float,
+    round_duration: float,
+) -> tuple[int, int, float]:
+    """
+    Calculate total round score with speed bonus.
+
+    Args:
+        guess: Player's guessed year
+        actual: Correct year from playlist
+        elapsed_time: Seconds elapsed since round started
+        round_duration: Total round duration in seconds
+
+    Returns:
+        Tuple of (final_score, base_score, speed_multiplier)
+
+    """
+    base_score = calculate_accuracy_score(guess, actual)
+    speed_multiplier = calculate_speed_multiplier(elapsed_time, round_duration)
+    final_score = int(base_score * speed_multiplier)
+    return final_score, base_score, speed_multiplier
+
+
+def apply_bet_multiplier(
+    round_score: int,
+    bet: bool,  # noqa: FBT001
+) -> tuple[int, str | None]:
+    """
+    Apply bet multiplier to round score (Story 5.3).
+
+    Betting is double-or-nothing:
+    - If bet and scored points (>0): double the score, outcome="won"
+    - If bet and 0 points: score stays 0, outcome="lost"
+    - If no bet: score unchanged, outcome=None
+
+    Args:
+        round_score: Points earned before bet (accuracy x speed)
+        bet: Whether player placed a bet
+
+    Returns:
+        Tuple of (final_score, bet_outcome)
+        bet_outcome is "won", "lost", or None
+
+    """
+    if not bet:
+        return round_score, None
+
+    if round_score > 0:
+        return round_score * 2, "won"
+    return 0, "lost"
+
+
+def calculate_streak_bonus(streak: int) -> int:
+    """
+    Calculate milestone bonus for streak.
+
+    Bonuses awarded at exact milestones only (Story 5.2):
+    - 3 consecutive: +20 points
+    - 5 consecutive: +50 points
+    - 10 consecutive: +100 points
+
+    Args:
+        streak: Current streak count (after incrementing for this round)
+
+    Returns:
+        Bonus points (0 if not at milestone)
+
+    """
+    return STREAK_MILESTONES.get(streak, 0)
 
 
 def calculate_years_off_text(diff: int) -> str:

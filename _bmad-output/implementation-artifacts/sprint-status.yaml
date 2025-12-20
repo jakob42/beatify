@@ -81,30 +81,30 @@ development_status:
   4-4-submission-tracking-display: done
   4-5-timer-expiry-and-auto-advance: done
   4-6-reveal-and-scoring: done
-  epic-4-retrospective: optional
+  epic-4-retrospective: done
 
   # Epic 5: Advanced Scoring & Leaderboard
   # Goal: Full gamification with speed bonuses, streaks, betting, live leaderboard
   # FRs: FR33, FR34, FR35, FR36, FR37, FR38, FR39, FR40, FR41, FR42
-  epic-5: backlog
-  5-1-speed-bonus-multiplier: backlog
-  5-2-streak-tracking-and-bonuses: backlog
-  5-3-betting-mechanic: backlog
-  5-4-no-submission-penalty: backlog
-  5-5-live-leaderboard: backlog
-  5-6-final-leaderboard: backlog
+  epic-5: in-progress
+  5-1-speed-bonus-multiplier: review
+  5-2-streak-tracking-and-bonuses: review
+  5-3-betting-mechanic: in-progress
+  5-4-no-submission-penalty: ready-for-dev
+  5-5-live-leaderboard: ready-for-dev
+  5-6-final-leaderboard: ready-for-dev
   epic-5-retrospective: optional
 
   # Epic 6: Host Game Control
   # Goal: Host controls game flow from player screen - stop song, next round, volume, end game
   # FRs: FR43, FR44, FR45, FR46, FR47, FR48
-  epic-6: backlog
-  6-1-admin-control-bar-ui: backlog
-  6-2-stop-song-control: backlog
-  6-3-next-round-control: backlog
-  6-4-volume-control: backlog
-  6-5-end-game-control: backlog
-  6-6-start-new-game-reset: backlog
+  epic-6: in-progress
+  6-1-admin-control-bar-ui: ready-for-dev
+  6-2-stop-song-control: ready-for-dev
+  6-3-next-round-control: ready-for-dev
+  6-4-volume-control: ready-for-dev
+  6-5-end-game-control: ready-for-dev
+  6-6-start-new-game-reset: ready-for-dev
   epic-6-retrospective: optional
 
   # Epic 7: Resilience & Recovery

@@ -130,6 +130,22 @@
                     </div>
                 </div>
 
+                <!-- Leaderboard (Story 5.5) -->
+                <div id="game-leaderboard" class="leaderboard is-compact">
+                    <div class="leaderboard-header">
+                        <span class="leaderboard-title">Leaderboard</span>
+                        <button id="leaderboard-toggle" class="leaderboard-toggle" type="button">
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                    </div>
+                    <div id="leaderboard-list" class="leaderboard-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <div id="leaderboard-you" class="leaderboard-you hidden">
+                        <!-- Quick "You: #X" indicator when scrolled -->
+                    </div>
+                </div>
+
                 <!-- Year Selector (Story 4.3) -->
                 <div id="year-selector-container" class="year-selector-container">
                     <div id="year-selector" class="year-selector">
@@ -146,6 +162,14 @@
                                    value="1990"
                                    class="year-slider">
                             <span class="slider-label slider-label--max">2025</span>
+                        </div>
+
+                        <!-- Bet Toggle (Story 5.3) -->
+                        <div class="bet-container">
+                            <button id="bet-toggle" class="bet-toggle" type="button">
+                                <span class="bet-icon">🎲</span>
+                                <span class="bet-label">Double or Nothing</span>
+                            </button>
                         </div>
 
                         <button id="submit-btn" class="submit-btn">
@@ -203,6 +227,16 @@
                     </div>
                 </div>
 
+                <!-- Reveal Leaderboard (Story 5.5) -->
+                <div id="reveal-leaderboard" class="leaderboard is-prominent">
+                    <div class="leaderboard-header">
+                        <span class="leaderboard-title">Standings</span>
+                    </div>
+                    <div id="reveal-leaderboard-list" class="leaderboard-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
                 <!-- Admin Controls -->
                 <div id="reveal-admin-controls" class="reveal-admin-controls hidden">
                     <button id="next-round-btn" class="next-round-btn">
@@ -212,13 +246,78 @@
             </div>
         </div>
 
-        <!-- End View -->
+        <!-- End View (Story 5.6) -->
         <div id="end-view" class="view hidden">
             <div class="end-container">
-                <div class="end-icon">🎮</div>
-                <h1>Game Has Ended</h1>
-                <p class="end-message">Thanks for playing Beatify!</p>
-                <p class="hint">Ask the host to start a new game.</p>
+                <!-- Header -->
+                <div class="end-header">
+                    <h1 class="end-title">Game Over!</h1>
+                    <p class="end-subtitle">Thanks for playing Beatify</p>
+                </div>
+
+                <!-- Podium for top 3 -->
+                <div class="podium">
+                    <div class="podium-place podium-2">
+                        <div class="podium-medal">🥈</div>
+                        <div class="podium-name" id="podium-2-name">---</div>
+                        <div class="podium-score" id="podium-2-score">0</div>
+                        <div class="podium-stand">2</div>
+                    </div>
+                    <div class="podium-place podium-1">
+                        <div class="podium-medal">🥇</div>
+                        <div class="podium-name" id="podium-1-name">---</div>
+                        <div class="podium-score" id="podium-1-score">0</div>
+                        <div class="podium-stand">1</div>
+                    </div>
+                    <div class="podium-place podium-3">
+                        <div class="podium-medal">🥉</div>
+                        <div class="podium-name" id="podium-3-name">---</div>
+                        <div class="podium-score" id="podium-3-score">0</div>
+                        <div class="podium-stand">3</div>
+                    </div>
+                </div>
+
+                <!-- Your result -->
+                <div class="your-result">
+                    <div class="your-result-header">Your Result</div>
+                    <div class="your-result-rank" id="your-final-rank">#?</div>
+                    <div class="your-result-score" id="your-final-score">0 points</div>
+                    <div class="your-result-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="stat-best-streak">0</span>
+                            <span class="stat-label">Best Streak</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-rounds">0</span>
+                            <span class="stat-label">Rounds Played</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-bets">0</span>
+                            <span class="stat-label">Bets Won</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full leaderboard -->
+                <div class="final-leaderboard">
+                    <div class="final-leaderboard-header">Full Rankings</div>
+                    <div id="final-leaderboard-list" class="final-leaderboard-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Admin controls -->
+                <div id="end-admin-controls" class="end-admin-controls hidden">
+                    <button id="new-game-btn" class="new-game-btn">
+                        Start New Game
+                    </button>
+                </div>
+
+                <!-- Player message -->
+                <div id="end-player-message" class="end-player-message hidden">
+                    <p>Thanks for playing! 🎉</p>
+                    <p class="end-hint">Wait for the host to start a new game</p>
+                </div>
             </div>
         </div>
     </main>

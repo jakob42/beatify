@@ -15,6 +15,10 @@ LOBBY_DISCONNECT_GRACE_PERIOD = 5  # seconds before removing disconnected player
 YEAR_MIN = 1950
 YEAR_MAX = 2025
 
+# Streak milestone bonuses (Story 5.2)
+# Key = streak count, Value = bonus points
+STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100}
+
 # Error codes
 ERR_NAME_TAKEN = "NAME_TAKEN"
 ERR_NAME_INVALID = "NAME_INVALID"

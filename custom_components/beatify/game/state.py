@@ -24,7 +24,7 @@ from custom_components.beatify.const import (
 
 from .player import PlayerSession
 from .playlist import PlaylistManager
-from .scoring import calculate_accuracy_score
+from .scoring import apply_bet_multiplier, calculate_round_score, calculate_streak_bonus
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
@@ -86,6 +86,10 @@ class GameState:
         self._timer_task: asyncio.Task | None = None
         self._on_round_end: Callable[[], Awaitable[None]] | None = None
 
+        # Round timing for speed bonus (Story 5.1)
+        self.round_start_time: float | None = None
+        self.round_duration: float = DEFAULT_ROUND_DURATION
+
     def create_game(
         self,
         playlists: list[str],
@@ -125,6 +129,10 @@ class GameState:
         self.last_round = False
         self.pause_reason = None
         self._previous_phase = None
+
+        # Reset timing for speed bonus (Story 5.1)
+        self.round_start_time = None
+        self.round_duration = DEFAULT_ROUND_DURATION
 
         # Reset timer task for new game
         self.cancel_timer()
@@ -187,6 +195,8 @@ class GameState:
                         "album_art", "/beatify/static/img/no-artwork.svg"
                     ),
                 }
+            # Leaderboard (Story 5.5)
+            state["leaderboard"] = self.get_leaderboard()
 
         elif self.phase == GamePhase.REVEAL:
             state["join_url"] = self.join_url
@@ -198,11 +208,19 @@ class GameState:
                 state["song"] = self.current_song
             # Include reveal-specific player data (guesses, round_score, missed)
             state["players"] = self.get_reveal_players_state()
+            # Leaderboard (Story 5.5)
+            state["leaderboard"] = self.get_leaderboard()
 
         elif self.phase == GamePhase.PAUSED:
             state["pause_reason"] = self.pause_reason
 
-        elif self.phase == GamePhase.END:  # noqa: SIM102
+        elif self.phase == GamePhase.END:
+            # Final leaderboard with all player stats (Story 5.6)
+            state["leaderboard"] = self.get_final_leaderboard()
+            state["game_stats"] = {
+                "total_rounds": self.round,
+                "total_players": len(self.players),
+            }
             # Include winner info
             if self.players:
                 winner = max(self.players.values(), key=lambda p: p.score)
@@ -233,6 +251,10 @@ class GameState:
         self._previous_phase = None
         self._playlist_manager = None
         self._media_player_service = None
+
+        # Reset timing (Story 5.1)
+        self.round_start_time = None
+        self.round_duration = DEFAULT_ROUND_DURATION
 
     def add_player(
         self, name: str, ws: web.WebSocketResponse
@@ -460,7 +482,11 @@ class GameState:
         # Update round tracking
         self.round += 1
         self.total_rounds = self._playlist_manager.get_total_count()
-        self.deadline = int((self._now() + DEFAULT_ROUND_DURATION) * 1000)
+
+        # Record round start time for speed bonus calculation (Story 5.1)
+        self.round_start_time = self._now()
+        self.round_duration = DEFAULT_ROUND_DURATION
+        self.deadline = int((self.round_start_time + self.round_duration) * 1000)
 
         # Reset player submissions for new round
         for player in self.players.values():
@@ -529,33 +555,73 @@ class GameState:
         # Cancel timer if still running
         self.cancel_timer()
 
+        # Store current ranks before scoring for rank change detection (5.5)
+        self._store_previous_ranks()
+
         # Get correct year from current song
         correct_year = self.current_song.get("year") if self.current_song else None
 
         # Calculate scores for all players
         for player in self.players.values():
             if player.submitted and correct_year is not None:
-                # Calculate accuracy score
-                player.round_score = calculate_accuracy_score(
-                    player.current_guess, correct_year
+                # Calculate elapsed time for speed bonus (Story 5.1)
+                if (
+                    player.submission_time is not None
+                    and self.round_start_time is not None
+                ):
+                    elapsed = player.submission_time - self.round_start_time
+                else:
+                    elapsed = self.round_duration  # No bonus if timing unavailable
+
+                # Calculate score with speed bonus
+                speed_score, player.base_score, player.speed_multiplier = (
+                    calculate_round_score(
+                        player.current_guess,
+                        correct_year,
+                        elapsed,
+                        self.round_duration,
+                    )
                 )
                 player.years_off = abs(player.current_guess - correct_year)
                 player.missed_round = False
 
-                # Update streak - any points continues streak
-                if player.round_score > 0:
-                    player.streak += 1
-                else:
-                    player.streak = 0
+                # Apply bet multiplier (Story 5.3)
+                player.round_score, player.bet_outcome = apply_bet_multiplier(
+                    speed_score, player.bet
+                )
 
-                # Add to total score
-                player.score += player.round_score
+                # Update streak - any points continues streak (Story 5.2)
+                # Note: streak based on speed_score, not bet-adjusted score
+                if speed_score > 0:
+                    player.previous_streak = 0  # Not relevant when scoring
+                    player.streak += 1
+                    # Check for streak milestone bonus (awarded at exact milestones)
+                    player.streak_bonus = calculate_streak_bonus(player.streak)
+                else:
+                    player.previous_streak = player.streak  # Store for display (5.4)
+                    player.streak = 0
+                    player.streak_bonus = 0
+
+                # Add to total score (round_score + streak_bonus are separate)
+                # Streak bonus NOT doubled by bet
+                player.score += player.round_score + player.streak_bonus
+
+                # Track cumulative stats (Story 5.6) - AFTER all scoring
+                player.rounds_played += 1
+                player.best_streak = max(player.best_streak, player.streak)
+                if player.bet_outcome == "won":
+                    player.bets_won += 1
             else:
-                # Non-submitter
+                # Non-submitter - store streak for "lost X-streak" display (5.4)
+                player.previous_streak = player.streak
                 player.round_score = 0
+                player.base_score = 0
+                player.speed_multiplier = 1.0
                 player.years_off = None
                 player.missed_round = True
                 player.streak = 0  # Break streak
+                player.streak_bonus = 0
+                player.bet_outcome = None
 
         # Transition to REVEAL
         self.phase = GamePhase.REVEAL
@@ -591,7 +657,8 @@ class GameState:
         Get player state with reveal info for REVEAL phase.
 
         Returns:
-            List of player dicts including guess, round_score, and years_off,
+            List of player dicts including guess, round_score, years_off,
+            speed bonus data (Story 5.1), and streak bonus (Story 5.2),
             sorted by total score descending.
 
         """
@@ -606,9 +673,118 @@ class GameState:
                 "round_score": p.round_score,
                 "years_off": p.years_off,
                 "missed_round": p.missed_round,
+                # Speed bonus data (Story 5.1)
+                "base_score": p.base_score,
+                "speed_multiplier": round(p.speed_multiplier, 2),
+                # Streak bonus data (Story 5.2)
+                "streak_bonus": p.streak_bonus,
+                # Bet data (Story 5.3)
+                "bet": p.bet,
+                "bet_outcome": p.bet_outcome,
+                # Missed round data (Story 5.4)
+                "previous_streak": p.previous_streak,
             }
             for p in self.players.values()
         ]
         # Sort by score descending for leaderboard preview
         players.sort(key=lambda p: p["score"], reverse=True)
         return players
+
+    def get_leaderboard(self) -> list[dict[str, Any]]:
+        """
+        Get leaderboard sorted by score (Story 5.5).
+
+        Returns:
+            List of player data with rank and movement info.
+            Note: is_current is set client-side based on playerName.
+
+        """
+        # Sort by score descending, then by name for tie-breaking display order
+        sorted_players = sorted(
+            self.players.values(),
+            key=lambda p: (-p.score, p.name),
+        )
+
+        leaderboard = []
+        current_rank = 0
+        previous_score = None
+
+        for i, player in enumerate(sorted_players):
+            # Handle ties (same score = same rank)
+            # Example: scores [100, 80, 80, 50] -> ranks [1, 2, 2, 4]
+            if player.score != previous_score:
+                current_rank = i + 1  # Rank jumps to position (skips tied ranks)
+            previous_score = player.score
+
+            # Calculate rank change (positive = moved up)
+            rank_change = 0
+            if player.previous_rank is not None:
+                rank_change = player.previous_rank - current_rank
+
+            entry = {
+                "rank": current_rank,
+                "name": player.name,
+                "score": player.score,
+                "streak": player.streak,
+                "is_admin": player.is_admin,
+                "rank_change": rank_change,
+                "connected": player.connected,
+            }
+            leaderboard.append(entry)
+
+        return leaderboard
+
+    def _store_previous_ranks(self) -> None:
+        """Store current ranks before scoring for rank change detection."""
+        sorted_players = sorted(
+            self.players.values(),
+            key=lambda p: (-p.score, p.name),
+        )
+
+        current_rank = 0
+        previous_score = None
+
+        for i, player in enumerate(sorted_players):
+            if player.score != previous_score:
+                current_rank = i + 1
+            previous_score = player.score
+            player.previous_rank = current_rank
+
+    def get_final_leaderboard(self) -> list[dict[str, Any]]:
+        """
+        Get final leaderboard with full player stats (Story 5.6).
+
+        Returns:
+            List of player data with rank and final stats.
+            Note: is_current is set client-side based on playerName.
+
+        """
+        # Sort by score descending, then by name for tie-breaking display order
+        sorted_players = sorted(
+            self.players.values(),
+            key=lambda p: (-p.score, p.name),
+        )
+
+        leaderboard = []
+        current_rank = 0
+        previous_score = None
+
+        for i, player in enumerate(sorted_players):
+            if player.score != previous_score:
+                current_rank = i + 1
+            previous_score = player.score
+
+            entry = {
+                "rank": current_rank,
+                "name": player.name,
+                "score": player.score,
+                "is_admin": player.is_admin,
+                "connected": player.connected,
+                # Final stats (Story 5.6)
+                "best_streak": player.best_streak,
+                "rounds_played": player.rounds_played,
+                "bets_won": player.bets_won,
+            }
+            leaderboard.append(entry)
+
+        return leaderboard

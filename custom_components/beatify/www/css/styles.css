@@ -1501,6 +1501,12 @@ footer {
     color: #ef4444;
 }
 
+/* Speed bonus indicator (Story 5.1) */
+.result-value.is-bonus {
+    color: #f59e0b;
+    font-weight: 700;
+}
+
 .result-score {
     font-size: 32px;
     font-weight: 700;
@@ -1512,6 +1518,563 @@ footer {
     font-size: 16px;
     color: #ef4444;
     font-weight: 600;
+}
+
+/* Streak bonus styling (Story 5.2) */
+.result-value.is-streak {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.streak-bonus-row {
+    background: linear-gradient(90deg, #fef3c7, #fde68a);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.result-total {
+    font-size: 24px;
+    font-weight: 700;
+    color: #10b981;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 2px dashed #e5e7eb;
+}
+
+/* Leaderboard streak indicator (Story 5.2) */
+.streak-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.streak-indicator::before {
+    content: "\01F525";
+}
+
+/* Bet toggle (Story 5.3) */
+.bet-container {
+    margin-bottom: 16px;
+}
+
+.bet-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #f3f4f6;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    width: 100%;
+    justify-content: center;
+}
+
+.bet-toggle:hover {
+    border-color: #9ca3af;
+}
+
+.bet-toggle.is-active {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+.bet-toggle.is-active .bet-icon {
+    animation: dice-shake 0.5s ease;
+}
+
+@keyframes dice-shake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+}
+
+/* Bet outcomes */
+.bet-won-row {
+    background: linear-gradient(90deg, #d1fae5, #a7f3d0);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.result-value.is-bet-won {
+    color: #059669;
+    font-weight: 700;
+}
+
+.bet-lost-row {
+    background: linear-gradient(90deg, #fee2e2, #fecaca);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.result-value.is-bet-lost {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+/* Missed round styling (Story 5.4) */
+.result-missed-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+}
+
+.result-missed-icon {
+    font-size: 48px;
+}
+
+.result-missed-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.streak-broken {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #fee2e2;
+    border-radius: 8px;
+}
+
+.streak-broken-icon {
+    font-size: 20px;
+}
+
+.streak-broken-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #dc2626;
+}
+
+.result-score.is-zero {
+    color: #9ca3af;
+    font-size: 24px;
+}
+
+/* ============================================
+   Leaderboard (Story 5.5)
+   ============================================ */
+
+/* Leaderboard container */
+.leaderboard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.leaderboard.is-compact .leaderboard-list {
+    max-height: 120px;
+}
+
+.leaderboard.is-expanded .leaderboard-list {
+    max-height: 400px;
+}
+
+.leaderboard.is-prominent {
+    margin-top: 16px;
+}
+
+.leaderboard.is-prominent .leaderboard-list {
+    max-height: 280px;
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.leaderboard-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.leaderboard-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    min-width: auto;
+    min-height: auto;
+    color: #6b7280;
+}
+
+.leaderboard-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Leaderboard entries */
+.leaderboard-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.2s ease;
+}
+
+.leaderboard-entry:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-entry.is-current {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+}
+
+/* Top 3 styling */
+.leaderboard-entry.is-top-1 {
+    background: linear-gradient(90deg, #fef3c7, #fde68a);
+}
+
+.leaderboard-entry.is-top-1 .entry-rank {
+    color: #b45309;
+    font-weight: 700;
+}
+
+.leaderboard-entry.is-top-2 {
+    background: linear-gradient(90deg, #f3f4f6, #e5e7eb);
+}
+
+.leaderboard-entry.is-top-2 .entry-rank {
+    color: #6b7280;
+    font-weight: 700;
+}
+
+.leaderboard-entry.is-top-3 {
+    background: linear-gradient(90deg, #fed7aa, #fdba74);
+}
+
+.leaderboard-entry.is-top-3 .entry-rank {
+    color: #c2410c;
+    font-weight: 700;
+}
+
+.entry-rank {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    min-width: 28px;
+}
+
+.entry-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entry-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.entry-score {
+    font-size: 14px;
+    font-weight: 700;
+    color: #6366f1;
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Rank change indicators */
+.rank-up {
+    font-size: 10px;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.rank-down {
+    font-size: 10px;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Quick you indicator */
+.leaderboard-you {
+    position: sticky;
+    bottom: 0;
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* ============================================
+   Final Leaderboard / End View (Story 5.6)
+   ============================================ */
+
+/* End view container */
+.end-container {
+    padding: 24px;
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.end-header {
+    margin-bottom: 24px;
+}
+
+.end-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.end-subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Podium */
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.podium-place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+}
+
+.podium-medal {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.podium-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.podium-score {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.podium-stand {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.podium-1 .podium-stand {
+    height: 80px;
+    background: linear-gradient(180deg, #fbbf24, #d97706);
+}
+
+.podium-2 .podium-stand {
+    height: 60px;
+    background: linear-gradient(180deg, #9ca3af, #6b7280);
+}
+
+.podium-3 .podium-stand {
+    height: 40px;
+    background: linear-gradient(180deg, #fb923c, #c2410c);
+}
+
+/* Your result */
+.your-result {
+    background: #eff6ff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.your-result-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: #3b82f6;
+    margin-bottom: 8px;
+}
+
+.your-result-rank {
+    font-size: 48px;
+    font-weight: 800;
+    color: #1f2937;
+}
+
+.your-result-score {
+    font-size: 18px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.your-result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #6366f1;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Final leaderboard */
+.final-leaderboard {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.final-leaderboard-header {
+    padding: 12px 16px;
+    background: #f3f4f6;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    text-align: left;
+}
+
+.final-leaderboard-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.final-entry {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.final-entry:last-child {
+    border-bottom: none;
+}
+
+.final-entry.is-current {
+    background: #eff6ff;
+}
+
+.final-rank {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    width: 32px;
+}
+
+.final-name {
+    flex: 1;
+    font-size: 14px;
+    color: #1f2937;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.final-score {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6366f1;
+}
+
+/* Admin controls for end */
+.end-admin-controls {
+    margin-bottom: 16px;
+}
+
+.new-game-btn {
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background: #10b981;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    min-width: auto;
+    min-height: auto;
+}
+
+.new-game-btn:hover {
+    background: #059669;
+}
+
+.new-game-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Player message */
+.end-player-message {
+    color: #6b7280;
+}
+
+.end-player-message p {
+    margin: 0 0 8px 0;
+}
+
+.end-hint {
+    font-size: 14px;
 }
 
 /* Admin Controls */

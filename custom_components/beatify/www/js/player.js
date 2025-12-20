@@ -389,6 +389,11 @@
 
         // Render submission tracker
         renderSubmissionTracker(data.players);
+
+        // Update leaderboard (Story 5.5)
+        if (data.leaderboard) {
+            updateLeaderboard(data, 'leaderboard-list');
+        }
     }
 
     // ============================================
@@ -467,10 +472,112 @@
     }
 
     // ============================================
+    // Leaderboard (Story 5.5)
+    // ============================================
+
+    /**
+     * Update leaderboard display
+     * @param {Object} data - State data containing leaderboard
+     * @param {string} targetListId - ID of list container (for different views)
+     */
+    function updateLeaderboard(data, targetListId) {
+        var leaderboard = data.leaderboard || [];
+        var listEl = document.getElementById(targetListId || 'leaderboard-list');
+        if (!listEl) return;
+
+        // Mark is_current client-side
+        leaderboard.forEach(function(entry) {
+            entry.is_current = (entry.name === playerName);
+        });
+
+        var html = '';
+        leaderboard.forEach(function(entry) {
+            var rankClass = entry.rank <= 3 ? 'is-top-' + entry.rank : '';
+            var currentClass = entry.is_current ? 'is-current' : '';
+            var adminBadge = entry.is_admin ? '<span class="admin-badge">👑</span>' : '';
+
+            // Rank change indicator
+            var changeIndicator = '';
+            if (entry.rank_change > 0) {
+                changeIndicator = '<span class="rank-up">▲' + entry.rank_change + '</span>';
+            } else if (entry.rank_change < 0) {
+                changeIndicator = '<span class="rank-down">▼' + Math.abs(entry.rank_change) + '</span>';
+            }
+
+            // Streak indicator (show for 2+ streak)
+            var streakIndicator = entry.streak >= 2
+                ? '<span class="streak-indicator">🔥' + entry.streak + '</span>'
+                : '';
+
+            html += '<div class="leaderboard-entry ' + rankClass + ' ' + currentClass + '" data-rank="' + entry.rank + '">' +
+                '<span class="entry-rank">#' + entry.rank + '</span>' +
+                '<span class="entry-name">' + escapeHtml(entry.name) + adminBadge + '</span>' +
+                '<span class="entry-meta">' +
+                    streakIndicator +
+                    changeIndicator +
+                '</span>' +
+                '<span class="entry-score">' + entry.score + '</span>' +
+            '</div>';
+        });
+
+        listEl.innerHTML = html;
+
+        // Scroll to current player if many players
+        if (leaderboard.length > 8) {
+            scrollToCurrentPlayer(listEl);
+        }
+
+        // Update quick indicator
+        updateYouIndicator(leaderboard);
+    }
+
+    /**
+     * Scroll leaderboard to show current player
+     * @param {Element} listEl - Leaderboard list element
+     */
+    function scrollToCurrentPlayer(listEl) {
+        var currentEntry = listEl.querySelector('.leaderboard-entry.is-current');
+        if (currentEntry) {
+            currentEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    /**
+     * Update "You: #X" quick indicator
+     * @param {Array} leaderboard - Leaderboard entries
+     */
+    function updateYouIndicator(leaderboard) {
+        var youEl = document.getElementById('leaderboard-you');
+        var currentPlayer = leaderboard.find(function(e) { return e.is_current; });
+        if (youEl && currentPlayer) {
+            youEl.textContent = 'You: #' + currentPlayer.rank;
+            youEl.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Setup leaderboard toggle behavior
+     */
+    function setupLeaderboardToggle() {
+        var toggle = document.getElementById('leaderboard-toggle');
+        var leaderboard = document.getElementById('game-leaderboard');
+        if (toggle && leaderboard) {
+            toggle.addEventListener('click', function() {
+                leaderboard.classList.toggle('is-expanded');
+                var icon = toggle.querySelector('.toggle-icon');
+                if (icon) {
+                    icon.textContent = leaderboard.classList.contains('is-expanded') ? '▲' : '▼';
+                }
+            });
+        }
+    }
+
+    // ============================================
     // Year Selector & Submission (Story 4.3)
     // ============================================
 
     let hasSubmitted = false;
+    let betActive = false;  // Betting state (Story 5.3)
 
     /**
      * Initialize year selector interaction
@@ -485,6 +592,16 @@
         slider.addEventListener('input', function() {
             yearDisplay.textContent = this.value;
         });
+
+        // Bet toggle handler (Story 5.3)
+        var betToggle = document.getElementById('bet-toggle');
+        if (betToggle) {
+            betToggle.addEventListener('click', function() {
+                if (hasSubmitted) return;
+                betActive = !betActive;
+                betToggle.classList.toggle('is-active', betActive);
+            });
+        }
 
         // Submit button handler
         var submitBtn = document.getElementById('submit-btn');
@@ -510,11 +627,12 @@
         submitBtn.disabled = true;
         submitBtn.classList.add('is-loading');
 
-        // Send submission via WebSocket
+        // Send submission via WebSocket (with bet flag - Story 5.3)
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 type: 'submit',
-                year: year
+                year: year,
+                bet: betActive
             }));
         } else {
             // WebSocket not connected
@@ -533,6 +651,7 @@
         var yearSelector = document.getElementById('year-selector');
         var submitBtn = document.getElementById('submit-btn');
         var confirmation = document.getElementById('submitted-confirmation');
+        var betToggle = document.getElementById('bet-toggle');
 
         if (yearSelector) {
             yearSelector.classList.add('is-submitted');
@@ -540,6 +659,11 @@
 
         if (submitBtn) {
             submitBtn.classList.add('hidden');
+        }
+
+        // Hide bet toggle after submission (Story 5.3)
+        if (betToggle) {
+            betToggle.classList.add('hidden');
         }
 
         if (confirmation) {
@@ -593,11 +717,13 @@
      */
     function resetSubmissionState() {
         hasSubmitted = false;
+        betActive = false;  // Reset bet (Story 5.3)
 
         var yearSelector = document.getElementById('year-selector');
         var submitBtn = document.getElementById('submit-btn');
         var confirmation = document.getElementById('submitted-confirmation');
         var slider = document.getElementById('year-slider');
+        var betToggle = document.getElementById('bet-toggle');
 
         if (yearSelector) {
             yearSelector.classList.remove('is-submitted');
@@ -607,6 +733,11 @@
             submitBtn.disabled = false;
             submitBtn.classList.remove('hidden', 'is-loading', 'is-error');
             submitBtn.textContent = 'Submit Guess';
+        }
+
+        // Reset bet toggle (Story 5.3)
+        if (betToggle) {
+            betToggle.classList.remove('hidden', 'is-active');
         }
 
         if (confirmation) {
@@ -679,6 +810,11 @@
         }
         renderPersonalResult(currentPlayer, song.year);
 
+        // Update leaderboard (Story 5.5)
+        if (data.leaderboard) {
+            updateLeaderboard(data, 'reveal-leaderboard-list');
+        }
+
         // Show admin controls if admin
         var adminControls = document.getElementById('reveal-admin-controls');
         var nextRoundBtn = document.getElementById('next-round-btn');
@@ -716,9 +852,25 @@
         }
 
         if (player.missed_round) {
-            resultContent.innerHTML =
-                '<div class="result-missed">No guess submitted</div>' +
-                '<div class="result-score">0 pts</div>';
+            // Enhanced missed round display (Story 5.4)
+            var missedHtml =
+                '<div class="result-missed-container">' +
+                    '<div class="result-missed-icon">⏰</div>' +
+                    '<div class="result-missed-text">No guess submitted</div>' +
+                '</div>';
+
+            // Show broken streak if they had one (>= 2)
+            var previousStreak = player.previous_streak || 0;
+            if (previousStreak >= 2) {
+                missedHtml +=
+                    '<div class="streak-broken">' +
+                        '<span class="streak-broken-icon">💔</span>' +
+                        '<span class="streak-broken-text">Lost ' + previousStreak + '-streak!</span>' +
+                    '</div>';
+            }
+
+            missedHtml += '<div class="result-score is-zero">0 pts</div>';
+            resultContent.innerHTML = missedHtml;
             return;
         }
 
@@ -729,6 +881,56 @@
 
         var resultClass = yearsOff === 0 ? 'is-exact' :
                           yearsOff <= 3 ? 'is-close' : 'is-far';
+
+        // Speed bonus display (Story 5.1)
+        var speedMultiplier = player.speed_multiplier || 1.0;
+        var baseScore = player.base_score || 0;
+        var hasSpeedBonus = speedMultiplier > 1.0;
+
+        // Streak bonus display (Story 5.2)
+        var streakBonus = player.streak_bonus || 0;
+
+        var scoreBreakdown = '';
+        if (hasSpeedBonus && baseScore > 0) {
+            scoreBreakdown =
+                '<div class="result-row">' +
+                    '<span class="result-label">Base score</span>' +
+                    '<span class="result-value">' + baseScore + ' pts</span>' +
+                '</div>' +
+                '<div class="result-row">' +
+                    '<span class="result-label">Speed bonus</span>' +
+                    '<span class="result-value is-bonus">' + speedMultiplier.toFixed(2) + 'x</span>' +
+                '</div>';
+        }
+
+        // Bet outcome row (Story 5.3)
+        var betOutcomeHtml = '';
+        if (player.bet_outcome === 'won') {
+            betOutcomeHtml =
+                '<div class="result-row bet-won-row">' +
+                    '<span class="result-label">🎲 Bet paid off!</span>' +
+                    '<span class="result-value is-bet-won">2x</span>' +
+                '</div>';
+        } else if (player.bet_outcome === 'lost') {
+            betOutcomeHtml =
+                '<div class="result-row bet-lost-row">' +
+                    '<span class="result-label">🎲 Bet lost</span>' +
+                    '<span class="result-value is-bet-lost">No bonus</span>' +
+                '</div>';
+        }
+
+        // Streak bonus row (Story 5.2)
+        var streakBonusHtml = '';
+        if (streakBonus > 0) {
+            streakBonusHtml =
+                '<div class="result-row streak-bonus-row">' +
+                    '<span class="result-label">' + player.streak + '-streak bonus!</span>' +
+                    '<span class="result-value is-streak">+' + streakBonus + ' pts</span>' +
+                '</div>';
+        }
+
+        // Calculate total (round_score already includes bet + speed bonus, add streak separately)
+        var totalScore = player.round_score + streakBonus;
 
         resultContent.innerHTML =
             '<div class="result-row">' +
@@ -743,7 +945,104 @@
                 '<span class="result-label">Accuracy</span>' +
                 '<span class="result-value ' + resultClass + '">' + yearsOffText + '</span>' +
             '</div>' +
-            '<div class="result-score">+' + player.round_score + ' pts</div>';
+            scoreBreakdown +
+            betOutcomeHtml +
+            '<div class="result-score">+' + player.round_score + ' pts</div>' +
+            streakBonusHtml +
+            (streakBonus > 0 ? '<div class="result-total">Total: +' + totalScore + ' pts</div>' : '');
+    }
+
+    // ============================================
+    // End View (Story 5.6)
+    // ============================================
+
+    /**
+     * Update end view with final standings and stats
+     * @param {Object} data - State data with leaderboard and game_stats
+     */
+    function updateEndView(data) {
+        var leaderboard = data.leaderboard || [];
+
+        // Mark is_current client-side
+        leaderboard.forEach(function(entry) {
+            entry.is_current = (entry.name === playerName);
+        });
+
+        // Update podium (positions 1, 2, 3)
+        [1, 2, 3].forEach(function(place) {
+            var player = leaderboard.find(function(p) { return p.rank === place; });
+            var nameEl = document.getElementById('podium-' + place + '-name');
+            var scoreEl = document.getElementById('podium-' + place + '-score');
+            if (nameEl) nameEl.textContent = player ? escapeHtml(player.name) : '---';
+            if (scoreEl) scoreEl.textContent = player ? player.score : '0';
+        });
+
+        // Find current player's stats
+        var currentPlayer = leaderboard.find(function(p) { return p.is_current; });
+
+        // Update your result
+        var rankEl = document.getElementById('your-final-rank');
+        var scoreEl = document.getElementById('your-final-score');
+        var bestStreakEl = document.getElementById('stat-best-streak');
+        var roundsEl = document.getElementById('stat-rounds');
+        var betsEl = document.getElementById('stat-bets');
+
+        if (currentPlayer) {
+            if (rankEl) rankEl.textContent = '#' + currentPlayer.rank;
+            if (scoreEl) scoreEl.textContent = currentPlayer.score + ' points';
+            if (bestStreakEl) bestStreakEl.textContent = currentPlayer.best_streak || 0;
+            if (roundsEl) roundsEl.textContent = currentPlayer.rounds_played || 0;
+            if (betsEl) betsEl.textContent = currentPlayer.bets_won || 0;
+        }
+
+        // Update full leaderboard
+        var listEl = document.getElementById('final-leaderboard-list');
+        if (listEl) {
+            listEl.innerHTML = leaderboard.map(function(entry) {
+                var currentClass = entry.is_current ? 'is-current' : '';
+                var adminBadge = entry.is_admin ? ' 👑' : '';
+                return '<div class="final-entry ' + currentClass + '">' +
+                    '<span class="final-rank">#' + entry.rank + '</span>' +
+                    '<span class="final-name">' + escapeHtml(entry.name) + adminBadge + '</span>' +
+                    '<span class="final-score">' + entry.score + '</span>' +
+                '</div>';
+            }).join('');
+        }
+
+        // Show admin or player controls
+        var adminControls = document.getElementById('end-admin-controls');
+        var playerMessage = document.getElementById('end-player-message');
+
+        if (currentPlayer && currentPlayer.is_admin) {
+            if (adminControls) adminControls.classList.remove('hidden');
+            if (playerMessage) playerMessage.classList.add('hidden');
+            // Wire up new game button
+            var newGameBtn = document.getElementById('new-game-btn');
+            if (newGameBtn) {
+                newGameBtn.onclick = handleNewGame;
+            }
+        } else {
+            if (adminControls) adminControls.classList.add('hidden');
+            if (playerMessage) playerMessage.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Handle new game button click
+     */
+    function handleNewGame() {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            var btn = document.getElementById('new-game-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Starting...';
+            }
+
+            ws.send(JSON.stringify({
+                type: 'admin',
+                action: 'new_game'
+            }));
+        }
     }
 
     // Debounce state to prevent rapid clicks
@@ -941,6 +1240,7 @@
                     startCountdown(data.deadline);
                 }
                 initYearSelector();
+                setupLeaderboardToggle();  // Story 5.5
             } else if (data.phase === 'REVEAL') {
                 stopCountdown();
                 showView('reveal-view');
@@ -948,6 +1248,7 @@
             } else if (data.phase === 'END') {
                 stopCountdown();
                 showView('end-view');
+                updateEndView(data);  // Story 5.6
             }
         } else if (data.type === 'submit_ack') {
             // Handle successful guess submission
