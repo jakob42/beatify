@@ -246,6 +246,19 @@
             </div>
         </div>
 
+        <!-- Paused View (Story 7-1) -->
+        <div id="paused-view" class="view hidden">
+            <div class="paused-container">
+                <div class="paused-icon">⏸️</div>
+                <h1>Game Paused</h1>
+                <p id="pause-message">Waiting for host to reconnect...</p>
+                <div class="paused-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <p class="paused-hint">The game will resume when the host returns</p>
+            </div>
+        </div>
+
         <!-- End View (Story 5.6) -->
         <div id="end-view" class="view hidden">
             <div class="end-container">
@@ -320,7 +333,52 @@
                 </div>
             </div>
         </div>
+
+        <!-- Admin Control Bar (Story 6.1) - visible across PLAYING/REVEAL for admin -->
+        <div id="admin-control-bar" class="admin-control-bar hidden">
+            <!-- Volume feedback indicator (Story 6.4) -->
+            <div id="volume-indicator" class="volume-indicator hidden">🔊 50%</div>
+            <button id="stop-song-btn" class="control-btn" type="button">
+                <span class="control-icon">⏹️</span>
+                <span class="control-label">Stop</span>
+            </button>
+            <button id="volume-down-btn" class="control-btn" type="button">
+                <span class="control-icon">🔉</span>
+            </button>
+            <button id="volume-up-btn" class="control-btn" type="button">
+                <span class="control-icon">🔊</span>
+            </button>
+            <button id="next-round-admin-btn" class="control-btn" type="button">
+                <span class="control-icon">⏭️</span>
+                <span class="control-label">Next</span>
+            </button>
+            <button id="end-game-btn" class="control-btn control-btn--danger" type="button">
+                <span class="control-icon">🛑</span>
+                <span class="control-label">End</span>
+            </button>
+        </div>
     </main>
+
+    <!-- Reconnecting Overlay (Story 7-3) -->
+    <div id="reconnecting-overlay" class="reconnecting-overlay hidden">
+        <div class="reconnecting-content">
+            <div class="reconnecting-spinner">
+                <div class="spinner"></div>
+            </div>
+            <p id="reconnect-status" class="reconnect-status">Reconnecting...</p>
+        </div>
+    </div>
+
+    <!-- Connection Lost View (Story 7-4) -->
+    <div id="connection-lost-view" class="view hidden">
+        <div class="connection-lost-container">
+            <div class="connection-lost-icon">📡</div>
+            <h1>Connection Lost</h1>
+            <p>We couldn't reconnect to the game server.</p>
+            <button id="retry-connection-btn" class="btn btn-primary">Try Again</button>
+            <p class="connection-lost-hint">Make sure you're connected to the network</p>
+        </div>
+    </div>
 
     <!-- QR Modal -->
     <div id="qr-modal" class="qr-modal hidden" role="dialog" aria-modal="true"

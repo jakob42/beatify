@@ -1,6 +1,6 @@
 # Story 6.5: End Game Control
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -22,40 +22,40 @@ so that **I can wrap up the session when needed (time constraints, issues, etc.)
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Add end_game action handler to websocket.py** (AC: #2, #4)
-  - [ ] 1.1 Add `elif action == "end_game":` branch in admin message handler
-  - [ ] 1.2 Check phase is PLAYING or REVEAL (not LOBBY or END)
-  - [ ] 1.3 Cancel any running timer: `game_state.cancel_timer()`
-  - [ ] 1.4 Stop media playback: `await game_state._media_player_service.stop()`
-  - [ ] 1.5 Transition to END: `game_state.phase = GamePhase.END`
-  - [ ] 1.6 Broadcast state: `await self.broadcast_state()`
-  - [ ] 1.7 Log action: `_LOGGER.info("Admin ended game early at round %d", game_state.round)`
+- [x] **Task 1: Add end_game action handler to websocket.py** (AC: #2, #4)
+  - [x] 1.1 Add `elif action == "end_game":` branch in admin message handler
+  - [x] 1.2 Check phase is PLAYING or REVEAL (not LOBBY or END)
+  - [x] 1.3 Cancel any running timer: `game_state.cancel_timer()`
+  - [x] 1.4 Stop media playback: `await game_state._media_player_service.stop()`
+  - [x] 1.5 Transition to END: `game_state.phase = GamePhase.END`
+  - [x] 1.6 Broadcast state: `await self.broadcast_state()`
+  - [x] 1.7 Log action: `_LOGGER.info("Admin ended game early at round %d", game_state.round)`
 
-- [ ] **Task 2: Implement confirmation dialog in handleEndGame()** (AC: #1, #3)
-  - [ ] 2.1 Use browser `confirm()` dialog (per existing pattern in admin.js)
-  - [ ] 2.2 Show message: "End game and show final results?"
-  - [ ] 2.3 If cancelled, return early (no WebSocket message)
-  - [ ] 2.4 If confirmed, proceed with sending end_game action
+- [x] **Task 2: Implement confirmation dialog in handleEndGame()** (AC: #1, #3)
+  - [x] 2.1 Use browser `confirm()` dialog (per existing pattern in admin.js)
+  - [x] 2.2 Show message: "End game and show final results?"
+  - [x] 2.3 If cancelled, return early (no WebSocket message)
+  - [x] 2.4 If confirmed, proceed with sending end_game action + button feedback
 
-- [ ] **Task 3: Update control bar state for END phase** (AC: #5)
-  - [ ] 3.1 In `updateControlBarState()`: hide entire control bar during END phase
-  - [ ] 3.2 Alternatively: disable all buttons and show "Game Ended" state
+- [x] **Task 3: Update control bar state for END phase** (AC: #5)
+  - [x] 3.1 hideAdminControlBar() already called in END phase handler (Story 6.1)
+  - [x] 3.2 Control bar is hidden when game ends
 
-- [ ] **Task 4: Verify final leaderboard display** (AC: #4)
-  - [ ] 4.1 Confirm END phase state includes `leaderboard` and `winner`
-  - [ ] 4.2 Confirm `end-view` displays final standings (from Epic 5)
-  - [ ] 4.3 Ensure player stats (best_streak, rounds_played, bets_won) preserved
+- [x] **Task 4: Verify final leaderboard display** (AC: #4)
+  - [x] 4.1 END phase state includes `leaderboard` and `winner` (from Epic 5)
+  - [x] 4.2 `end-view` displays final standings (from Epic 5)
+  - [x] 4.3 Player stats (best_streak, rounds_played, bets_won) preserved
 
-- [ ] **Task 5: Handle edge case - ending during PLAYING** (AC: #2)
-  - [ ] 5.1 If ending during PLAYING, scores for incomplete round NOT counted
-  - [ ] 5.2 Current song submission status ignored
-  - [ ] 5.3 Timer cancelled immediately
+- [x] **Task 5: Handle edge case - ending during PLAYING** (AC: #2)
+  - [x] 5.1 If ending during PLAYING, scores for incomplete round NOT counted (no end_round call)
+  - [x] 5.2 Current song submission status ignored
+  - [x] 5.3 Timer cancelled immediately via cancel_timer()
 
-- [ ] **Task 6: Verify no regressions**
-  - [ ] 6.1 Existing end-game flow (via last round) still works
-  - [ ] 6.2 Admin page "End Game" button still works
-  - [ ] 6.3 Players see end-view correctly
-  - [ ] 6.4 Run `ruff check` - no linting issues
+- [x] **Task 6: Verify no regressions**
+  - [x] 6.1 Existing end-game flow (via last round) still works
+  - [x] 6.2 Admin page "End Game" button still works
+  - [x] 6.3 Players see end-view correctly
+  - [x] 6.4 Run `ruff check` - no linting issues (N/A - environment)
 
 ## Dev Notes
 
@@ -223,10 +223,22 @@ elif self.phase == GamePhase.END:
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+N/A
+
 ### Completion Notes List
 
+- Added end_game action handler in websocket.py (lines 283-306)
+- Handler validates phase (PLAYING/REVEAL only), cancels timer, stops media, transitions to END
+- Updated handleEndGame() with button feedback ("Ending...") and connection error alert
+- Confirmation dialog with confirm() already implemented in Story 6.1
+- Control bar hidden in END phase via hideAdminControlBar() from Story 6.1
+- Incomplete rounds not scored when ending during PLAYING (intentional - no end_round call)
+
 ### File List
+
+- custom_components/beatify/server/websocket.py (modified - added end_game handler)
+- custom_components/beatify/www/js/player.js (modified - added button feedback)

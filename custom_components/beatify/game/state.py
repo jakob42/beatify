@@ -90,6 +90,15 @@ class GameState:
         self.round_start_time: float | None = None
         self.round_duration: float = DEFAULT_ROUND_DURATION
 
+        # Song stopped flag (Story 6.2)
+        self.song_stopped: bool = False
+
+        # Volume control (Story 6.4)
+        self.volume_level: float = 0.5  # Default 50%
+
+        # Admin disconnect tracking (Epic 7)
+        self.disconnected_admin_name: str | None = None
+
     def create_game(
         self,
         playlists: list[str],
@@ -133,6 +142,12 @@ class GameState:
         # Reset timing for speed bonus (Story 5.1)
         self.round_start_time = None
         self.round_duration = DEFAULT_ROUND_DURATION
+
+        # Reset song stopped flag (Story 6.2)
+        self.song_stopped = False
+
+        # Reset volume to default (Story 6.4)
+        self.volume_level = 0.5
 
         # Reset timer task for new game
         self.cancel_timer()
@@ -256,6 +271,101 @@ class GameState:
         self.round_start_time = None
         self.round_duration = DEFAULT_ROUND_DURATION
 
+        # Reset song stopped flag (Story 6.2)
+        self.song_stopped = False
+
+        # Reset volume to default (Story 6.4)
+        self.volume_level = 0.5
+
+        # Reset admin disconnect tracking (Epic 7)
+        self.disconnected_admin_name = None
+
+    async def pause_game(self, reason: str) -> bool:
+        """
+        Pause the game (typically due to admin disconnect).
+
+        Args:
+            reason: Pause reason code (e.g., "admin_disconnected")
+
+        Returns:
+            True if successfully paused, False if already paused/ended
+
+        """
+        if self.phase == GamePhase.PAUSED:
+            return False  # Already paused
+        if self.phase == GamePhase.END:
+            return False  # Can't pause ended game
+
+        # Store current phase for resume
+        self._previous_phase = self.phase
+        self.pause_reason = reason
+
+        # Store admin name for rejoin verification (Story 7-2)
+        if reason == "admin_disconnected":
+            for player in self.players.values():
+                if player.is_admin:
+                    self.disconnected_admin_name = player.name
+                    break
+
+        # Stop timer if in PLAYING
+        if self.phase == GamePhase.PLAYING:
+            self.cancel_timer()
+            # Stop media playback
+            if self._media_player_service:
+                await self._media_player_service.stop()
+
+        # Transition to PAUSED
+        self.phase = GamePhase.PAUSED
+        _LOGGER.info("Game paused: %s", reason)
+
+        return True
+
+    async def resume_game(self) -> bool:
+        """
+        Resume game from PAUSED state.
+
+        Returns:
+            True if successfully resumed, False if not paused
+
+        """
+        if self.phase != GamePhase.PAUSED:
+            return False
+        if self._previous_phase is None:
+            _LOGGER.error("Cannot resume: no previous phase stored")
+            return False
+
+        previous = self._previous_phase
+
+        # Restart timer if resuming to PLAYING and deadline still valid
+        if previous == GamePhase.PLAYING and self.deadline:
+            now_ms = int(self._now() * 1000)
+            remaining_ms = self.deadline - now_ms
+
+            if remaining_ms > 0:
+                remaining_seconds = remaining_ms / 1000.0
+                self._timer_task = asyncio.create_task(
+                    self._timer_countdown(remaining_seconds)
+                )
+                _LOGGER.info("Timer restarted with %.1fs remaining", remaining_seconds)
+
+                # Resume media playback if it was stopped
+                if self._media_player_service and self.current_song:
+                    await self._media_player_service.play(self.current_song)
+                    _LOGGER.info("Media playback resumed")
+            else:
+                # Timer would have expired during pause
+                _LOGGER.info("Timer expired during pause, will advance to reveal")
+
+        # Restore previous phase
+        self.phase = previous
+        self.pause_reason = None
+        self.disconnected_admin_name = None
+        self._previous_phase = None
+
+        _LOGGER.info("Game resumed to phase: %s", previous.value)
+
+        return True
+
     def add_player(
         self, name: str, ws: web.WebSocketResponse
     ) -> tuple[bool, str | None]:
@@ -280,22 +390,33 @@ class GameState:
         if len(name) > MAX_NAME_LENGTH:
             return False, ERR_NAME_INVALID
 
-        # Check phase - reject END state
+        # Check phase - reject END state (PAUSED is OK for reconnection)
         if self.phase == GamePhase.END:
             return False, ERR_GAME_ENDED
+
+        # Check for reconnection (Story 7-2, 7-3) - case-insensitive match
+        # Allowed during PAUSED phase for reconnection
+        for existing_name, existing_player in self.players.items():
+            if existing_name.lower() == name.lower():
+                # Name exists - check if it's a reconnection (player disconnected)
+                if not existing_player.connected:
+                    # Reconnection: update WebSocket and mark connected
+                    existing_player.ws = ws
+                    existing_player.connected = True
+                    _LOGGER.info("Player reconnected: %s", existing_name)
+                    return True, None
+                else:
+                    # Player still connected, reject duplicate
+                    return False, ERR_NAME_TAKEN
 
         # Check player limit
         if len(self.players) >= MAX_PLAYERS:
             return False, ERR_GAME_FULL
 
-        # Check uniqueness (case-insensitive)
-        if name.lower() in [p.lower() for p in self.players]:
-            return False, ERR_NAME_TAKEN
-
         # Determine if late joiner
         joined_late = self.phase != GamePhase.LOBBY
 
-        # Add player
+        # Add new player
         self.players[name] = PlayerSession(
             name=name, ws=ws, score=0, streak=0, joined_late=joined_late
         )
@@ -458,6 +579,9 @@ class GameState:
             # Wait for playback to start
             await asyncio.sleep(0.5)
 
+            # Apply stored volume level to ensure sync after song change (M1 fix)
+            await self._media_player_service.set_volume(self.volume_level)
+
             # Get metadata from media player
             metadata = await self._media_player_service.get_metadata()
         else:
@@ -491,6 +615,9 @@ class GameState:
         # Reset player submissions for new round
         for player in self.players.values():
             player.reset_round()
+
+        # Reset song stopped flag for new round (Story 6.2)
+        self.song_stopped = False
 
         # Cancel any existing timer
         self.cancel_timer()
@@ -788,3 +915,23 @@ class GameState:
             leaderboard.append(entry)
 
         return leaderboard
+
+    def adjust_volume(self, direction: str) -> float:
+        """
+        Adjust volume level by step (Story 6.4).
+
+        Args:
+            direction: "up" to increase, "down" to decrease
+
+        Returns:
+            New volume level (clamped 0.0 to 1.0)
+
+        """
+        from custom_components.beatify.const import VOLUME_STEP  # noqa: PLC0415
+
+        if direction == "up":
+            self.volume_level = min(1.0, self.volume_level + VOLUME_STEP)
+        elif direction == "down":
+            self.volume_level = max(0.0, self.volume_level - VOLUME_STEP)
+
+        return self.volume_level

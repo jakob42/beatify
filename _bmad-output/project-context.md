@@ -32,6 +32,16 @@ MAX_NAME_LENGTH = 20
 MIN_NAME_LENGTH = 1
 LOBBY_DISCONNECT_GRACE_PERIOD = 5  # seconds before removing disconnected player
 
+# Year range for guesses
+YEAR_MIN = 1950
+YEAR_MAX = 2025
+
+# Volume control step (10%)
+VOLUME_STEP = 0.1
+
+# Streak milestone bonuses (awarded at exact streak counts)
+STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100}
+
 # Error codes
 ERR_NAME_TAKEN = "NAME_TAKEN"
 ERR_NAME_INVALID = "NAME_INVALID"
@@ -41,9 +51,12 @@ ERR_GAME_ENDED = "GAME_ENDED"
 ERR_NOT_ADMIN = "NOT_ADMIN"
 ERR_ADMIN_EXISTS = "ADMIN_EXISTS"
 ERR_ROUND_EXPIRED = "ROUND_EXPIRED"
+ERR_ALREADY_SUBMITTED = "ALREADY_SUBMITTED"
+ERR_NOT_IN_GAME = "NOT_IN_GAME"
 ERR_MEDIA_PLAYER_UNAVAILABLE = "MEDIA_PLAYER_UNAVAILABLE"
 ERR_INVALID_ACTION = "INVALID_ACTION"
 ERR_GAME_FULL = "GAME_FULL"
+ERR_NO_SONGS_REMAINING = "NO_SONGS_REMAINING"
 ```
 
 ---
@@ -62,7 +75,7 @@ ERR_GAME_FULL = "GAME_FULL"
 - Endpoint: `/beatify/ws` via custom aiohttp handler
 - NO authentication (frictionless player access)
 - All message fields: `snake_case`
-- Message types: `join`, `submit`, `admin`, `state`, `error`
+- Message types: `join`, `submit`, `admin`, `state`, `error`, `submit_ack`, `song_stopped`, `volume_changed`
 
 ```python
 # Server → Client state broadcast
@@ -141,42 +154,38 @@ Location: `{HA_CONFIG}/beatify/playlists/*.json`
 
 ## Scoring Algorithm (game/scoring.py)
 
+Scoring order: Base → Speed multiplier → Bet multiplier → Streak bonus (added after, not multiplied)
+
 ```python
-def calculate_points(guess: int, actual: int, submission_time_ratio: float, streak: int, bet: bool) -> int:
-    """
-    submission_time_ratio: 0.0 (instant) to 1.0 (at deadline)
-    streak: consecutive correct guesses (within 3 years)
-    """
-    diff = abs(guess - actual)
+# 1. Base score from accuracy
+def calculate_base_score(diff: int) -> int:
+    if diff == 0: return 10
+    elif diff == 1: return 7
+    elif diff <= 3: return 5
+    elif diff <= 5: return 3
+    else: return 1
 
-    # Base points
-    if diff == 0:
-        base = 10
-    elif diff == 1:
-        base = 7
-    elif diff <= 3:
-        base = 5
-    elif diff <= 5:
-        base = 3
-    else:
-        base = 1
+# 2. Speed multiplier (1.5x instant → 1.0x at deadline)
+speed_multiplier = 1.5 - (0.5 * submission_time_ratio)
+speed_adjusted = int(base_score * speed_multiplier)
 
-    # Speed bonus: 1.5x for instant, 1.0x at deadline
-    speed_multiplier = 1.5 - (0.5 * submission_time_ratio)
+# 3. Bet multiplier (applied to speed-adjusted score)
+if bet:
+    round_score = speed_adjusted * 2 if diff <= 3 else 0
+    bet_outcome = "won" if diff <= 3 else "lost"
+else:
+    round_score = speed_adjusted
 
-    # Streak bonus: +5 per consecutive correct (within 3 years)
-    streak_bonus = streak * 5 if diff <= 3 else 0
+# 4. Streak bonus (milestone-based, added AFTER bet, not multiplied)
+# Awarded at exact milestones: 3-streak=+20, 5-streak=+50, 10-streak=+100
+STREAK_MILESTONES = {3: 20, 5: 50, 10: 100}
+streak_bonus = STREAK_MILESTONES.get(streak, 0)
 
-    # Bet multiplier
-    if bet:
-        bet_multiplier = 2 if diff <= 3 else 0
-    else:
-        bet_multiplier = 1
-
-    return int((base * speed_multiplier + streak_bonus) * bet_multiplier)
+# Total = round_score + streak_bonus
+total_score = round_score + streak_bonus
 ```
 
-**No submission = 0 points, streak resets.**
+**No submission = 0 points, streak resets, previous_streak stored for "lost X-streak" display.**
 
 ---
 
@@ -319,5 +328,5 @@ from .game.state import GameState
 
 ---
 
-_Last updated: 2025-12-18_
-_Source: architecture.md_
+_Last updated: 2025-12-20_
+_Source: architecture.md, Epic 5 & Epic 6 implementations_

@@ -86,34 +86,34 @@ development_status:
   # Epic 5: Advanced Scoring & Leaderboard
   # Goal: Full gamification with speed bonuses, streaks, betting, live leaderboard
   # FRs: FR33, FR34, FR35, FR36, FR37, FR38, FR39, FR40, FR41, FR42
-  epic-5: in-progress
-  5-1-speed-bonus-multiplier: review
-  5-2-streak-tracking-and-bonuses: review
-  5-3-betting-mechanic: in-progress
-  5-4-no-submission-penalty: ready-for-dev
-  5-5-live-leaderboard: ready-for-dev
-  5-6-final-leaderboard: ready-for-dev
-  epic-5-retrospective: optional
+  epic-5: done
+  5-1-speed-bonus-multiplier: done
+  5-2-streak-tracking-and-bonuses: done
+  5-3-betting-mechanic: done
+  5-4-no-submission-penalty: done
+  5-5-live-leaderboard: done
+  5-6-final-leaderboard: done
+  epic-5-retrospective: done
 
   # Epic 6: Host Game Control
   # Goal: Host controls game flow from player screen - stop song, next round, volume, end game
   # FRs: FR43, FR44, FR45, FR46, FR47, FR48
-  epic-6: in-progress
-  6-1-admin-control-bar-ui: ready-for-dev
-  6-2-stop-song-control: ready-for-dev
-  6-3-next-round-control: ready-for-dev
-  6-4-volume-control: ready-for-dev
-  6-5-end-game-control: ready-for-dev
-  6-6-start-new-game-reset: ready-for-dev
+  epic-6: done
+  6-1-admin-control-bar-ui: done
+  6-2-stop-song-control: done
+  6-3-next-round-control: done
+  6-4-volume-control: done
+  6-5-end-game-control: done
+  6-6-start-new-game-reset: done
   epic-6-retrospective: optional
 
   # Epic 7: Resilience & Recovery
   # Goal: Graceful error handling - auto-reconnect, admin recovery, clear error messages
   # FRs: FR49, FR50, FR51, FR52, FR53, FR57, FR58, FR59
-  epic-7: backlog
-  7-1-admin-disconnect-and-game-pause: backlog
-  7-2-admin-reconnection: backlog
-  7-3-player-auto-reconnect: backlog
-  7-4-network-error-messages: backlog
-  7-5-game-end-full-reset: backlog
+  epic-7: in-progress
+  7-1-admin-disconnect-and-game-pause: ready-for-dev
+  7-2-admin-reconnection: ready-for-dev
+  7-3-player-auto-reconnect: ready-for-dev
+  7-4-network-error-messages: ready-for-dev
+  7-5-game-end-full-reset: ready-for-dev
   epic-7-retrospective: optional

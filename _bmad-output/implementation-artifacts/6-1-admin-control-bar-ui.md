@@ -1,6 +1,6 @@
 # Story 6.1: Admin Control Bar UI
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -20,64 +20,64 @@ so that **I can manage the game without switching devices**.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Add admin control bar HTML to player.html** (AC: #1, #3)
-  - [ ] 1.1 Create `<div id="admin-control-bar" class="admin-control-bar hidden">` container
-  - [ ] 1.2 Add Stop Song button: `<button id="stop-song-btn" class="control-btn" type="button"><span class="control-icon">⏹️</span><span class="control-label">Stop</span></button>`
-  - [ ] 1.3 Add Volume Down button: `<button id="volume-down-btn" class="control-btn" type="button"><span class="control-icon">🔉</span></button>`
-  - [ ] 1.4 Add Volume Up button: `<button id="volume-up-btn" class="control-btn" type="button"><span class="control-icon">🔊</span></button>`
-  - [ ] 1.5 Add Next Round button: `<button id="next-round-admin-btn" class="control-btn" type="button"><span class="control-icon">⏭️</span><span class="control-label">Next</span></button>`
-  - [ ] 1.6 Add End Game button: `<button id="end-game-btn" class="control-btn control-btn--danger" type="button"><span class="control-icon">🛑</span><span class="control-label">End</span></button>`
-  - [ ] 1.7 Position control bar at bottom of player-container, OUTSIDE game-view div (visible across phases)
+- [x] **Task 1: Add admin control bar HTML to player.html** (AC: #1, #3)
+  - [x] 1.1 Create `<div id="admin-control-bar" class="admin-control-bar hidden">` container
+  - [x] 1.2 Add Stop Song button: `<button id="stop-song-btn" class="control-btn" type="button"><span class="control-icon">⏹️</span><span class="control-label">Stop</span></button>`
+  - [x] 1.3 Add Volume Down button: `<button id="volume-down-btn" class="control-btn" type="button"><span class="control-icon">🔉</span></button>`
+  - [x] 1.4 Add Volume Up button: `<button id="volume-up-btn" class="control-btn" type="button"><span class="control-icon">🔊</span></button>`
+  - [x] 1.5 Add Next Round button: `<button id="next-round-admin-btn" class="control-btn" type="button"><span class="control-icon">⏭️</span><span class="control-label">Next</span></button>`
+  - [x] 1.6 Add End Game button: `<button id="end-game-btn" class="control-btn control-btn--danger" type="button"><span class="control-icon">🛑</span><span class="control-label">End</span></button>`
+  - [x] 1.7 Position control bar at bottom of player-container, OUTSIDE game-view div (visible across phases)
 
-- [ ] **Task 2: Style admin control bar** (AC: #1, #3)
-  - [ ] 2.1 Create `.admin-control-bar` styles: fixed/sticky bottom, full width, flex row, gap
-  - [ ] 2.2 Ensure minimum 44x44px touch targets for all buttons
-  - [ ] 2.3 Add safe-area padding for notched devices: `padding-bottom: env(safe-area-inset-bottom)`
-  - [ ] 2.4 Style `.control-btn` with consistent look
-  - [ ] 2.5 Style `.control-btn--danger` with red/warning color
-  - [ ] 2.6 Style `.control-btn.is-disabled` with greyed out appearance
-  - [ ] 2.7 Ensure control bar doesn't overlap year selector or submit button
+- [x] **Task 2: Style admin control bar** (AC: #1, #3)
+  - [x] 2.1 Create `.admin-control-bar` styles: fixed/sticky bottom, full width, flex row, gap
+  - [x] 2.2 Ensure minimum 44x44px touch targets for all buttons
+  - [x] 2.3 Add safe-area padding for notched devices: `padding-bottom: env(safe-area-inset-bottom)`
+  - [x] 2.4 Style `.control-btn` with consistent look
+  - [x] 2.5 Style `.control-btn--danger` with red/warning color
+  - [x] 2.6 Style `.control-btn.is-disabled` with greyed out appearance
+  - [x] 2.7 Ensure control bar doesn't overlap year selector or submit button
 
-- [ ] **Task 3: Implement control bar visibility logic** (AC: #1, #2)
-  - [ ] 3.1 Add `showAdminControlBar()` function that checks `isAdmin` flag
-  - [ ] 3.2 Add `hideAdminControlBar()` function
-  - [ ] 3.3 Call `showAdminControlBar()` in handleServerMessage when phase is PLAYING or REVEAL AND player is admin
-  - [ ] 3.4 Call `hideAdminControlBar()` in handleServerMessage when phase is LOBBY or END
-  - [ ] 3.5 Ensure control bar hidden for non-admin players regardless of phase
+- [x] **Task 3: Implement control bar visibility logic** (AC: #1, #2)
+  - [x] 3.1 Add `showAdminControlBar()` function that checks `isAdmin` flag
+  - [x] 3.2 Add `hideAdminControlBar()` function
+  - [x] 3.3 Call `showAdminControlBar()` in handleServerMessage when phase is PLAYING or REVEAL AND player is admin
+  - [x] 3.4 Call `hideAdminControlBar()` in handleServerMessage when phase is LOBBY or END
+  - [x] 3.5 Ensure control bar hidden for non-admin players regardless of phase
 
-- [ ] **Task 4: Implement phase-based button state** (AC: #4)
-  - [ ] 4.1 Add `updateControlBarState(phase)` function
-  - [ ] 4.2 During PLAYING: Enable Stop Song, Volume controls; Disable Next Round
-  - [ ] 4.3 During REVEAL: Disable Stop Song; Enable Next Round, Volume controls
-  - [ ] 4.4 End Game always enabled (both phases)
-  - [ ] 4.5 Call `updateControlBarState()` whenever phase changes
+- [x] **Task 4: Implement phase-based button state** (AC: #4)
+  - [x] 4.1 Add `updateControlBarState(phase)` function
+  - [x] 4.2 During PLAYING: Enable Stop Song, Volume controls; Disable Next Round
+  - [x] 4.3 During REVEAL: Disable Stop Song; Enable Next Round, Volume controls
+  - [x] 4.4 End Game always enabled (both phases)
+  - [x] 4.5 Call `updateControlBarState()` whenever phase changes
 
-- [ ] **Task 5: Wire button event handlers** (AC: #1)
-  - [ ] 5.1 Add `setupAdminControlBar()` function called in initAll()
-  - [ ] 5.2 Wire Stop Song click → `handleStopSong()`
-  - [ ] 5.3 Wire Volume Up click → `handleVolumeUp()`
-  - [ ] 5.4 Wire Volume Down click → `handleVolumeDown()`
-  - [ ] 5.5 Wire Next Round click → `handleNextRoundFromBar()` (reuse existing logic)
-  - [ ] 5.6 Wire End Game click → `handleEndGame()`
+- [x] **Task 5: Wire button event handlers** (AC: #1)
+  - [x] 5.1 Add `setupAdminControlBar()` function called in initAll()
+  - [x] 5.2 Wire Stop Song click → `handleStopSong()`
+  - [x] 5.3 Wire Volume Up click → `handleVolumeUp()`
+  - [x] 5.4 Wire Volume Down click → `handleVolumeDown()`
+  - [x] 5.5 Wire Next Round click → `handleNextRoundFromBar()` (reuse existing logic)
+  - [x] 5.6 Wire End Game click → `handleEndGame()`
 
-- [ ] **Task 6: Implement admin action stubs** (AC: #1)
-  - [ ] 6.1 `handleStopSong()`: Send `{type: "admin", action: "stop_song"}` via WebSocket
-  - [ ] 6.2 `handleVolumeUp()`: Send `{type: "admin", action: "set_volume", direction: "up"}` via WebSocket
-  - [ ] 6.3 `handleVolumeDown()`: Send `{type: "admin", action: "set_volume", direction: "down"}` via WebSocket
-  - [ ] 6.4 `handleEndGame()`: Show confirmation, then send `{type: "admin", action: "end_game"}` via WebSocket
-  - [ ] 6.5 Add debouncing (500ms) to prevent rapid repeated clicks
+- [x] **Task 6: Implement admin action stubs** (AC: #1)
+  - [x] 6.1 `handleStopSong()`: Send `{type: "admin", action: "stop_song"}` via WebSocket
+  - [x] 6.2 `handleVolumeUp()`: Send `{type: "admin", action: "set_volume", direction: "up"}` via WebSocket
+  - [x] 6.3 `handleVolumeDown()`: Send `{type: "admin", action: "set_volume", direction: "down"}` via WebSocket
+  - [x] 6.4 `handleEndGame()`: Show confirmation, then send `{type: "admin", action: "end_game"}` via WebSocket
+  - [x] 6.5 Add debouncing (500ms) to prevent rapid repeated clicks
 
-- [ ] **Task 7: Handle server responses for admin actions**
-  - [ ] 7.1 Add handling for `{type: "error", code: "NOT_ADMIN"}` - hide control bar, show error
-  - [ ] 7.2 Add handling for `{type: "volume_changed", level: number}` - optional visual feedback
-  - [ ] 7.3 Add handling for `{type: "song_stopped"}` - disable Stop Song button, show "Stopped"
+- [x] **Task 7: Handle server responses for admin actions**
+  - [x] 7.1 Add handling for `{type: "error", code: "NOT_ADMIN"}` - hide control bar, show error
+  - [x] 7.2 Add handling for `{type: "volume_changed", level: number}` - optional visual feedback
+  - [x] 7.3 Add handling for `{type: "song_stopped"}` - disable Stop Song button, show "Stopped"
 
-- [ ] **Task 8: Verify no regressions**
-  - [ ] 8.1 Existing reveal-admin-controls still work (Next Round in reveal view)
-  - [ ] 8.2 Existing lobby admin controls still work (Start Game)
-  - [ ] 8.3 Non-admin players see NO admin controls anywhere
-  - [ ] 8.4 Run `ruff check` - no linting issues
-  - [ ] 8.5 Manual test: join as admin, verify control bar visible during game
+- [x] **Task 8: Verify no regressions**
+  - [x] 8.1 Existing reveal-admin-controls still work (Next Round in reveal view)
+  - [x] 8.2 Existing lobby admin controls still work (Start Game)
+  - [x] 8.3 Non-admin players see NO admin controls anywhere
+  - [x] 8.4 Run `ruff check` - no linting issues (N/A - UI only story, Python unchanged)
+  - [x] 8.5 Manual test: join as admin, verify control bar visible during game
 
 ## Dev Notes
 
@@ -416,10 +416,25 @@ The `next_round` action already exists from Epic 4. The UI can send messages, bu
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+N/A - UI-only implementation
+
 ### Completion Notes List
 
+- Implemented admin control bar HTML with 5 buttons (Stop, Volume Down, Volume Up, Next, End) positioned outside game-view for persistence across phases
+- Added CSS styles for fixed-bottom bar with 44x44px touch targets, safe-area padding, and disabled states
+- Implemented JS visibility logic: showAdminControlBar() checks isAdmin flag, hideAdminControlBar() hides unconditionally
+- Added phase-based button states: Stop Song enabled in PLAYING, Next Round enabled in REVEAL
+- Wired all button handlers with 500ms debounce to prevent rapid clicks
+- Implemented WebSocket message sending for stop_song, set_volume, end_game, next_round
+- Added server response handlers for NOT_ADMIN, song_stopped, volume_changed messages
+- Note: Backend handlers for stop_song, set_volume, end_game will be implemented in Stories 6.2-6.5
+
 ### File List
+
+- custom_components/beatify/www/player.html (modified - added admin-control-bar div)
+- custom_components/beatify/www/css/styles.css (modified - added control bar styles)
+- custom_components/beatify/www/js/player.js (modified - added control bar JS functions)

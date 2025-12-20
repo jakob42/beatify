@@ -18,14 +18,16 @@
     const lobbyView = document.getElementById('lobby-view');
     const gameView = document.getElementById('game-view');
     const revealView = document.getElementById('reveal-view');
+    const pausedView = document.getElementById('paused-view');
     const endView = document.getElementById('end-view');
+    const connectionLostView = document.getElementById('connection-lost-view');
 
     /**
      * Show a specific view and hide all others
      * @param {string} viewId - ID of view to show
      */
     function showView(viewId) {
-        [loadingView, notFoundView, endedView, inProgressView, joinView, lobbyView, gameView, revealView, endView].forEach(function(v) {
+        [loadingView, notFoundView, endedView, inProgressView, joinView, lobbyView, gameView, revealView, pausedView, endView, connectionLostView].forEach(function(v) {
             if (v) {
                 v.classList.add('hidden');
             }
@@ -1027,22 +1029,49 @@
         }
     }
 
+    // ============================================
+    // Paused View (Story 7-1)
+    // ============================================
+
     /**
-     * Handle new game button click
+     * Update paused view based on pause reason
+     * @param {Object} data - State data with pause_reason
+     */
+    function updatePausedView(data) {
+        var messageEl = document.getElementById('pause-message');
+        if (messageEl) {
+            if (data.pause_reason === 'admin_disconnected') {
+                messageEl.textContent = 'Waiting for host to reconnect...';
+            } else {
+                messageEl.textContent = 'Game paused. Please wait...';
+            }
+        }
+    }
+
+    /**
+     * Handle new game button click (Story 6.6)
      */
     function handleNewGame() {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            var btn = document.getElementById('new-game-btn');
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = 'Starting...';
-            }
-
-            ws.send(JSON.stringify({
-                type: 'admin',
-                action: 'new_game'
-            }));
+        if (!confirm('Start a new game?')) {
+            return;
         }
+
+        var btn = document.getElementById('new-game-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Redirecting...';
+        }
+
+        // Clear admin session storage
+        try {
+            sessionStorage.removeItem('beatify_admin_name');
+            sessionStorage.removeItem('beatify_is_admin');
+        } catch (e) {
+            // Ignore storage errors
+        }
+
+        // Redirect to admin page for new game setup
+        window.location.href = '/beatify/admin';
     }
 
     // Debounce state to prevent rapid clicks
@@ -1060,10 +1089,19 @@
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             nextRoundPending = true;
-            var btn = document.getElementById('next-round-btn');
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = 'Loading...';
+
+            // Update both buttons (reveal-view and control bar) - Story 6.3
+            var revealBtn = document.getElementById('next-round-btn');
+            var barBtn = document.getElementById('next-round-admin-btn');
+
+            if (revealBtn) {
+                revealBtn.disabled = true;
+                revealBtn.textContent = 'Loading...';
+            }
+            if (barBtn) {
+                barBtn.disabled = true;
+                var labelEl = barBtn.querySelector('.control-label');
+                if (labelEl) labelEl.textContent = 'Wait...';
             }
 
             ws.send(JSON.stringify({
@@ -1074,8 +1112,307 @@
             // Reset after debounce period (server state change will also update UI)
             setTimeout(function() {
                 nextRoundPending = false;
-                if (btn) btn.disabled = false;
+                if (revealBtn) revealBtn.disabled = false;
+                if (barBtn) barBtn.disabled = false;
             }, NEXT_ROUND_DEBOUNCE_MS);
+        }
+    }
+
+    // ============================================
+    // Admin Control Bar (Story 6.1)
+    // ============================================
+
+    // Debounce state for admin actions
+    let adminActionPending = false;
+    var ADMIN_ACTION_DEBOUNCE_MS = 500;
+
+    // Song stopped state (Story 6.2)
+    let songStopped = false;
+
+    // Volume state (Story 6.4)
+    let currentVolume = 0.5;
+
+    /**
+     * Debounce admin actions to prevent rapid repeated clicks
+     * @returns {boolean} True if action can proceed, false if debounced
+     */
+    function debounceAdminAction() {
+        if (adminActionPending) return false;
+        adminActionPending = true;
+        setTimeout(function() { adminActionPending = false; }, ADMIN_ACTION_DEBOUNCE_MS);
+        return true;
+    }
+
+    /**
+     * Show admin control bar for admin players
+     */
+    function showAdminControlBar() {
+        if (!isAdmin) return;
+        var bar = document.getElementById('admin-control-bar');
+        if (bar) {
+            bar.classList.remove('hidden');
+            document.body.classList.add('has-control-bar'); // M3 fix
+        }
+    }
+
+    /**
+     * Hide admin control bar
+     */
+    function hideAdminControlBar() {
+        var bar = document.getElementById('admin-control-bar');
+        if (bar) {
+            bar.classList.add('hidden');
+            document.body.classList.remove('has-control-bar'); // M3 fix
+        }
+    }
+
+    /**
+     * Update control bar button states based on phase
+     * @param {string} phase - Current game phase
+     */
+    function updateControlBarState(phase) {
+        var stopBtn = document.getElementById('stop-song-btn');
+        var nextBtn = document.getElementById('next-round-admin-btn');
+
+        if (phase === 'PLAYING') {
+            // Reset song stopped state for new round (Story 6.2)
+            resetSongStoppedState();
+            // Stop Song enabled (unless already stopped)
+            if (stopBtn && !songStopped) {
+                stopBtn.classList.remove('is-disabled');
+                stopBtn.disabled = false;
+            }
+            // Next Round enabled for "Skip" functionality (Story 6.3)
+            if (nextBtn) {
+                nextBtn.classList.remove('is-disabled');
+                nextBtn.disabled = false;
+                var labelEl = nextBtn.querySelector('.control-label');
+                if (labelEl) labelEl.textContent = 'Skip';
+            }
+        } else if (phase === 'REVEAL') {
+            // Stop Song disabled, Next Round enabled
+            if (stopBtn) {
+                stopBtn.classList.add('is-disabled');
+                stopBtn.disabled = true;
+            }
+            if (nextBtn) {
+                nextBtn.classList.remove('is-disabled');
+                nextBtn.disabled = false;
+                var labelEl = nextBtn.querySelector('.control-label');
+                if (labelEl) labelEl.textContent = 'Next';
+            }
+        } else {
+            // LOBBY or END: disable Next Round (Story 6.3)
+            if (nextBtn) {
+                nextBtn.classList.add('is-disabled');
+                nextBtn.disabled = true;
+                var labelEl = nextBtn.querySelector('.control-label');
+                if (labelEl) labelEl.textContent = 'Next';
+            }
+        }
+        // Volume and End Game always enabled (no changes needed)
+    }
+
+    /**
+     * Handle Stop Song button
+     */
+    function handleStopSong() {
+        if (!debounceAdminAction()) return;
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(JSON.stringify({
+            type: 'admin',
+            action: 'stop_song'
+        }));
+    }
+
+    /**
+     * Handle Volume Up button
+     */
+    function handleVolumeUp() {
+        // Check limit before debounce (M2 fix)
+        if (currentVolume >= 1.0) {
+            showVolumeLimitFeedback('max');
+            return;
+        }
+        if (!debounceAdminAction()) return;
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(JSON.stringify({
+            type: 'admin',
+            action: 'set_volume',
+            direction: 'up'
+        }));
+    }
+
+    /**
+     * Handle Volume Down button
+     */
+    function handleVolumeDown() {
+        // Check limit before debounce (M2 fix)
+        if (currentVolume <= 0.0) {
+            showVolumeLimitFeedback('min');
+            return;
+        }
+        if (!debounceAdminAction()) return;
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(JSON.stringify({
+            type: 'admin',
+            action: 'set_volume',
+            direction: 'down'
+        }));
+    }
+
+    /**
+     * Show feedback when volume is at limit (M2 fix)
+     * @param {string} limit - 'max' or 'min'
+     */
+    function showVolumeLimitFeedback(limit) {
+        var indicator = document.getElementById('volume-indicator');
+        if (!indicator) return;
+
+        indicator.textContent = limit === 'max' ? '🔊 Max' : '🔇 Min';
+        indicator.classList.remove('hidden');
+        indicator.classList.add('is-visible');
+
+        // Fade out after 1s (shorter than normal feedback)
+        setTimeout(function() {
+            indicator.classList.remove('is-visible');
+            setTimeout(function() {
+                indicator.classList.add('hidden');
+            }, 300);
+        }, 1000);
+    }
+
+    /**
+     * Handle End Game button
+     */
+    function handleEndGame() {
+        if (!confirm('End game and show final results?')) return;
+        if (!debounceAdminAction()) return;
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+            alert('Connection lost. Please refresh.');
+            return;
+        }
+
+        // Update button state (Story 6.5)
+        var endBtn = document.getElementById('end-game-btn');
+        if (endBtn) {
+            endBtn.disabled = true;
+            var labelEl = endBtn.querySelector('.control-label');
+            if (labelEl) labelEl.textContent = 'Ending...';
+        }
+
+        ws.send(JSON.stringify({
+            type: 'admin',
+            action: 'end_game'
+        }));
+    }
+
+    /**
+     * Handle Next Round from control bar (reuse reveal logic)
+     */
+    function handleNextRoundFromBar() {
+        handleNextRound();
+    }
+
+    /**
+     * Setup admin control bar event handlers
+     */
+    function setupAdminControlBar() {
+        var stopBtn = document.getElementById('stop-song-btn');
+        var volUpBtn = document.getElementById('volume-up-btn');
+        var volDownBtn = document.getElementById('volume-down-btn');
+        var nextBtn = document.getElementById('next-round-admin-btn');
+        var endBtn = document.getElementById('end-game-btn');
+
+        if (stopBtn) stopBtn.addEventListener('click', handleStopSong);
+        if (volUpBtn) volUpBtn.addEventListener('click', handleVolumeUp);
+        if (volDownBtn) volDownBtn.addEventListener('click', handleVolumeDown);
+        if (nextBtn) nextBtn.addEventListener('click', handleNextRoundFromBar);
+        if (endBtn) endBtn.addEventListener('click', handleEndGame);
+    }
+
+    /**
+     * Handle song stopped notification from server (Story 6.2)
+     */
+    function handleSongStopped() {
+        songStopped = true;
+        var stopBtn = document.getElementById('stop-song-btn');
+        if (stopBtn) {
+            stopBtn.classList.add('is-stopped');
+            stopBtn.classList.add('is-disabled');
+            stopBtn.disabled = true;
+            var iconEl = stopBtn.querySelector('.control-icon');
+            var labelEl = stopBtn.querySelector('.control-label');
+            if (iconEl) iconEl.textContent = '✓';
+            if (labelEl) labelEl.textContent = 'Stopped';
+        }
+    }
+
+    /**
+     * Reset song stopped state for new round (Story 6.2)
+     */
+    function resetSongStoppedState() {
+        songStopped = false;
+        var stopBtn = document.getElementById('stop-song-btn');
+        if (stopBtn) {
+            stopBtn.classList.remove('is-stopped');
+            stopBtn.classList.remove('is-disabled');
+            stopBtn.disabled = false;
+            var iconEl = stopBtn.querySelector('.control-icon');
+            var labelEl = stopBtn.querySelector('.control-label');
+            if (iconEl) iconEl.textContent = '⏹️';
+            if (labelEl) labelEl.textContent = 'Stop';
+        }
+    }
+
+    /**
+     * Handle volume changed response from server (Story 6.4)
+     * @param {number} level - New volume level (0.0 to 1.0)
+     */
+    function handleVolumeChanged(level) {
+        currentVolume = level;
+        showVolumeIndicator(level);
+        updateVolumeLimitStates(level);
+    }
+
+    /**
+     * Show brief volume indicator popup (Story 6.4)
+     * @param {number} level - Volume level
+     */
+    function showVolumeIndicator(level) {
+        var indicator = document.getElementById('volume-indicator');
+        if (!indicator) return;
+
+        var percentage = Math.round(level * 100);
+        indicator.textContent = '🔊 ' + percentage + '%';
+        indicator.classList.remove('hidden');
+        indicator.classList.add('is-visible');
+
+        // Fade out after 1.5s
+        setTimeout(function() {
+            indicator.classList.remove('is-visible');
+            setTimeout(function() {
+                indicator.classList.add('hidden');
+            }, 300);
+        }, 1500);
+    }
+
+    /**
+     * Update volume buttons when at limits (Story 6.4)
+     * @param {number} level - Current volume level
+     */
+    function updateVolumeLimitStates(level) {
+        var upBtn = document.getElementById('volume-up-btn');
+        var downBtn = document.getElementById('volume-down-btn');
+
+        if (upBtn) {
+            upBtn.classList.toggle('is-at-limit', level >= 1.0);
+        }
+        if (downBtn) {
+            downBtn.classList.toggle('is-at-limit', level <= 0.0);
         }
     }
 
@@ -1150,8 +1487,13 @@
     let ws = null;
     let playerName = null;
     let reconnectAttempts = 0;
+    const MAX_RECONNECT_ATTEMPTS = 10;  // Story 7-3: Increased for resilience
     const MAX_RECONNECT_DELAY_MS = 30000;
     const STORAGE_KEY_NAME = 'beatify_player_name';
+    const STORAGE_KEY_GAME_ID = 'beatify_game_id';
+
+    // Reconnection state (Story 7-3)
+    let isReconnecting = false;
 
     /**
      * Get reconnection delay with exponential backoff
@@ -1163,17 +1505,114 @@
     }
 
     /**
+     * Get stored player name for this game (Story 7-3)
+     * @returns {string|null} Stored name or null
+     */
+    function getStoredPlayerName() {
+        try {
+            var storedGameId = localStorage.getItem(STORAGE_KEY_GAME_ID);
+            if (storedGameId === gameId) {
+                return localStorage.getItem(STORAGE_KEY_NAME);
+            }
+            // Different game, clear stored name
+            localStorage.removeItem(STORAGE_KEY_NAME);
+            localStorage.removeItem(STORAGE_KEY_GAME_ID);
+        } catch (e) {
+            // localStorage unavailable
+        }
+        return null;
+    }
+
+    /**
+     * Store player name for reconnection (Story 7-3)
+     * @param {string} name - Player name to store
+     */
+    function storePlayerName(name) {
+        try {
+            localStorage.setItem(STORAGE_KEY_NAME, name);
+            localStorage.setItem(STORAGE_KEY_GAME_ID, gameId);
+        } catch (e) {
+            // localStorage unavailable
+        }
+    }
+
+    /**
+     * Clear stored player name (Story 7-3)
+     */
+    function clearStoredPlayerName() {
+        try {
+            localStorage.removeItem(STORAGE_KEY_NAME);
+            localStorage.removeItem(STORAGE_KEY_GAME_ID);
+        } catch (e) {
+            // localStorage unavailable
+        }
+    }
+
+    /**
+     * Show reconnecting overlay (Story 7-3)
+     */
+    function showReconnectingOverlay() {
+        var overlay = document.getElementById('reconnecting-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Hide reconnecting overlay (Story 7-3)
+     */
+    function hideReconnectingOverlay() {
+        var overlay = document.getElementById('reconnecting-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Update reconnecting overlay status (Story 7-3)
+     * @param {number} attempt - Current attempt number
+     */
+    function updateReconnectStatus(attempt) {
+        var statusEl = document.getElementById('reconnect-status');
+        if (statusEl) {
+            statusEl.textContent = 'Reconnecting... (Attempt ' + attempt + '/' + MAX_RECONNECT_ATTEMPTS + ')';
+        }
+    }
+
+    /**
+     * Show connection lost view (Story 7-4)
+     */
+    function showConnectionLostView() {
+        showView('connection-lost-view');
+    }
+
+    /**
+     * Setup retry connection button (Story 7-4)
+     */
+    function setupRetryConnection() {
+        var retryBtn = document.getElementById('retry-connection-btn');
+        if (retryBtn) {
+            retryBtn.addEventListener('click', function() {
+                if (playerName) {
+                    reconnectAttempts = 0;
+                    showView('loading-view');
+                    connectWebSocket(playerName);
+                } else {
+                    // No player name - go back to join view
+                    checkGameStatus();
+                }
+            });
+        }
+    }
+
+    /**
      * Connect to WebSocket and send join message
      * @param {string} name - Player name
      */
     function connectWebSocket(name) {
         playerName = name;
-        // Store name for reconnection (Epic 7 prep)
-        try {
-            localStorage.setItem(STORAGE_KEY_NAME, name);
-        } catch (e) {
-            // localStorage may be unavailable in private browsing
-        }
+        // Store name for reconnection (Story 7-3)
+        storePlayerName(name);
 
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = wsProtocol + '//' + window.location.host + '/beatify/ws';
@@ -1182,6 +1621,9 @@
 
         ws.onopen = function() {
             reconnectAttempts = 0;
+            isReconnecting = false;
+            hideReconnectingOverlay();
+
             var joinMsg = { type: 'join', name: name };
             if (isAdmin) {
                 joinMsg.is_admin = true;
@@ -1200,11 +1642,20 @@
 
         ws.onclose = function() {
             // Attempt reconnection if we were connected and have a name
-            if (playerName && reconnectAttempts < 5) {
+            if (playerName && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                isReconnecting = true;
                 reconnectAttempts++;
+                showReconnectingOverlay();
+                updateReconnectStatus(reconnectAttempts);
+
                 const delay = getReconnectDelay();
-                console.log('WebSocket closed. Reconnecting in ' + delay + 'ms...');
+                console.log('WebSocket closed. Reconnecting in ' + delay + 'ms... (attempt ' + reconnectAttempts + ')');
                 setTimeout(function() { connectWebSocket(playerName); }, delay);
+            } else if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+                // Max attempts reached - show connection lost view (Story 7-4)
+                isReconnecting = false;
+                hideReconnectingOverlay();
+                showConnectionLostView();
             }
         };
 
@@ -1222,16 +1673,24 @@
         const nameInput = document.getElementById('name-input');
 
         if (data.type === 'state') {
+            // Update isAdmin from players list (Story 6.1)
+            var players = data.players || [];
+            var currentPlayer = players.find(function(p) { return p.name === playerName; });
+            if (currentPlayer) {
+                isAdmin = currentPlayer.is_admin === true;
+            }
+
             if (data.phase === 'LOBBY') {
                 stopCountdown();
+                hideAdminControlBar();  // Story 6.1
                 showView('lobby-view');
-                renderPlayerList(data.players || []);
+                renderPlayerList(players);
                 // Render QR code with join URL
                 if (data.join_url) {
                     renderQRCode(data.join_url);
                 }
                 // Update admin controls visibility
-                updateAdminControls(data.players || []);
+                updateAdminControls(players);
             } else if (data.phase === 'PLAYING') {
                 resetSubmissionState();  // Reset for new round
                 showView('game-view');
@@ -1241,14 +1700,29 @@
                 }
                 initYearSelector();
                 setupLeaderboardToggle();  // Story 5.5
+                // Show admin control bar (Story 6.1)
+                showAdminControlBar();
+                updateControlBarState('PLAYING');
             } else if (data.phase === 'REVEAL') {
                 stopCountdown();
                 showView('reveal-view');
                 updateRevealView(data);
+                // Show admin control bar (Story 6.1)
+                showAdminControlBar();
+                updateControlBarState('REVEAL');
+            } else if (data.phase === 'PAUSED') {
+                // Story 7-1: Show paused view
+                stopCountdown();
+                hideAdminControlBar();
+                showView('paused-view');
+                updatePausedView(data);
             } else if (data.phase === 'END') {
                 stopCountdown();
+                hideAdminControlBar();  // Story 6.1
                 showView('end-view');
                 updateEndView(data);  // Story 5.6
+                // Clear stored player name (game is over - Story 7-3)
+                clearStoredPlayerName();
             }
         } else if (data.type === 'submit_ack') {
             // Handle successful guess submission
@@ -1264,6 +1738,13 @@
                 showView('end-view');
                 return;
             }
+            // Handle NOT_ADMIN error (Story 6.1)
+            if (data.code === 'NOT_ADMIN') {
+                isAdmin = false;
+                hideAdminControlBar();
+                console.warn('Admin action rejected: not admin');
+                return;
+            }
             // Show error, re-enable form
             showJoinError(data.message);
             if (joinBtn) {
@@ -1275,7 +1756,56 @@
             }
             // Clear stored name on join error
             playerName = null;
+        } else if (data.type === 'song_stopped') {
+            // Story 6.2 - handle song stopped notification
+            handleSongStopped();
+        } else if (data.type === 'volume_changed') {
+            // Story 6.4 - handle volume changed response
+            handleVolumeChanged(data.level);
+        } else if (data.type === 'game_ended') {
+            // Story 7-5 - game has fully ended
+            handleGameEnded();
         }
+    }
+
+    /**
+     * Handle game ended notification (Story 7-5)
+     */
+    function handleGameEnded() {
+        // Clear all stored session data
+        clearStoredPlayerName();
+        try {
+            sessionStorage.removeItem('beatify_admin_name');
+            sessionStorage.removeItem('beatify_is_admin');
+        } catch (e) {
+            // Ignore storage errors
+        }
+
+        // Reset local state
+        playerName = null;
+        isAdmin = false;
+
+        // Close WebSocket to prevent stale connections
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.close();
+        }
+        ws = null;
+
+        // If already showing end view, just update the message
+        if (!endView || !endView.classList.contains('hidden')) {
+            return;
+        }
+
+        // Update end message with rejoin hint
+        var endMessage = document.getElementById('end-player-message');
+        if (endMessage) {
+            endMessage.innerHTML =
+                '<p>Thanks for playing!</p>' +
+                '<p class="rejoin-hint">Scan the QR code again to join the next game.</p>';
+            endMessage.classList.remove('hidden');
+        }
+
+        showView('end-view');
     }
 
     /**
@@ -1383,6 +1913,23 @@
         setupQRModal();
         setupAdminControls();
         setupRevealControls();
+        setupAdminControlBar();  // Story 6.1
+        setupRetryConnection();  // Story 7-4
+
+        // Prefill name from localStorage (Story 7-3)
+        var storedName = getStoredPlayerName();
+        if (storedName) {
+            var nameInput = document.getElementById('name-input');
+            var joinBtn = document.getElementById('join-btn');
+            if (nameInput) {
+                nameInput.value = storedName;
+                // Enable join button if valid
+                if (joinBtn) {
+                    var result = validateName(storedName);
+                    joinBtn.disabled = !result.valid;
+                }
+            }
+        }
 
         // Check if this is an admin redirect
         if (checkAdminStatus() && playerName) {

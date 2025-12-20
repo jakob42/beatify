@@ -2077,6 +2077,12 @@ footer {
     font-size: 14px;
 }
 
+.rejoin-hint {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 8px;
+}
+
 /* Admin Controls */
 .reveal-admin-controls {
     margin-top: 16px;
@@ -2109,6 +2115,255 @@ footer {
 
 .next-round-btn.is-final:hover {
     background: #059669;
+}
+
+/* ============================================
+   Admin Control Bar (Story 6.1)
+   ============================================ */
+
+.admin-control-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 12px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    background: rgba(0, 0, 0, 0.9);
+    border-top: 1px solid #333;
+    z-index: 100;
+}
+
+.admin-control-bar.hidden {
+    display: none;
+}
+
+.control-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 12px;
+    background: #2a2a2a;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+}
+
+.control-btn:hover:not(.is-disabled) {
+    background: #3a3a3a;
+}
+
+.control-btn:active:not(.is-disabled) {
+    background: #4a4a4a;
+}
+
+.control-btn.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.control-btn--danger {
+    background: #7f1d1d;
+}
+
+.control-btn--danger:hover:not(.is-disabled) {
+    background: #991b1b;
+}
+
+.control-btn.is-stopped {
+    background: #374151;
+    opacity: 0.7;
+}
+
+.control-btn.is-stopped .control-icon {
+    color: #10b981;
+}
+
+/* Volume indicator popup (Story 6.4) */
+.volume-indicator {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.volume-indicator.is-visible {
+    opacity: 1;
+}
+
+/* Volume button at limit (Story 6.4) */
+.control-btn.is-at-limit {
+    opacity: 0.5;
+}
+
+.control-btn.is-at-limit:active {
+    transform: none;
+}
+
+.control-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.control-label {
+    font-size: 10px;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Ensure game-view content doesn't get covered by control bar (M3 fix: conditional) */
+.has-control-bar .game-container {
+    padding-bottom: 80px;
+}
+
+.has-control-bar .reveal-container {
+    padding-bottom: 80px;
+}
+
+.has-control-bar .end-container {
+    padding-bottom: 80px;
+}
+
+/* ============================================
+   Paused View (Story 7-1)
+   ============================================ */
+
+.paused-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.paused-icon {
+    font-size: 72px;
+    margin-bottom: 24px;
+    animation: pause-pulse 2s infinite;
+}
+
+@keyframes pause-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.95); }
+}
+
+.paused-container h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.paused-container > p {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.paused-spinner {
+    margin: 32px 0;
+}
+
+.paused-hint {
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+/* ============================================
+   Reconnecting Overlay (Story 7-3)
+   ============================================ */
+
+.reconnecting-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+}
+
+.reconnecting-overlay.hidden {
+    display: none;
+}
+
+.reconnecting-content {
+    text-align: center;
+    color: white;
+}
+
+.reconnecting-spinner .spinner {
+    border-top-color: white;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+}
+
+.reconnect-status {
+    font-size: 16px;
+    color: #e5e7eb;
+}
+
+/* ============================================
+   Connection Lost View (Story 7-4)
+   ============================================ */
+
+.connection-lost-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.connection-lost-icon {
+    font-size: 72px;
+    margin-bottom: 24px;
+}
+
+.connection-lost-container h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.connection-lost-container > p {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 24px;
+}
+
+.connection-lost-hint {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-top: 16px;
 }
 
 /* Responsive adjustments for Reveal View */

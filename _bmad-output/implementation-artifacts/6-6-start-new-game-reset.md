@@ -1,6 +1,6 @@
 # Story 6.6: Start New Game Reset
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -20,36 +20,36 @@ so that **I can easily run another session without navigating back to the admin 
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Add New Game button to end-view for admin** (AC: #1, #3)
-  - [ ] 1.1 Add `<div id="end-admin-controls" class="end-admin-controls hidden">` to player.html
-  - [ ] 1.2 Add "New Game" button inside container
-  - [ ] 1.3 Style button consistently with other admin controls
+- [x] **Task 1: Add New Game button to end-view for admin** (AC: #1, #3)
+  - [x] 1.1 HTML already exists: `<div id="end-admin-controls" class="end-admin-controls hidden">`
+  - [x] 1.2 Button exists: `<button id="new-game-btn" class="new-game-btn">Start New Game</button>`
+  - [x] 1.3 Styled with green primary button
 
-- [ ] **Task 2: Show/hide New Game button based on admin status** (AC: #1, #3)
-  - [ ] 2.1 In end-view rendering, check if current player is admin
-  - [ ] 2.2 Show `end-admin-controls` only for admin
-  - [ ] 2.3 Keep hidden for regular players
+- [x] **Task 2: Show/hide New Game button based on admin status** (AC: #1, #3)
+  - [x] 2.1 updateEndView() checks currentPlayer.is_admin
+  - [x] 2.2 Shows `end-admin-controls` only for admin
+  - [x] 2.3 Shows `end-player-message` for regular players
 
-- [ ] **Task 3: Implement New Game button handler** (AC: #2)
-  - [ ] 3.1 Add `handleNewGame()` function
-  - [ ] 3.2 Show confirmation: "Start a new game?"
-  - [ ] 3.3 On confirm, redirect to `/beatify/admin`
-  - [ ] 3.4 Clear session storage (admin flags)
+- [x] **Task 3: Implement New Game button handler** (AC: #2)
+  - [x] 3.1 handleNewGame() function implemented
+  - [x] 3.2 Shows confirmation: "Start a new game?"
+  - [x] 3.3 On confirm, redirects to `/beatify/admin`
+  - [x] 3.4 Clears session storage (beatify_admin_name, beatify_is_admin)
 
-- [ ] **Task 4: Ensure clean game reset on admin page** (AC: #4)
-  - [ ] 4.1 Verify admin page calls `/beatify/api/end-game` if needed
-  - [ ] 4.2 Verify `game_state.end_game()` clears all state
-  - [ ] 4.3 Confirm new game gets fresh `game_id`
+- [x] **Task 4: Ensure clean game reset on admin page** (AC: #4)
+  - [x] 4.1 Admin page handles existing game state
+  - [x] 4.2 game_state.end_game() clears all state (verified in Epic 4/5)
+  - [x] 4.3 create_game() generates fresh game_id via secrets.token_urlsafe(8)
 
-- [ ] **Task 5: Style end-view admin controls** (AC: #1)
-  - [ ] 5.1 Add `.end-admin-controls` styles
-  - [ ] 5.2 Position below final leaderboard
-  - [ ] 5.3 Make button prominent (primary style)
+- [x] **Task 5: Style end-view admin controls** (AC: #1)
+  - [x] 5.1 .end-admin-controls styles exist
+  - [x] 5.2 Positioned after final leaderboard
+  - [x] 5.3 .new-game-btn styled as green primary button
 
-- [ ] **Task 6: Verify no regressions**
-  - [ ] 6.1 End-view still displays correctly for all players
-  - [ ] 6.2 Admin page start-game flow still works
-  - [ ] 6.3 Run `ruff check` - no linting issues
+- [x] **Task 6: Verify no regressions**
+  - [x] 6.1 End-view displays correctly for all players
+  - [x] 6.2 Admin page start-game flow works
+  - [x] 6.3 Run `ruff check` - no linting issues (N/A - JS only changes)
 
 ## Dev Notes
 
@@ -261,10 +261,22 @@ This ensures clean state, but may cause race conditions with WebSocket. Simpler 
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+N/A
+
 ### Completion Notes List
 
+- HTML and CSS for New Game button already existed from prior Epic 5 implementation
+- Updated handleNewGame() to use redirect approach per story AC:
+  - Shows confirmation dialog
+  - Clears sessionStorage (beatify_admin_name, beatify_is_admin)
+  - Redirects to /beatify/admin for new game setup
+- Existing updateEndView() correctly shows button only for admin players
+- Regular players see "Thanks for playing" message instead
+
 ### File List
+
+- custom_components/beatify/www/js/player.js (modified - updated handleNewGame for redirect)

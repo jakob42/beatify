@@ -15,6 +15,9 @@ LOBBY_DISCONNECT_GRACE_PERIOD = 5  # seconds before removing disconnected player
 YEAR_MIN = 1950
 YEAR_MAX = 2025
 
+# Volume control step (10%) - Story 6.4
+VOLUME_STEP = 0.1
+
 # Streak milestone bonuses (Story 5.2)
 # Key = streak count, Value = bonus points
 STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100}

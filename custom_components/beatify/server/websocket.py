@@ -48,6 +48,7 @@ class BeatifyWebSocketHandler:
         self.hass = hass
         self.connections: set[web.WebSocketResponse] = set()
         self._pending_removals: dict[str, asyncio.Task] = {}
+        self._admin_disconnect_task: asyncio.Task | None = None
 
     async def handle(self, request: web.Request) -> web.WebSocketResponse:
         """
@@ -112,22 +113,54 @@ class BeatifyWebSocketHandler:
             success, error_code = game_state.add_player(name, ws)
 
             if success:
-                # Handle admin join
+                # Handle admin join/reconnection (Story 7-2)
                 if is_admin:
-                    existing_admin = any(
-                        p.is_admin for p in game_state.players.values()
-                        if p.name != name
-                    )
-                    if existing_admin:
-                        # Remove the just-added player and return error
-                        game_state.remove_player(name)
-                        await ws.send_json({
-                            "type": "error",
-                            "code": ERR_ADMIN_EXISTS,
-                            "message": "Game already has an admin",
-                        })
-                        return
-                    game_state.set_admin(name)
+                    # Check if reconnecting as the disconnected admin
+                    if game_state.disconnected_admin_name:
+                        if name.lower() == game_state.disconnected_admin_name.lower():
+                            # Same admin reconnecting - cancel disconnect task
+                            if self._admin_disconnect_task:
+                                self._admin_disconnect_task.cancel()
+                                self._admin_disconnect_task = None
+                                _LOGGER.info(
+                                    "Admin reconnected, cancelled pause task: %s", name
+                                )
+
+                            # Cancel pending removal if any
+                            self.cancel_pending_removal(name)
+
+                            # Resume game if paused
+                            if game_state.phase == GamePhase.PAUSED:
+                                if await game_state.resume_game():
+                                    _LOGGER.info("Game resumed by admin reconnection")
+                        else:
+                            # Different person trying to claim admin
+                            game_state.remove_player(name)
+                            await ws.send_json({
+                                "type": "error",
+                                "code": ERR_ADMIN_EXISTS,
+                                "message": "Only the original host can reconnect",
+                            })
+                            return
+                    else:
+                        # No disconnected admin - check for existing admin
+                        existing_admin = any(
+                            p.is_admin for p in game_state.players.values()
+                            if p.name != name
+                        )
+                        if existing_admin:
+                            # Remove the just-added player and return error
+                            game_state.remove_player(name)
+                            await ws.send_json({
+                                "type": "error",
+                                "code": ERR_ADMIN_EXISTS,
+                                "message": "Game already has an admin",
+                            })
+                            return
+                        game_state.set_admin(name)
+                else:
+                    # Regular player - cancel pending removal on reconnect
+                    self.cancel_pending_removal(name)
 
                 # Send full state to newly joined player
                 state_msg = {"type": "state", **game_state.get_state()}
@@ -223,6 +256,93 @@ class BeatifyWebSocketHandler:
                         "code": ERR_INVALID_ACTION,
                         "message": "Cannot advance round in current phase",
                     })
+
+            elif action == "stop_song":
+                if game_state.phase != GamePhase.PLAYING:
+                    await ws.send_json({
+                        "type": "error",
+                        "code": ERR_INVALID_ACTION,
+                        "message": "No song playing",
+                    })
+                    return
+
+                if game_state.song_stopped:
+                    # Already stopped, no-op
+                    return
+
+                # Stop playback
+                if game_state._media_player_service:
+                    await game_state._media_player_service.stop()
+
+                game_state.song_stopped = True
+                _LOGGER.info("Admin stopped song in round %d", game_state.round)
+
+                # Notify all clients
+                await self.broadcast({"type": "song_stopped"})
+
+            elif action == "set_volume":
+                direction = data.get("direction")  # "up" or "down"
+                if direction not in ("up", "down"):
+                    await ws.send_json({
+                        "type": "error",
+                        "code": ERR_INVALID_ACTION,
+                        "message": "Invalid volume direction",
+                    })
+                    return
+
+                # Calculate new volume
+                new_level = game_state.adjust_volume(direction)
+
+                # Apply to media player
+                if game_state._media_player_service:
+                    success = await game_state._media_player_service.set_volume(
+                        new_level
+                    )
+                    if not success:
+                        _LOGGER.warning(
+                            "Failed to set volume to %.0f%%", new_level * 100
+                        )
+
+                _LOGGER.info(
+                    "Volume adjusted %s to %.0f%%", direction, new_level * 100
+                )
+
+                # Send feedback to requester only (not broadcast)
+                await ws.send_json({
+                    "type": "volume_changed",
+                    "level": new_level,
+                })
+
+            elif action == "end_game":
+                if game_state.phase not in (GamePhase.PLAYING, GamePhase.REVEAL):
+                    await ws.send_json({
+                        "type": "error",
+                        "code": ERR_INVALID_ACTION,
+                        "message": "Cannot end game in current phase",
+                    })
+                    return
+
+                # Cancel timer if running
+                game_state.cancel_timer()
+
+                # Stop media playback
+                if game_state._media_player_service:
+                    await game_state._media_player_service.stop()
+
+                # Transition to END
+                game_state.phase = GamePhase.END
+                _LOGGER.info(
+                    "Admin ended game early at round %d", game_state.round
+                )
+
+                # Broadcast final state to all players FIRST (Story 7-5)
+                await self.broadcast_state()
+
+                # Send game_ended notification (Story 7-5)
+                await self.broadcast({"type": "game_ended"})
+
+                # Cleanup pending tasks (Story 7-5)
+                await self.cleanup_game_tasks()
 
             else:
                 _LOGGER.warning("Unknown admin action: %s", action)
@@ -356,33 +476,73 @@ class BeatifyWebSocketHandler:
 
         # Find player by WebSocket
         player_name = None
-        for name, player in game_state.players.items():
-            if player.ws == ws:
+        player = None
+        for name, p in game_state.players.items():
+            if p.ws == ws:
                 player_name = name
+                player = p
                 player.connected = False
                 break
 
-        if not player_name:
+        if not player_name or not player:
             return
 
-        _LOGGER.info("Player disconnected: %s", player_name)
+        _LOGGER.info(
+            "Player disconnected: %s (is_admin: %s)", player_name, player.is_admin
+        )
 
-        # Broadcast disconnect state
+        # Broadcast disconnect state immediately
         await self.broadcast_state()
 
-        # Schedule removal after grace period
-        async def remove_after_timeout() -> None:
-            await asyncio.sleep(LOBBY_DISCONNECT_GRACE_PERIOD)
-            if player_name in game_state.players:
-                if not game_state.players[player_name].connected:
-                    game_state.remove_player(player_name)
-                    await self.broadcast_state()
-                    _LOGGER.info("Player removed after timeout: %s", player_name)
-            if player_name in self._pending_removals:
-                del self._pending_removals[player_name]
+        # Admin disconnect: pause game after grace period (Story 7-1)
+        if player.is_admin:
+            async def pause_after_timeout() -> None:
+                await asyncio.sleep(LOBBY_DISCONNECT_GRACE_PERIOD)
+                # Check if admin still disconnected
+                if player_name in game_state.players:
+                    admin = game_state.players[player_name]
+                    if not admin.connected:
+                        # pause_game() is async and handles media stop internally
+                        if await game_state.pause_game("admin_disconnected"):
+                            await self.broadcast_state()
+                            _LOGGER.info("Game paused due to admin disconnect")
 
-        task = asyncio.create_task(remove_after_timeout())
-        self._pending_removals[player_name] = task
+            # Store task for cancellation on reconnect
+            self._admin_disconnect_task = asyncio.create_task(pause_after_timeout())
+        else:
+            # Regular player: remove after grace period (existing behavior)
+            async def remove_after_timeout() -> None:
+                await asyncio.sleep(LOBBY_DISCONNECT_GRACE_PERIOD)
+                if player_name in game_state.players:
+                    if not game_state.players[player_name].connected:
+                        game_state.remove_player(player_name)
+                        await self.broadcast_state()
+                        _LOGGER.info("Player removed after timeout: %s", player_name)
+                if player_name in self._pending_removals:
+                    del self._pending_removals[player_name]
+
+            task = asyncio.create_task(remove_after_timeout())
+            self._pending_removals[player_name] = task
+
+    async def cleanup_game_tasks(self) -> None:
+        """
+        Cancel all pending tasks related to the game (Story 7-5).
+
+        Called when game ends to prevent dangling async tasks.
+
+        """
+        # Cancel all pending player removals
+        for task in list(self._pending_removals.values()):
+            if not task.done():
+                task.cancel()
+        self._pending_removals.clear()
+
+        # Cancel admin disconnect task
+        if self._admin_disconnect_task and not self._admin_disconnect_task.done():
+            self._admin_disconnect_task.cancel()
+        self._admin_disconnect_task = None
+
+        _LOGGER.debug("Cleaned up all pending game tasks")
 
     def cancel_pending_removal(self, player_name: str) -> None:
         """
