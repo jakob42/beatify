@@ -16,13 +16,11 @@ let currentGame = null;
 let cachedQRUrl = null;
 
 // Setup sections to hide/show as a group
-const setupSections = ['ma-status', 'media-players', 'playlists', 'game-controls'];
-const allViews = ['setup', 'lobby', 'existing-game'];
+const setupSections = ['media-players', 'playlists', 'game-controls'];
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Wire event listeners
     document.getElementById('start-game')?.addEventListener('click', startGame);
-    document.getElementById('start-game-lobby')?.addEventListener('click', startGameplay);
     document.getElementById('print-qr')?.addEventListener('click', printQRCode);
     document.getElementById('rejoin-game')?.addEventListener('click', rejoinGame);
     document.getElementById('end-game')?.addEventListener('click', endGame);
@@ -49,7 +47,6 @@ async function loadStatus() {
 
         playlistDocsUrl = status.playlist_docs_url || '';
         mediaPlayerDocsUrl = status.media_player_docs_url || '';
-        renderMAStatus(status.ma_configured, status.ma_setup_url);
         renderMediaPlayers(status.media_players);
         renderPlaylists(status.playlists, status.playlist_dir);
         updateStartButtonState();
@@ -62,35 +59,16 @@ async function loadStatus() {
         }
     } catch (error) {
         console.error('Failed to load status:', error);
-        document.getElementById('ma-status-content').innerHTML =
-            '<span class="status-error">Failed to load status</span>';
-    }
-}
-
-/**
- * Render Music Assistant status
- * @param {boolean} isConfigured
- * @param {string} setupUrl
- */
-function renderMAStatus(isConfigured, setupUrl) {
-    const container = document.getElementById('ma-status-content');
-
-    if (isConfigured) {
-        container.innerHTML = '<span class="status-connected">✓ Connected</span>';
-    } else {
-        container.innerHTML = `
-            <span class="status-error">✗ Not configured</span>
-            <p style="margin-top: 8px;">Music Assistant is required for Beatify to play songs.</p>
-            <a href="${escapeHtml(setupUrl)}" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 12px;">
-                Setup Guide
-            </a>
-        `;
+        const container = document.getElementById('media-players-list');
+        if (container) {
+            container.innerHTML = '<span class="status-error">Failed to load status</span>';
+        }
     }
 }
 
 /**
  * Render media players list with radio buttons for selection
- * Filters out unavailable players (AC1, AC2, AC3)
+ * Filters out unavailable players
  * @param {Array} players
  */
 function renderMediaPlayers(players) {
@@ -509,44 +487,6 @@ async function startGame() {
         btn.disabled = false;
         btn.textContent = originalText;
         updateStartButtonState();
-    }
-}
-
-/**
- * Start gameplay (transition from LOBBY to PLAYING)
- */
-async function startGameplay() {
-    const btn = document.getElementById('start-game-lobby');
-    if (!btn) return;
-
-    btn.disabled = true;
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<span class="btn-icon">⏳</span> Starting...';
-
-    try {
-        const response = await fetch('/beatify/api/start-gameplay', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            showError(data.message || 'Failed to start gameplay');
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-            return;
-        }
-
-        // Game started - show success state
-        btn.innerHTML = '<span class="btn-icon">✓</span> Game Started!';
-        // Button stays disabled since game is now running
-
-    } catch (err) {
-        showError('Network error. Please try again.');
-        console.error('Start gameplay error:', err);
-        btn.disabled = false;
-        btn.innerHTML = originalText;
     }
 }
 

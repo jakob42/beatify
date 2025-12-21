@@ -1,6 +1,6 @@
 # Story 7.5: Game End Full Reset
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 

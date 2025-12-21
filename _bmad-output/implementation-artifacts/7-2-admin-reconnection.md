@@ -1,6 +1,6 @@
 # Story 7.2: Admin Reconnection
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 

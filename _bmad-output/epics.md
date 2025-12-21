@@ -1534,3 +1534,161 @@ So that **no stale data affects the next game**.
 **When** admin returns to setup screen
 **Then** system is ready for fresh game configuration
 **And** no data from previous game persists in game state
+
+---
+
+## Epic 8: Cleanup & Fixes
+
+**Goal:** Address technical debt, remove obsolete code, and fix miscellaneous issues discovered during implementation.
+
+**FRs covered:** None (cleanup epic)
+
+---
+
+### Story 8.1: Remove Music Assistant UI Section
+
+As a **user**,
+I want **the obsolete Music Assistant section removed from the admin page**,
+So that **the UI is clean and doesn't show irrelevant configuration options**.
+
+**Acceptance Criteria:**
+
+**Given** the admin page loads
+**When** the page renders
+**Then** no "Music Assistant" section is displayed
+**And** the section `#ma-status` is removed from HTML
+
+**Given** the admin.js code
+**When** reviewed
+**Then** `'ma-status'` is removed from `setupSections` array
+**And** `renderMAStatus()` function is removed
+**And** call to `renderMAStatus()` in `loadStatus()` is removed
+
+**Given** the backend status API
+**When** called
+**Then** `ma_configured` and `ma_setup_url` fields are removed from response
+**Or** ignored if still present (backwards compatibility)
+
+**Files to modify:**
+- `custom_components/beatify/www/admin.html` (remove section)
+- `custom_components/beatify/www/js/admin.js` (remove MA-related code)
+- Backend status API (remove MA fields if applicable)
+
+---
+
+### Story 8.2: Fix Media Player Discovery Refresh
+
+As a **host**,
+I want **the admin page to show all current media players**,
+So that **I can select any available speaker for the game**.
+
+**Root Cause:** Media players were cached once at integration setup and never refreshed. The status API returned stale data.
+
+**Acceptance Criteria:**
+
+**Given** the admin page loads
+**When** the status API is called
+**Then** `async_get_media_players(hass)` is called fresh (not cached)
+**And** all current `media_player` entities are returned
+
+**Given** a new media player is added to Home Assistant
+**When** the admin page is refreshed
+**Then** the new media player appears in the list immediately
+
+**Given** a media player is removed from Home Assistant
+**When** the admin page is refreshed
+**Then** the removed media player no longer appears
+
+**Implementation:**
+```python
+# In StatusView.get():
+from custom_components.beatify.services.media_player import async_get_media_players
+
+media_players = await async_get_media_players(self.hass)  # Fresh fetch
+status = {
+    "media_players": media_players,  # Not data.get("media_players")
+    ...
+}
+```
+
+**Files to modify:**
+- `custom_components/beatify/server/views.py` (StatusView.get - line 76)
+
+---
+
+### Story 8.3: Remove Start Game Button from Admin Lobby
+
+As a **host**,
+I want **only "Join as Player" shown on the admin lobby page**,
+So that **I follow the correct flow: join first, then start game from player view**.
+
+**Context:** Per PRD Journey 2 and FR21, the admin should:
+1. Create lobby from admin page
+2. Click "Join as Player" to transition to player page
+3. Start game from player page (with admin controls)
+
+The current implementation incorrectly shows a "Start Game" button on the admin lobby page.
+
+**Acceptance Criteria:**
+
+**Given** admin is on the lobby page (after creating a game)
+**When** the lobby view displays
+**Then** only the "Join as Player" button is visible
+**And** there is no "Start Game" button on this page
+
+**Given** admin clicks "Join as Player"
+**When** they enter their name and join
+**Then** they are redirected to the player page
+**And** the player page shows the "Start Game" button (admin-only)
+
+**Files to modify:**
+- `custom_components/beatify/www/admin.html` (remove `#start-game-lobby` button, lines 59-62)
+- `custom_components/beatify/www/js/admin.js` (remove `startGameplay()` function and event listener)
+
+---
+
+### Story 8.4: Fix QR Code Rendering on Player Page
+
+As a **player**,
+I want **the QR code to render correctly on the player lobby page**,
+So that **I can invite friends to join the game**.
+
+**Root Cause:** The player.js `renderQRCode()` function uses the wrong QR code library API (`qrcode(0, 'M')` which is qrcode-generator syntax), but the page loads qrcode.min.js (qrcodejs library) which uses `new QRCode()` constructor. Admin.js uses the correct API.
+
+**Acceptance Criteria:**
+
+**Given** a player joins the game and reaches the lobby view
+**When** the QR code section renders
+**Then** a valid QR code image is displayed
+**And** the QR code is scannable and leads to the join URL
+
+**Given** a player taps the QR code to enlarge
+**When** the modal opens
+**Then** a larger QR code is displayed correctly
+**And** the QR code is the same join URL
+
+**Implementation:**
+```javascript
+// Replace in player.js renderQRCode():
+// OLD (wrong API):
+var qr = qrcode(0, 'M');
+qr.addData(joinUrl);
+qr.make();
+container.innerHTML = qr.createImgTag(4, 0);
+
+// NEW (correct API, matching admin.js):
+container.innerHTML = '';
+new QRCode(container, {
+    text: joinUrl,
+    width: 128,
+    height: 128,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+});
+```
+
+**Files to modify:**
+- `custom_components/beatify/www/js/player.js`:
+  - `renderQRCode()` function (lines 198-225)
+  - `openQRModal()` function (lines 230-243)

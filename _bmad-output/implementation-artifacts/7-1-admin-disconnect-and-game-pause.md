@@ -1,6 +1,6 @@
 # Story 7.1: Admin Disconnect & Game Pause
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 

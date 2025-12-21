@@ -16,6 +16,7 @@ from custom_components.beatify.const import (
     PLAYLIST_DOCS_URL,
 )
 from custom_components.beatify.game.state import GameState
+from custom_components.beatify.services.media_player import async_get_media_players
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -72,8 +73,11 @@ class StatusView(HomeAssistantView):
         if game_state and game_state.game_id:
             active_game = game_state.get_state()
 
+        # Fetch media players fresh (not cached) - Story 8-2
+        media_players = await async_get_media_players(self.hass)
+
         status = {
-            "media_players": data.get("media_players", []),
+            "media_players": media_players,
             "playlists": data.get("playlists", []),
             "playlist_dir": data.get("playlist_dir", ""),
             "playlist_docs_url": PLAYLIST_DOCS_URL,

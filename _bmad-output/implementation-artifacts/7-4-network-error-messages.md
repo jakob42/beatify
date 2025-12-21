@@ -1,6 +1,6 @@
 # Story 7.4: Network Error Messages
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 

@@ -1,6 +1,6 @@
 # Story 7.3: Player Auto-Reconnect
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 

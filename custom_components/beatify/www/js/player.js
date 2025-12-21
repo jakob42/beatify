@@ -199,20 +199,25 @@
         if (!joinUrl) return;
         currentJoinUrl = joinUrl;
 
-        const container = document.getElementById('player-qr-code');
+        var container = document.getElementById('player-qr-code');
         if (!container) return;
 
         // Clear previous QR
         container.innerHTML = '';
 
-        // Generate QR code using qrcode-generator
-        // Type 0 = auto, Error correction M
-        var qr = qrcode(0, 'M');
-        qr.addData(joinUrl);
-        qr.make();
-
-        // Create image (cell size 4 for inline display)
-        container.innerHTML = qr.createImgTag(4, 0);
+        // Generate QR code using qrcodejs (matches admin.js pattern)
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(container, {
+                text: joinUrl,
+                width: 128,
+                height: 128,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        } else {
+            container.innerHTML = '<p class="status-error">QR code library not loaded</p>';
+        }
 
         // Add click handler for modal
         container.onclick = openQRModal;
@@ -236,10 +241,20 @@
 
         // Clear and render larger QR
         modalCode.innerHTML = '';
-        var qr = qrcode(0, 'M');
-        qr.addData(currentJoinUrl);
-        qr.make();
-        modalCode.innerHTML = qr.createImgTag(8, 0);  // Larger cell size
+
+        // Generate larger QR code using qrcodejs (matches admin.js pattern)
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(modalCode, {
+                text: currentJoinUrl,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        } else {
+            modalCode.innerHTML = '<p class="status-error">QR code library not loaded</p>';
+        }
 
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
