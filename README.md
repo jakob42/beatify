@@ -9,7 +9,7 @@
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.11+-41BDF5?style=flat-square&logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
 [![HACS](https://img.shields.io/badge/HACS-Custom-orange?style=flat-square)](https://hacs.xyz/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.9.6-blue?style=flat-square)](https://github.com/mholzi/beatify/releases)
+[![Version](https://img.shields.io/badge/Version-0.9.7-blue?style=flat-square)](https://github.com/mholzi/beatify/releases)
 
 *Turn any gathering into an epic music trivia showdown!*
 
@@ -63,7 +63,7 @@ Perfect for:
 ### 🛠️ Host Controls
 - **Admin Control Bar** - Skip songs, adjust volume, manage the game
 - **Pause & Resume** - Life happens, the game waits
-- **Flexible Playlists** - Use any Music Assistant playlist
+- **Flexible Playlists** - Use JSON playlist files with any media URIs
 - **Late Join Support** - Latecomers can jump in mid-game
 
 ---
@@ -75,7 +75,7 @@ Perfect for:
 | Requirement | Version | Notes |
 |-------------|---------|-------|
 | Home Assistant | 2025.11+ | Core platform |
-| Music Assistant | 2.4+ | For music playback |
+| Media Player | Any | Any HA media player entity |
 | HACS | Latest | Recommended for easy install |
 
 ### Option 1: HACS (Recommended)
@@ -207,9 +207,9 @@ There's no hard limit! We've tested with 20+ players. Your WiFi is the only cons
 </details>
 
 <details>
-<summary><b>Does it work without Music Assistant?</b></summary>
+<summary><b>How do playlists work?</b></summary>
 
-Currently, Music Assistant is required for playlist management and playback. We may add more sources in the future!
+Beatify uses JSON playlist files stored in `config/beatify/playlists/`. Each playlist contains songs with their release year, media URI, and optional fun facts. A sample playlist is included to get you started!
 </details>
 
 <details>
@@ -224,9 +224,9 @@ The Neon Party Mode theme is built-in. Custom theming may come in future updates
 
 ### Common Issues
 
-**"Music Assistant not found"**
-- Ensure Music Assistant is installed and showing as "Loaded"
-- Restart Home Assistant after installing MA
+**"No playlists found"**
+- Check that JSON playlist files exist in `config/beatify/playlists/`
+- Restart Home Assistant after adding playlists
 
 **Players can't connect**
 - Check that your HA instance is accessible on your network
@@ -235,7 +235,7 @@ The Neon Party Mode theme is built-in. Custom theming may come in future updates
 
 **Songs not playing**
 - Verify your media player is online and working
-- Check Music Assistant can play to that device directly
+- Check that the media URIs in your playlist are valid
 - Look for errors in Home Assistant logs
 
 **QR code not scanning**
@@ -295,7 +295,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - Built for [Home Assistant](https://www.home-assistant.io/) - the best smart home platform
-- Powered by [Music Assistant](https://music-assistant.io/) - for seamless music playback
 - Inspired by countless game nights and the joy of music trivia
 
 ---
