@@ -1797,14 +1797,22 @@
     function getStoredPlayerName() {
         try {
             var storedGameId = localStorage.getItem(STORAGE_KEY_GAME_ID);
-            if (storedGameId === gameId) {
-                return localStorage.getItem(STORAGE_KEY_NAME);
+            var storedName = localStorage.getItem(STORAGE_KEY_NAME);
+            console.log('[Beatify] Checking localStorage - storedGameId:', storedGameId, 'currentGameId:', gameId, 'storedName:', storedName);
+
+            if (storedGameId && storedGameId === gameId) {
+                console.log('[Beatify] Game ID match, returning stored name:', storedName);
+                return storedName;
             }
-            // Different game, clear stored name
-            localStorage.removeItem(STORAGE_KEY_NAME);
-            localStorage.removeItem(STORAGE_KEY_GAME_ID);
+
+            if (storedGameId && storedGameId !== gameId) {
+                // Different game, clear stored name
+                console.log('[Beatify] Different game ID, clearing stored data');
+                localStorage.removeItem(STORAGE_KEY_NAME);
+                localStorage.removeItem(STORAGE_KEY_GAME_ID);
+            }
         } catch (e) {
-            // localStorage unavailable
+            console.error('[Beatify] localStorage error:', e);
         }
         return null;
     }
@@ -1817,8 +1825,9 @@
         try {
             localStorage.setItem(STORAGE_KEY_NAME, name);
             localStorage.setItem(STORAGE_KEY_GAME_ID, gameId);
+            console.log('[Beatify] Stored player name:', name, 'for game:', gameId);
         } catch (e) {
-            // localStorage unavailable
+            console.error('[Beatify] Failed to store player name:', e);
         }
     }
 
@@ -2377,25 +2386,33 @@
         setupRetryConnection();  // Story 7-4
         initConfetti();  // Story 9.4
 
-        // Prefill name from localStorage (Story 7-3)
+        // Check if this is an admin redirect
+        if (checkAdminStatus() && playerName) {
+            // Auto-connect as admin
+            connectWebSocket(playerName);
+            return;
+        }
+
+        // Auto-reconnect from localStorage on page reload (Story 7-3)
         var storedName = getStoredPlayerName();
+        if (storedName && gameId) {
+            console.log('[Beatify] Auto-reconnecting as:', storedName);
+            // Auto-connect with stored name
+            connectWebSocket(storedName);
+            return;
+        }
+
+        // No stored name - prefill form if we have a partial match
         if (storedName) {
             var nameInput = document.getElementById('name-input');
             var joinBtn = document.getElementById('join-btn');
             if (nameInput) {
                 nameInput.value = storedName;
-                // Enable join button if valid
                 if (joinBtn) {
                     var result = validateName(storedName);
                     joinBtn.disabled = !result.valid;
                 }
             }
-        }
-
-        // Check if this is an admin redirect
-        if (checkAdminStatus() && playerName) {
-            // Auto-connect as admin
-            connectWebSocket(playerName);
         }
     }
 
