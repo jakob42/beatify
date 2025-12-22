@@ -1,13 +1,18 @@
 ---
-stepsCompleted: [1, 2, 3, 4]
-status: complete
-completedAt: '2025-12-18'
+stepsCompleted: [1, 2, 3, 4, 'step1-revalidated']
+status: in-progress
 inputDocuments:
   - '_bmad-output/prd.md'
   - '_bmad-output/architecture.md'
-epicCount: 7
-storyCount: 38
+  - '_bmad-output/ux-design-specification.md'
+epicCount: 10
+storyCount: 50
 frCoverage: 59
+additionalRequirements:
+  - 'EL1: Guess Artist Mode (artist AND year guessing)'
+  - 'EL2: Late Join with Average Points'
+  - 'EL3: Admin Sidebar Link in Home Assistant'
+lastUpdated: '2025-12-21'
 ---
 
 # Beatify - Epic Breakdown
@@ -295,8 +300,11 @@ This document provides the complete epic and story breakdown for Beatify, decomp
 | 5 | Advanced Scoring & Leaderboard | 10 | Gamification & competition |
 | 6 | Host Game Control | 6 | Control during play |
 | 7 | Resilience & Recovery | 8 | Handle disconnects & recovery |
+| 8 | Cleanup & Fixes | 5 | Technical debt & bug fixes |
+| 9 | UX Design Overhaul | 9 | Neon party mode visual polish |
+| 10 | Feature Enhancements (Elicited) | 3 | Artist mode, late join scoring, sidebar link |
 
-**Total: 7 epics, 59 FRs**
+**Total: 10 epics, 59 FRs + 17 enhancement/UX/cleanup stories**
 
 ---
 
@@ -1537,6 +1545,457 @@ So that **no stale data affects the next game**.
 
 ---
 
+## Epic 9: UX Design Overhaul
+
+**Goal:** Transform Beatify's visual experience from functional prototype to polished party game with the Neon Party Mode aesthetic—dark backgrounds, vibrant accents, celebration animations, and edge-to-edge layouts that feel like a TV game show, not a developer tool.
+
+**Source Document:** `_bmad-output/ux-design-specification.md`
+
+**FRs covered:** None directly (UX enhancement epic), but supports NFR18 (touch targets), NFR19 (color contrast), NFR20 (visual confirmation)
+
+---
+
+### Story 9.1: CSS Custom Properties Foundation
+
+As a **developer**,
+I want **all hardcoded colors, spacing, typography, and effects extracted into CSS custom properties**,
+So that **the design system is maintainable and theming is possible**.
+
+**Acceptance Criteria:**
+
+**Given** the current `styles.css` (~2400 lines)
+**When** refactored
+**Then** all color values are replaced with semantic custom properties:
+```css
+:root {
+  --color-bg-primary: #0a0a12;
+  --color-bg-surface: rgba(255, 255, 255, 0.05);
+  --color-accent-primary: #ff2d6a;
+  --color-accent-secondary: #00f5ff;
+  --color-success: #39ff14;
+  --color-warning: #ff6600;
+  --color-error: #ff0040;
+  --color-text-primary: #ffffff;
+  --color-text-muted: #8b8b9e;
+}
+```
+
+**Given** spacing values are scattered throughout CSS
+**When** refactored
+**Then** all spacing uses custom properties:
+```css
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+}
+```
+
+**Given** typography is inconsistent
+**When** refactored
+**Then** typography uses custom properties:
+```css
+:root {
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-size-timer: 64px;
+  --font-size-year: 56px;
+}
+```
+
+**Given** glow effects are used
+**When** defined
+**Then** effects are reusable:
+```css
+:root {
+  --glow-primary: 0 0 20px var(--color-accent-primary);
+  --glow-success: 0 0 20px var(--color-success);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+}
+```
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css`
+
+---
+
+### Story 9.2: Neon Party Mode Theme
+
+As a **party guest**,
+I want **a dark, immersive visual theme with neon accents**,
+So that **the game feels like a party experience, not a utility app**.
+
+**Acceptance Criteria:**
+
+**Given** all screens load
+**When** viewed
+**Then** background is `#0a0a12` (near-black)
+**And** text is high-contrast white (`#ffffff`) or muted (`#b3b3c2`)
+**And** primary accent is magenta (`#ff2d6a`)
+**And** secondary accent is cyan (`#00f5ff`)
+
+**Given** component classes are defined
+**When** applied
+**Then** these utility classes exist:
+- `.btn-primary` - Magenta fill, white text
+- `.btn-glow` - Adds glow on hover/active
+- `.card` - Surface background with border-radius
+- `.card-glass` - Subtle transparency effect
+- `.text-glow` - Neon text effect for emphasis
+
+**Given** buttons receive interaction
+**When** user hovers or taps
+**Then** `.btn-glow` adds `box-shadow: var(--glow-primary)`
+**And** active state scales down slightly (transform: scale(0.98))
+
+**Given** player is in low-light environment
+**When** they view any screen
+**Then** all text passes WCAG AA contrast (4.5:1 minimum)
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css`
+- `custom_components/beatify/www/player.html`
+- `custom_components/beatify/www/admin.html`
+
+---
+
+### Story 9.3: Timer Visual Enhancement
+
+As a **player**,
+I want **the countdown timer to build tension with visual urgency cues**,
+So that **the final seconds feel exciting, not stressful**.
+
+**Acceptance Criteria:**
+
+**Given** timer is counting down
+**When** time > 10 seconds (normal state)
+**Then** timer displays in white text, no special effects
+
+**Given** timer reaches 10 seconds
+**When** warning state triggers
+**Then** timer text turns orange (`#ff6600`)
+**And** subtle pulse animation begins (opacity 0.8→1.0)
+
+**Given** timer reaches 5 seconds
+**When** critical state triggers
+**Then** timer text turns red (`#ff0040`)
+**And** glow effect activates (`box-shadow: 0 0 30px #ff0040`)
+**And** scale animation adds slight size increase on each second
+**And** pulse animation intensifies
+
+**Given** user has `prefers-reduced-motion: reduce`
+**When** timer enters warning/critical states
+**Then** color changes apply but animations are disabled
+**And** glow remains static (no pulse)
+
+**Given** timer component
+**When** CSS classes are applied
+**Then** these state classes exist:
+- `.timer` (base styles)
+- `.timer--warning` (orange, subtle pulse)
+- `.timer--critical` (red, glow, intense pulse, scale)
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css`
+- `custom_components/beatify/www/js/player.js` (add state class logic)
+
+---
+
+### Story 9.4: Celebration-First Reveal Experience
+
+As a **player**,
+I want **the reveal to lead with emotion before showing data**,
+So that **getting the answer feels theatrical and satisfying**.
+
+**Acceptance Criteria:**
+
+**Given** round ends and reveal displays
+**When** player got exact match (0 years off)
+**Then** "NAILED IT!" text displays prominently in green
+**And** confetti animation triggers (canvas or CSS particles)
+**And** correct year displays with glow effect
+**And** after 1 second, score breakdown fades in
+
+**Given** round ends and reveal displays
+**When** player was close (within 2 years)
+**Then** "SO CLOSE!" text displays in orange
+**And** near-miss animation plays (shake or pulse)
+**And** difference shown: "Off by 2 years"
+
+**Given** round ends and reveal displays
+**When** player was way off (>5 years)
+**Then** playful "Oops!" text displays in muted gray
+**And** exaggerated distance shown humorously
+**And** no shame messaging—keep it light
+
+**Given** player did not submit
+**When** reveal displays
+**Then** "No guess" displays neutrally
+**And** no celebration or commiseration animation
+
+**Given** confetti animation exists
+**When** triggered
+**Then** uses canvas or CSS-only implementation (no heavy libraries)
+**And** respects `prefers-reduced-motion` (static icon fallback)
+**And** auto-clears after 2-3 seconds
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css` (reveal styles, confetti CSS)
+- `custom_components/beatify/www/js/player.js` (reveal logic, confetti trigger)
+- `custom_components/beatify/www/player.html` (reveal section structure)
+
+---
+
+### Story 9.5: Leaderboard Animation & Styling
+
+As a **player**,
+I want **the leaderboard to feel alive with rank change animations**,
+So that **competition feels dynamic, not like a static spreadsheet**.
+
+**Acceptance Criteria:**
+
+**Given** leaderboard updates after a round
+**When** player's rank changes
+**Then** row animates to new position (slide up or down)
+**And** up arrow (▲) or down arrow (▼) indicator shows briefly
+**And** animation completes in 300-500ms
+
+**Given** leaderboard displays
+**When** current player views their row
+**Then** their row is highlighted (accent border or background)
+**And** easy to find at a glance
+
+**Given** many players in game (>10)
+**When** leaderboard displays
+**Then** smart compression applies:
+  - Top 5 shown fully
+  - "..." separator
+  - Current player's position (if not in top 5): "**You (#14)**"
+  - "..." separator
+  - Bottom 3 shown
+**And** list is scrollable for full view
+
+**Given** streak indicator displays
+**When** player has active streak
+**Then** streak badge shows (e.g., "🔥3")
+**And** badge has subtle glow if streak ≥5
+
+**Given** final leaderboard displays (game end)
+**When** top 3 are shown
+**Then** podium-style treatment with larger text/glow
+**And** 1st place gets gold accent, 2nd silver, 3rd bronze
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css`
+- `custom_components/beatify/www/js/player.js` (leaderboard animation logic)
+
+---
+
+### Story 9.6: Edge-to-Edge Layout & Safe Areas
+
+As a **mobile player**,
+I want **the game to use my full screen without awkward padding**,
+So that **gameplay area is maximized on my small phone screen**.
+
+**Acceptance Criteria:**
+
+**Given** player page loads on mobile
+**When** layout renders
+**Then** horizontal padding is minimal (8px max at screen edges)
+**And** content flows edge-to-edge
+**And** no wasted whitespace on sides
+
+**Given** device has notch or home indicator (iPhone X+)
+**When** page renders
+**Then** safe-area-inset CSS env() variables are respected:
+```css
+.screen {
+  padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+  padding-left: max(var(--space-sm), env(safe-area-inset-left));
+  padding-right: max(var(--space-sm), env(safe-area-inset-right));
+}
+```
+**And** submit button doesn't overlap home indicator
+**And** content doesn't get clipped by notch
+
+**Given** viewport meta tag
+**When** page loads
+**Then** includes `viewport-fit=cover` for full-screen support:
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+```
+
+**Given** layout on tablet (768px+)
+**When** page renders
+**Then** content is centered with max-width container (~480px)
+**And** maintains mobile-optimized proportions
+
+**Files to modify:**
+- `custom_components/beatify/www/player.html` (viewport meta)
+- `custom_components/beatify/www/styles.css` (safe areas, edge-to-edge)
+
+---
+
+### Story 9.7: Accessibility & Reduced Motion
+
+As a **player with accessibility needs**,
+I want **the game to be usable with reduced motion preferences and proper contrast**,
+So that **I can enjoy the party game like everyone else**.
+
+**Acceptance Criteria:**
+
+**Given** user has `prefers-reduced-motion: reduce` set
+**When** any animation would play
+**Then** animations are disabled via:
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+**And** state changes remain instant (color changes, etc.)
+**And** confetti shows as static celebration icon instead
+
+**Given** user has `prefers-color-scheme: light` set
+**When** page renders
+**Then** Day Mode fallback applies:
+  - Background: `#ffffff`
+  - Surface: `#f5f5f7`
+  - Text: `#1a1a1a`
+  - Accents remain vibrant (magenta/cyan)
+
+**Given** focus is on interactive elements
+**When** using keyboard navigation
+**Then** focus indicator is visible (magenta glow ring, 2px offset)
+**And** focus never gets "lost" on dark backgrounds
+
+**Given** timer changes state
+**When** screen reader is active
+**Then** ARIA live region announces time remaining at key moments
+**And** state changes are announced ("10 seconds remaining", "5 seconds!")
+
+**Given** all text on dark backgrounds
+**When** contrast is measured
+**Then** all combinations exceed WCAG AA (4.5:1 minimum)
+**And** muted text (`#b3b3c2`) on `#0a0a12` passes ratio check
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css`
+- `custom_components/beatify/www/player.html` (ARIA attributes)
+
+---
+
+### Story 9.8: Beatify Brand Identity
+
+As a **host showing off Beatify**,
+I want **a recognizable brand identity with wordmark and logo**,
+So that **Beatify looks polished and memorable**.
+
+**Acceptance Criteria:**
+
+**Given** join screen loads
+**When** player views the page
+**Then** Beatify wordmark is prominently displayed:
+  - "Beat" in white
+  - "ify" in magenta-to-cyan gradient
+  - Bold geometric font (Outfit or similar)
+  - Subtle glow behind for hero usage
+
+**Given** admin page loads
+**When** host views the page
+**Then** Beatify wordmark appears in header
+**And** matches player-side branding
+
+**Given** fonts are loaded
+**When** page renders
+**Then** custom fonts load with `font-display: swap`
+**And** fonts are preloaded for critical weights only (2 weights max)
+**And** fallback to system-ui ensures no blank text
+
+**Given** loading state
+**When** player waits for connection
+**Then** Beatify logo pulses subtly (not spinner)
+**And** feels premium, not generic
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css` (font-face, logo styles)
+- `custom_components/beatify/www/player.html` (wordmark markup)
+- `custom_components/beatify/www/admin.html` (wordmark markup)
+
+---
+
+### Story 9.9: Energy Escalation Pattern
+
+As a **party guest**,
+I want **visual energy to build from calm join to exciting gameplay**,
+So that **the experience matches the emotional journey of the game**.
+
+**Acceptance Criteria:**
+
+**Given** player is on join screen
+**When** page renders
+**Then** energy is **calm**:
+  - Minimal elements (logo, name field, button)
+  - No animations or glows
+  - Clean, focused entry point
+
+**Given** player is in lobby
+**When** waiting for game to start
+**Then** energy is **warming up**:
+  - Player cards slide in with subtle animation
+  - QR code pulses gently
+  - Background may have subtle particle effect
+
+**Given** player is in active gameplay
+**When** round is in progress
+**Then** energy is **full party**:
+  - Timer glows in critical states
+  - Submit button has active glow on hover
+  - Album art has subtle ambient glow
+  - Reveal has full celebration treatment
+
+**Given** screen transitions happen
+**When** moving between phases
+**Then** transitions are smooth (fade or slide)
+**And** feel cohesive, not jarring
+**And** respect `prefers-reduced-motion`
+
+**Files to modify:**
+- `custom_components/beatify/www/styles.css`
+- `custom_components/beatify/www/js/player.js` (screen transition logic)
+
+---
+
+### Epic 9 Summary
+
+| Story | Title | Priority | Complexity |
+|-------|-------|----------|------------|
+| 9.1 | CSS Custom Properties Foundation | High | Medium |
+| 9.2 | Neon Party Mode Theme | High | Medium |
+| 9.3 | Timer Visual Enhancement | High | Low |
+| 9.4 | Celebration-First Reveal | High | Medium |
+| 9.5 | Leaderboard Animation & Styling | Medium | Medium |
+| 9.6 | Edge-to-Edge Layout & Safe Areas | Medium | Low |
+| 9.7 | Accessibility & Reduced Motion | Medium | Low |
+| 9.8 | Beatify Brand Identity | Low | Low |
+| 9.9 | Energy Escalation Pattern | Low | Medium |
+
+**Recommended Order:** 9.1 → 9.2 → 9.6 → 9.3 → 9.4 → 9.5 → 9.7 → 9.8 → 9.9
+
+Foundation first (tokens, theme, layout), then enhance components (timer, reveal, leaderboard), then polish (accessibility, brand, energy).
+
+---
+
 ## Epic 8: Cleanup & Fixes
 
 **Goal:** Address technical debt, remove obsolete code, and fix miscellaneous issues discovered during implementation.
@@ -1729,3 +2188,209 @@ So that **my speaker stays at whatever volume I set it to, and only changes when
 
 **Files modified:**
 - `custom_components/beatify/game/state.py`
+
+---
+
+## Epic 10: Feature Enhancements (Elicited)
+
+**Goal:** Enhance Beatify with new gameplay modes, improved late-join experience, and better Home Assistant integration based on user feedback and elicitation sessions.
+
+**Requirements covered:** EL1, EL2, EL3 (from elicitation session 2025-12-21)
+
+---
+
+### Story 10.1: Guess Artist Mode
+
+As a **player**,
+I want **to guess both the artist AND the year for each song**,
+So that **the game is more challenging and rewards deeper music knowledge**.
+
+**Acceptance Criteria:**
+
+**Given** a round is in progress
+**When** player views the game screen
+**Then** two input fields are displayed:
+- Artist name text input (with autocomplete if possible)
+- Year selector (existing slider/picker)
+
+**Given** player submits their guess
+**When** submission is sent
+**Then** both artist guess and year guess are included in the payload:
+```json
+{"type": "submit", "artist": "string", "year": number, "bet": boolean}
+```
+
+**Given** server evaluates the guess
+**When** scoring is calculated
+**Then** artist scoring applies:
+- Exact artist match (case-insensitive): +10 points
+- Partial match (contains artist name): +5 points
+- No match: 0 points
+**And** year scoring remains unchanged (existing FR32 logic)
+**And** total round score = artist_points + year_points (before multipliers)
+
+**Given** reveal displays
+**When** player views their result
+**Then** both results are shown:
+- Artist: "You guessed: [guess] | Correct: [artist]" + points
+- Year: "You guessed: [year] | Correct: [year]" + points
+- Combined score with any multipliers
+
+**Given** player leaves artist field empty
+**When** they submit
+**Then** artist portion scores 0 points
+**And** year score is still calculated normally
+
+**Given** reveal displays the correct answer
+**When** song info is shown
+**Then** artist name is prominently displayed alongside year and title
+
+**Files to modify:**
+- `custom_components/beatify/www/player.html` (add artist input field)
+- `custom_components/beatify/www/js/player.js` (handle artist input, submit both)
+- `custom_components/beatify/www/styles.css` (style artist input)
+- `custom_components/beatify/game/state.py` (handle artist in submission)
+- `custom_components/beatify/game/scoring.py` (add artist scoring logic)
+- `custom_components/beatify/server/messages.py` (update message schema)
+
+---
+
+### Story 10.2: Late Join with Average Points
+
+As a **late-joining player**,
+I want **to start with the average score of current players**,
+So that **I'm not hopelessly behind and can compete meaningfully**.
+
+**Acceptance Criteria:**
+
+**Given** a game is in progress (PLAYING or REVEAL phase)
+**When** a new player joins mid-game
+**Then** player's initial score is set to the current average of all existing players
+**And** average is calculated as: sum(all_player_scores) / count(players)
+**And** score is rounded to nearest integer
+
+**Given** late joiner receives average score
+**When** they view the leaderboard
+**Then** their score reflects the average they received
+**And** a subtle indicator shows "(joined late)" or similar badge
+
+**Given** game is in lobby phase (not started)
+**When** a player joins
+**Then** they receive 0 points (normal behavior, not average)
+
+**Given** only one player exists when late joiner joins
+**When** average is calculated
+**Then** late joiner receives that player's score as the average
+
+**Given** all existing players have 0 points
+**When** late joiner joins
+**Then** late joiner receives 0 points (average of 0)
+
+**Given** late joiner's average score is applied
+**When** leaderboard updates
+**Then** late joiner appears at appropriate rank based on their starting score
+**And** their position may be mid-leaderboard rather than last
+
+**Implementation:**
+```python
+# In game/player.py or game/state.py:
+def calculate_average_score(players: list) -> int:
+    if not players:
+        return 0
+    total = sum(p.score for p in players)
+    return round(total / len(players))
+
+def add_late_joiner(name: str, game_state: GameState) -> Player:
+    if game_state.phase in [Phase.PLAYING, Phase.REVEAL]:
+        initial_score = calculate_average_score(game_state.players)
+    else:
+        initial_score = 0
+    return Player(name=name, score=initial_score, joined_late=True)
+```
+
+**Files to modify:**
+- `custom_components/beatify/game/player.py` (add average calculation, joined_late flag)
+- `custom_components/beatify/game/state.py` (apply average on late join)
+- `custom_components/beatify/server/websocket.py` (handle late join flow)
+- `custom_components/beatify/server/messages.py` (include joined_late in player data)
+- `custom_components/beatify/www/js/player.js` (display "joined late" indicator)
+- `custom_components/beatify/www/styles.css` (style joined late badge)
+
+---
+
+### Story 10.3: Admin Sidebar Link in Home Assistant
+
+As a **Home Assistant admin**,
+I want **a Beatify link in the HA sidebar**,
+So that **I can quickly access the admin page without typing the URL**.
+
+**Acceptance Criteria:**
+
+**Given** Beatify integration is installed and configured
+**When** Home Assistant loads
+**Then** a "Beatify" entry appears in the HA sidebar
+**And** the icon is appropriate (e.g., `mdi:music` or custom)
+
+**Given** user clicks the Beatify sidebar link
+**When** navigation occurs
+**Then** user is taken to `/beatify/admin` (the admin page)
+**And** page opens in the same window (not a new tab)
+
+**Given** Beatify integration is removed
+**When** Home Assistant reloads
+**Then** the sidebar link is removed automatically
+
+**Given** sidebar entry is configured
+**When** displayed
+**Then** shows "Beatify" as the label
+**And** uses a recognizable music/game icon
+
+**Implementation Notes:**
+
+Use HA's `panel_custom` or `panel_iframe` registration in `__init__.py`:
+
+```python
+# In __init__.py async_setup_entry():
+hass.components.frontend.async_register_built_in_panel(
+    component_name="iframe",
+    sidebar_title="Beatify",
+    sidebar_icon="mdi:music-box",
+    frontend_url_path="beatify-admin",
+    config={"url": "/beatify/admin"},
+    require_admin=False,
+)
+
+# Or use async_register_panel for custom panel
+```
+
+Alternative approach using `panel_custom`:
+```python
+from homeassistant.components.frontend import async_register_built_in_panel
+
+async_register_built_in_panel(
+    hass,
+    component_name="iframe",
+    sidebar_title="Beatify",
+    sidebar_icon="mdi:music-circle",
+    frontend_url_path="beatify",
+    config={"url": "/beatify/admin"},
+)
+```
+
+**Files to modify:**
+- `custom_components/beatify/__init__.py` (register sidebar panel in async_setup_entry)
+- `custom_components/beatify/manifest.json` (add "panel" to dependencies if needed)
+
+---
+
+### Epic 10 Summary
+
+| Story | Title | Priority | Complexity |
+|-------|-------|----------|------------|
+| 10.1 | Guess Artist Mode | High | Medium |
+| 10.2 | Late Join with Average Points | High | Low |
+| 10.3 | Admin Sidebar Link | Medium | Low |
+
+**Recommended Order:** 10.3 → 10.2 → 10.1
+
+Start with the simplest (sidebar link), then late join scoring (isolated change), then artist mode (touches multiple layers).

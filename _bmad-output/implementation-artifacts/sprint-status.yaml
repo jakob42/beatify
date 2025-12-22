@@ -1,4 +1,4 @@
-# generated: 2025-12-21
+# generated: 2025-12-21 (refreshed)
 # project: Beatify
 # tracking_system: file-system
 # story_location: _bmad-output/implementation-artifacts
@@ -126,4 +126,20 @@ development_status:
   8-2-fix-media-player-discovery-refresh: done
   8-3-remove-start-game-button-from-admin-lobby: done
   8-4-fix-qr-code-rendering-on-player-page: done
+  8-5-remove-automatic-volume-setting-on-song-start: done
   epic-8-retrospective: optional
+
+  # Epic 9: UX Design Overhaul
+  # Goal: Transform Beatify's visual experience to polished Neon Party Mode aesthetic
+  # FRs: None (UX enhancement epic), supports NFR18, NFR19, NFR20
+  epic-9: done
+  9-1-css-custom-properties-foundation: done
+  9-2-neon-party-mode-theme: done
+  9-3-timer-visual-enhancement: done
+  9-4-celebration-first-reveal-experience: done
+  9-5-leaderboard-animation-and-styling: done
+  9-6-edge-to-edge-layout-and-safe-areas: done
+  9-7-accessibility-and-reduced-motion: done
+  9-8-beatify-brand-identity: done
+  9-9-energy-escalation-pattern: done
+  epic-9-retrospective: optional

@@ -335,6 +335,17 @@
                 timerElement.classList.remove('timer--warning', 'timer--critical');
             }
 
+            // ARIA announcements at key moments (Story 9.7)
+            if (remaining === 10) {
+                timerElement.setAttribute('aria-label', '10 seconds remaining');
+            } else if (remaining === 5) {
+                timerElement.setAttribute('aria-label', '5 seconds!');
+            } else if (remaining === 0) {
+                timerElement.setAttribute('aria-label', 'Time is up!');
+            } else {
+                timerElement.setAttribute('aria-label', 'Time remaining: ' + remaining + ' seconds');
+            }
+
             // Stop countdown when reaching 0
             if (remaining <= 0) {
                 stopCountdown();
@@ -507,11 +518,28 @@
             entry.is_current = (entry.name === playerName);
         });
 
+        // Smart compression for >10 players (Story 9.5)
+        var displayList = compressLeaderboard(leaderboard, playerName);
+
         var html = '';
-        leaderboard.forEach(function(entry) {
+        displayList.forEach(function(entry) {
+            // Handle separator
+            if (entry.separator) {
+                html += '<div class="leaderboard-separator">...</div>';
+                return;
+            }
+
             var rankClass = entry.rank <= 3 ? 'is-top-' + entry.rank : '';
             var currentClass = entry.is_current ? 'is-current' : '';
             var adminBadge = entry.is_admin ? '<span class="admin-badge">👑</span>' : '';
+
+            // Rank change animation class (Story 9.5)
+            var animationClass = '';
+            if (entry.rank_change > 0) {
+                animationClass = 'leaderboard-entry--climbing';
+            } else if (entry.rank_change < 0) {
+                animationClass = 'leaderboard-entry--falling';
+            }
 
             // Rank change indicator
             var changeIndicator = '';
@@ -521,12 +549,14 @@
                 changeIndicator = '<span class="rank-down">▼' + Math.abs(entry.rank_change) + '</span>';
             }
 
-            // Streak indicator (show for 2+ streak)
-            var streakIndicator = entry.streak >= 2
-                ? '<span class="streak-indicator">🔥' + entry.streak + '</span>'
-                : '';
+            // Streak indicator with hot glow for 5+ (Story 9.5)
+            var streakIndicator = '';
+            if (entry.streak >= 2) {
+                var hotClass = entry.streak >= 5 ? 'streak-indicator--hot' : '';
+                streakIndicator = '<span class="streak-indicator ' + hotClass + '">🔥' + entry.streak + '</span>';
+            }
 
-            html += '<div class="leaderboard-entry ' + rankClass + ' ' + currentClass + '" data-rank="' + entry.rank + '">' +
+            html += '<div class="leaderboard-entry ' + rankClass + ' ' + currentClass + ' ' + animationClass + '" data-rank="' + entry.rank + '">' +
                 '<span class="entry-rank">#' + entry.rank + '</span>' +
                 '<span class="entry-name">' + escapeHtml(entry.name) + adminBadge + '</span>' +
                 '<span class="entry-meta">' +
@@ -546,6 +576,43 @@
 
         // Update quick indicator
         updateYouIndicator(leaderboard);
+    }
+
+    /**
+     * Compress leaderboard for display when >10 players (Story 9.5)
+     * Shows: top 5, separator, current player if not in top/bottom, separator, bottom 3
+     * @param {Array} players - Full leaderboard
+     * @param {string} currentPlayerName - Name of current player
+     * @returns {Array} Compressed display list
+     */
+    function compressLeaderboard(players, currentPlayerName) {
+        if (players.length <= 10) return players;
+
+        var top5 = players.slice(0, 5);
+        var bottom3 = players.slice(-3);
+        var currentIdx = -1;
+
+        // Find current player index
+        for (var i = 0; i < players.length; i++) {
+            if (players[i].name === currentPlayerName) {
+                currentIdx = i;
+                break;
+            }
+        }
+
+        // If current player in top 5 or bottom 3, no middle section needed
+        if (currentIdx < 5 || currentIdx >= players.length - 3) {
+            return [].concat(top5, [{ separator: true }], bottom3);
+        }
+
+        // Show current player in middle
+        return [].concat(
+            top5,
+            [{ separator: true }],
+            [players[currentIdx]],
+            [{ separator: true }],
+            bottom3
+        );
     }
 
     /**
@@ -595,6 +662,7 @@
 
     let hasSubmitted = false;
     let betActive = false;  // Betting state (Story 5.3)
+    let currentRoundNumber = 0;  // Track round to detect new rounds
 
     /**
      * Initialize year selector interaction
@@ -825,6 +893,9 @@
                 break;
             }
         }
+
+        // Show celebration-first reveal (Story 9.4)
+        showRevealEmotion(currentPlayer, song.year);
         renderPersonalResult(currentPlayer, song.year);
 
         // Update leaderboard (Story 5.5)
@@ -851,6 +922,82 @@
             }
         } else if (adminControls) {
             adminControls.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Show celebration-first emotion before data (Story 9.4)
+     * @param {Object} player - Current player data
+     * @param {number} correctYear - The correct year
+     */
+    function showRevealEmotion(player, correctYear) {
+        var emotionEl = document.getElementById('reveal-emotion');
+        var personalResult = document.getElementById('personal-result');
+        if (!emotionEl) return;
+
+        // Reset emotion element
+        emotionEl.className = 'reveal-emotion';
+        emotionEl.innerHTML = '';
+        emotionEl.classList.add('hidden');
+
+        // Reset personal result delay
+        if (personalResult) {
+            personalResult.classList.remove('is-delayed');
+        }
+
+        // Stop any existing confetti
+        stopConfetti();
+
+        // Determine emotion category
+        var emotionType = 'missed';
+        var emotionText = 'No guess';
+        var subtitle = '';
+
+        if (player && !player.missed_round) {
+            var yearsOff = player.years_off || 0;
+
+            if (yearsOff === 0) {
+                emotionType = 'exact';
+                emotionText = 'NAILED IT!';
+                subtitle = 'Perfect guess!';
+            } else if (yearsOff <= 2) {
+                emotionType = 'close';
+                emotionText = 'SO CLOSE!';
+                subtitle = 'Off by ' + yearsOff + ' year' + (yearsOff > 1 ? 's' : '');
+            } else if (yearsOff <= 5) {
+                emotionType = 'close';
+                emotionText = 'Not bad!';
+                subtitle = 'Off by ' + yearsOff + ' years';
+            } else {
+                emotionType = 'wrong';
+                emotionText = 'Oops!';
+                subtitle = 'Off by ' + yearsOff + ' years';
+            }
+        } else if (player && player.missed_round) {
+            emotionType = 'missed';
+            emotionText = 'No guess';
+            subtitle = 'Time ran out';
+        }
+
+        // Build emotion HTML
+        var emotionHtml = '<span class="reveal-emotion-text">' + emotionText + '</span>';
+        if (subtitle) {
+            emotionHtml += '<div class="reveal-emotion-subtitle">' + subtitle + '</div>';
+        }
+        emotionEl.innerHTML = emotionHtml;
+
+        // Apply emotion class
+        emotionEl.classList.add('reveal-emotion--' + emotionType);
+        emotionEl.classList.remove('hidden');
+
+        // Trigger confetti for exact match
+        if (emotionType === 'exact') {
+            triggerConfetti();
+        }
+
+        // Add delay class to personal result for fade-in effect
+        if (personalResult && emotionType !== 'missed') {
+            personalResult.classList.add('is-delayed');
         }
     }
 
@@ -1698,6 +1845,8 @@
             if (data.phase === 'LOBBY') {
                 stopCountdown();
                 hideAdminControlBar();  // Story 6.1
+                currentRoundNumber = 0;  // Reset for new game
+                setEnergyLevel('warmup');  // Story 9.9
                 showView('lobby-view');
                 renderPlayerList(players);
                 // Render QR code with join URL
@@ -1707,7 +1856,13 @@
                 // Update admin controls visibility
                 updateAdminControls(players);
             } else if (data.phase === 'PLAYING') {
-                resetSubmissionState();  // Reset for new round
+                // Only reset submission state when round actually changes
+                var newRound = data.round || 1;
+                if (newRound !== currentRoundNumber) {
+                    currentRoundNumber = newRound;
+                    resetSubmissionState();  // Reset for new round
+                }
+                setEnergyLevel('party');  // Story 9.9
                 showView('game-view');
                 updateGameView(data);
                 if (data.deadline) {
@@ -1720,6 +1875,7 @@
                 updateControlBarState('PLAYING');
             } else if (data.phase === 'REVEAL') {
                 stopCountdown();
+                setEnergyLevel('party');  // Story 9.9 - maintain party for reveal
                 showView('reveal-view');
                 updateRevealView(data);
                 // Show admin control bar (Story 6.1)
@@ -1729,11 +1885,14 @@
                 // Story 7-1: Show paused view
                 stopCountdown();
                 hideAdminControlBar();
+                setEnergyLevel('warmup');  // Story 9.9 - lower energy during pause
                 showView('paused-view');
                 updatePausedView(data);
             } else if (data.phase === 'END') {
                 stopCountdown();
                 hideAdminControlBar();  // Story 6.1
+                currentRoundNumber = 0;  // Reset for potential new game
+                setEnergyLevel('warmup');  // Story 9.9 - final standings, lower energy
                 showView('end-view');
                 updateEndView(data);  // Story 5.6
                 // Clear stored player name (game is over - Story 7-3)
@@ -1900,10 +2059,18 @@
         });
     }
 
-    // Wrap showView to auto-focus name input
+    // Wrap showView to auto-focus name input and set energy level (Story 9.9)
     const originalShowView = showView;
     showView = function(viewId) {
         originalShowView(viewId);
+
+        // Set calm energy for entry screens (Story 9.9)
+        if (viewId === 'join-view' || viewId === 'loading-view' ||
+            viewId === 'not-found-view' || viewId === 'ended-view' ||
+            viewId === 'in-progress-view' || viewId === 'connection-lost-view') {
+            setEnergyLevel('calm');
+        }
+
         if (viewId === 'join-view') {
             setTimeout(function() {
                 var nameInput = document.getElementById('name-input');
@@ -1911,6 +2078,160 @@
             }, 100);
         }
     };
+
+    // ============================================
+    // Energy Escalation System (Story 9.9)
+    // ============================================
+
+    /**
+     * Set energy level class on body based on game phase
+     * @param {string} level - 'calm', 'warmup', or 'party'
+     */
+    function setEnergyLevel(level) {
+        document.body.classList.remove('energy-calm', 'energy-warmup', 'energy-party');
+        document.body.classList.add('energy-' + level);
+    }
+
+    // ============================================
+    // Confetti System (Story 9.4)
+    // ============================================
+
+    /**
+     * Lightweight canvas confetti for exact match celebration
+     */
+    var confettiCanvas = null;
+    var confettiCtx = null;
+    var confettiParticles = [];
+    var confettiAnimationId = null;
+
+    /**
+     * Initialize confetti canvas
+     */
+    function initConfetti() {
+        confettiCanvas = document.getElementById('confetti-canvas');
+        if (confettiCanvas) {
+            confettiCtx = confettiCanvas.getContext('2d');
+            resizeConfettiCanvas();
+            window.addEventListener('resize', resizeConfettiCanvas);
+        }
+    }
+
+    /**
+     * Resize confetti canvas to match window
+     */
+    function resizeConfettiCanvas() {
+        if (confettiCanvas) {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+    }
+
+    /**
+     * Create confetti particle
+     */
+    function createConfettiParticle() {
+        var colors = ['#ff2d6a', '#00f5ff', '#00ff88', '#ffdd00', '#ff6600'];
+        return {
+            x: Math.random() * confettiCanvas.width,
+            y: -20,
+            size: Math.random() * 10 + 5,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speedY: Math.random() * 3 + 2,
+            speedX: Math.random() * 4 - 2,
+            rotation: Math.random() * 360,
+            rotationSpeed: Math.random() * 10 - 5
+        };
+    }
+
+    /**
+     * Trigger confetti animation
+     */
+    function triggerConfetti() {
+        // Check for reduced motion preference
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            // Show static celebration icon instead
+            showStaticCelebration();
+            return;
+        }
+
+        if (!confettiCanvas || !confettiCtx) {
+            initConfetti();
+        }
+
+        // Create particles
+        confettiParticles = [];
+        for (var i = 0; i < 100; i++) {
+            confettiParticles.push(createConfettiParticle());
+        }
+
+        // Start animation
+        animateConfetti();
+
+        // Auto-clear after 3 seconds
+        setTimeout(stopConfetti, 3000);
+    }
+
+    /**
+     * Animate confetti particles
+     */
+    function animateConfetti() {
+        if (!confettiCtx || confettiParticles.length === 0) return;
+
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+        confettiParticles.forEach(function(p) {
+            p.y += p.speedY;
+            p.x += p.speedX;
+            p.rotation += p.rotationSpeed;
+
+            confettiCtx.save();
+            confettiCtx.translate(p.x, p.y);
+            confettiCtx.rotate(p.rotation * Math.PI / 180);
+            confettiCtx.fillStyle = p.color;
+            confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            confettiCtx.restore();
+        });
+
+        // Remove off-screen particles
+        confettiParticles = confettiParticles.filter(function(p) {
+            return p.y < confettiCanvas.height + 20;
+        });
+
+        if (confettiParticles.length > 0) {
+            confettiAnimationId = requestAnimationFrame(animateConfetti);
+        }
+    }
+
+    /**
+     * Stop confetti animation
+     */
+    function stopConfetti() {
+        if (confettiAnimationId) {
+            cancelAnimationFrame(confettiAnimationId);
+            confettiAnimationId = null;
+        }
+        confettiParticles = [];
+        if (confettiCtx && confettiCanvas) {
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+    }
+
+    /**
+     * Show static celebration for reduced motion users
+     */
+    function showStaticCelebration() {
+        var emotionEl = document.getElementById('reveal-emotion');
+        if (emotionEl) {
+            // Add a static celebration icon
+            var existingIcon = emotionEl.querySelector('.celebration-icon');
+            if (!existingIcon) {
+                var icon = document.createElement('span');
+                icon.className = 'celebration-icon';
+                icon.textContent = ' 🎉';
+                emotionEl.appendChild(icon);
+            }
+        }
+    }
 
     /**
      * Setup reveal view event handlers
@@ -1930,6 +2251,7 @@
         setupRevealControls();
         setupAdminControlBar();  // Story 6.1
         setupRetryConnection();  // Story 7-4
+        initConfetti();  // Story 9.4
 
         // Prefill name from localStorage (Story 7-3)
         var storedName = getStoredPlayerName();
