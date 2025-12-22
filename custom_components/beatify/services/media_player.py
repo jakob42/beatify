@@ -96,6 +96,22 @@ class MediaPlayerService:
             _LOGGER.error("Failed to stop playback: %s", err)  # noqa: TRY400
             return False
 
+    def get_volume(self) -> float:
+        """
+        Get current volume level from media player.
+
+        Returns:
+            Volume level 0.0 to 1.0, or 0.5 if unavailable
+
+        """
+        state = self._hass.states.get(self._entity_id)
+        if not state:
+            return 0.5
+        volume = state.attributes.get("volume_level")
+        if volume is None:
+            return 0.5
+        return float(volume)
+
     async def set_volume(self, level: float) -> bool:
         """
         Set volume level.

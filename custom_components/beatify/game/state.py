@@ -946,6 +946,10 @@ class GameState:
         """
         from custom_components.beatify.const import VOLUME_STEP  # noqa: PLC0415
 
+        # Sync with actual media player volume before adjusting
+        if self._media_player_service:
+            self.volume_level = self._media_player_service.get_volume()
+
         if direction == "up":
             self.volume_level = min(1.0, self.volume_level + VOLUME_STEP)
         elif direction == "down":
