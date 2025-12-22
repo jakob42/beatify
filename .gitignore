@@ -1,18 +1,58 @@
-# artifacts
-__pycache__
-.pytest*
-*.egg-info
-*/build/*
-*/dist/*
+# ===========================================
+# Beatify - Only integration files in repo
+# ===========================================
 
+# BMAD Development Framework
+_bmad/
+_bmad-output/
 
-# misc
+# Claude Code
+.claude/
+
+# Development files
+docs/
+scripts/
+tests/
+pyproject.toml
+requirements*.txt
+.ruff.toml
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+
+# Testing
+.pytest_cache/
+.pytest/
 .coverage
-.vscode
 coverage.xml
-.ruff_cache
+htmlcov/
+.tox/
+.nox/
 
+# Linting/Formatting
+.ruff_cache/
+.mypy_cache/
 
-# Home Assistant configuration
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Home Assistant dev config
 config/*
 !config/configuration.yaml
