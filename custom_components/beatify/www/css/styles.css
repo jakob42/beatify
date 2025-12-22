@@ -494,6 +494,22 @@ body.theme-dark .modal-content p {
     color: var(--color-text-primary);
 }
 
+/* Input fields inside modals need dark text on light background */
+body.theme-dark .modal-content .name-input {
+    background: var(--color-bg-white);
+    border-color: var(--color-border-medium);
+    color: var(--color-text-primary);
+}
+
+body.theme-dark .modal-content .name-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+body.theme-dark .modal-content .name-input:focus {
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 /* Card component classes */
 .card {
     background: var(--color-dark-surface);
