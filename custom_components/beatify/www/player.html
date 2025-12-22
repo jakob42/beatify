@@ -93,7 +93,7 @@
 
                 <div id="admin-controls" class="admin-controls hidden">
                     <button id="start-game-btn" class="btn btn-primary btn-glow btn-large">
-                        <span class="btn-icon">▶️</span>
+                        <span class="btn-icon">🎉</span>
                         Start Game
                     </button>
                     <p class="admin-hint">Press when everyone is ready</p>
@@ -138,22 +138,6 @@
                     </div>
                 </div>
 
-                <!-- Leaderboard (Story 5.5) -->
-                <div id="game-leaderboard" class="leaderboard is-compact">
-                    <div class="leaderboard-header">
-                        <span class="leaderboard-title">Leaderboard</span>
-                        <button id="leaderboard-toggle" class="leaderboard-toggle" type="button">
-                            <span class="toggle-icon">▼</span>
-                        </button>
-                    </div>
-                    <div id="leaderboard-list" class="leaderboard-list">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                    <div id="leaderboard-you" class="leaderboard-you hidden">
-                        <!-- Quick "You: #X" indicator when scrolled -->
-                    </div>
-                </div>
-
                 <!-- Year Selector (Story 4.3) -->
                 <div id="year-selector-container" class="year-selector-container">
                     <div id="year-selector" class="year-selector">
@@ -190,6 +174,22 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Leaderboard (Story 5.5 - moved below year selector per Story 9.10) -->
+                <div id="game-leaderboard" class="leaderboard is-compact">
+                    <div class="leaderboard-header">
+                        <span class="leaderboard-title">Leaderboard</span>
+                        <button id="leaderboard-toggle" class="leaderboard-toggle" type="button">
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                    </div>
+                    <div id="leaderboard-list" class="leaderboard-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <div id="leaderboard-you" class="leaderboard-you hidden">
+                        <!-- Quick "You: #X" indicator when scrolled -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -209,16 +209,16 @@
                          class="reveal-album-cover">
                 </div>
 
+                <!-- Song Info (Story 9.10: moved above year) -->
+                <div class="song-info">
+                    <div id="song-title" class="song-title">Unknown Song</div>
+                    <div id="song-artist" class="song-artist">Unknown Artist</div>
+                </div>
+
                 <!-- Correct Year -->
                 <div class="correct-year-container">
                     <div class="correct-year-label">The year was</div>
                     <div id="correct-year" class="correct-year text-glow">1984</div>
-                </div>
-
-                <!-- Song Info -->
-                <div class="song-info">
-                    <div id="song-title" class="song-title">Unknown Song</div>
-                    <div id="song-artist" class="song-artist">Unknown Artist</div>
                 </div>
 
                 <!-- Fun Fact -->
@@ -241,6 +241,11 @@
                     <div id="result-content" class="result-content">
                         <!-- Populated dynamically -->
                     </div>
+                </div>
+
+                <!-- Player Results Cards (Story 9.10) -->
+                <div id="reveal-results-cards" class="reveal-results-cards">
+                    <!-- Populated by JavaScript: shows all player guesses -->
                 </div>
 
                 <!-- Reveal Leaderboard (Story 5.5) -->

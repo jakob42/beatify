@@ -480,14 +480,15 @@
             return;
         }
 
-        // Render player indicators
+        // Render player indicators (Story 9.10: added is-betting class)
         container.innerHTML = playerList.map(function(player) {
             var initials = getInitials(player.name);
             var isCurrentPlayer = player.name === playerName;
             var classes = [
                 'player-indicator',
                 player.submitted ? 'is-submitted' : '',
-                isCurrentPlayer ? 'is-current-player' : ''
+                isCurrentPlayer ? 'is-current-player' : '',
+                player.bet ? 'is-betting' : ''
             ].filter(Boolean).join(' ');
 
             return '<div class="' + classes + '">' +
@@ -898,6 +899,9 @@
         showRevealEmotion(currentPlayer, song.year);
         renderPersonalResult(currentPlayer, song.year);
 
+        // Render player result cards (Story 9.10)
+        renderPlayerResultCards(players);
+
         // Update leaderboard (Story 5.5)
         if (data.leaderboard) {
             updateLeaderboard(data, 'reveal-leaderboard-list');
@@ -948,35 +952,104 @@
         // Stop any existing confetti
         stopConfetti();
 
+        // Fun text alternatives for each outcome (20 each)
+        var exactTexts = [
+            'NAILED IT!', 'PERFECT!', 'BULLSEYE!', 'GENIUS!', 'LEGENDARY!',
+            'FLAWLESS!', 'SPOT ON!', 'CRUSHING IT!', 'UNSTOPPABLE!', 'GODLIKE!',
+            'MIND READER!', 'TIME LORD!', 'AMAZING!', 'SUPERSTAR!', 'EPIC WIN!',
+            'BOOM!', 'WIZARDRY!', 'SORCERY!', 'UNREAL!', 'INCREDIBLE!'
+        ];
+        var exactSubtitles = [
+            'Perfect guess!', 'You absolute legend!', 'Are you from this era?',
+            'Living encyclopedia!', 'Music historian!', 'Ears of gold!',
+            'Did you write this song?', 'Spooky accurate!', 'Take a bow!',
+            'Chef\'s kiss!', 'No notes!', 'Mic drop moment!', 'Hall of fame!',
+            'Pure perfection!', 'Textbook answer!', 'Nerd alert!', 'Scary good!',
+            'You\'re on fire!', 'The oracle speaks!', 'Bow down everyone!'
+        ];
+
+        var closeTexts = [
+            'SO CLOSE!', 'ALMOST!', 'NEARLY!', 'CLOSE ONE!', 'JUST MISSED!',
+            'HOT!', 'WARM!', 'NICE TRY!', 'GOOD EAR!', 'SOLID!',
+            'RESPECTABLE!', 'NOT BAD!', 'DECENT!', 'FAIR PLAY!', 'CLOSE CALL!',
+            'INCHES AWAY!', 'HAIR\'S WIDTH!', 'TANTALIZINGLY CLOSE!', 'OOH!', 'AHH!'
+        ];
+        var closeSubtitles = [
+            'So tantalizingly close!', 'You could taste it!', 'Almost had it!',
+            'Just a whisker off!', 'The vibes were right!', 'Trust your gut more!',
+            'Your instincts are good!', 'Nearly nailed it!', 'Close but no cigar!',
+            'A worthy attempt!', 'You\'re getting warmer!', 'In the ballpark!',
+            'Right neighborhood!', 'Solid guess!', 'Can\'t be mad at that!',
+            'Points on the board!', 'That\'ll do!', 'Respectable effort!',
+            'Keep that energy!', 'You\'re onto something!'
+        ];
+
+        var wrongTexts = [
+            'OOPS!', 'YIKES!', 'UH OH!', 'WELP!', 'SWING AND A MISS!',
+            'NOT QUITE!', 'WAY OFF!', 'NOPE!', 'WRONG ERA!', 'TIME WARP!',
+            'PLOT TWIST!', 'SURPRISE!', 'WHOOPSIE!', 'AWKWARD!', 'BRUH!',
+            'REALLY?', 'NICE TRY!', 'OOF!', 'YEET!', 'RIP!'
+        ];
+        var wrongSubtitles = [
+            'That was... creative!', 'Bold strategy!', 'Points for confidence!',
+            'Wrong decade, friend!', 'Time machine needed!', 'History is hard!',
+            'We\'ve all been there!', 'Shake it off!', 'Next round is yours!',
+            'Interesting theory!', 'Alternative timeline!', 'Parallel universe guess!',
+            'The vibes deceived you!', 'Music is tricky!', 'Happens to the best!',
+            'Plot twist energy!', 'Confidently incorrect!', 'Swing for the fences!',
+            'At least you tried!', 'Character building moment!'
+        ];
+
+        var missedTexts = [
+            'NO GUESS', 'TIME\'S UP!', 'TOO SLOW!', 'MISSED IT!', 'SNOOZE!',
+            'ASLEEP?', 'HELLO?', 'EARTH TO YOU!', 'FROZEN!', 'AFK!',
+            'BUFFERING...', 'TIMED OUT!', 'GHOST MODE!', 'VANISHED!', 'INVISIBLE!',
+            'SILENCE!', 'CRICKETS!', 'NADA!', 'ZILCH!', 'ABSENT!'
+        ];
+        var missedSubtitles = [
+            'Time ran out!', 'The clock waits for no one!', 'Too busy vibing?',
+            'Song was that good huh?', 'Analysis paralysis!', 'Indecision is a decision!',
+            'Phone died?', 'Cat walked on keyboard?', 'Snack break?',
+            'Lost in the music!', 'Daydreaming!', 'Zoned out!',
+            'Brain freeze!', 'Decision fatigue!', 'Overthinking it!',
+            'Commitment issues!', 'Stage fright!', 'Performance anxiety!',
+            'Better luck next round!', 'Wake up call!'
+        ];
+
+        // Helper to pick random from array
+        function randomFrom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
         // Determine emotion category
         var emotionType = 'missed';
-        var emotionText = 'No guess';
-        var subtitle = '';
+        var emotionText = randomFrom(missedTexts);
+        var subtitle = randomFrom(missedSubtitles);
 
         if (player && !player.missed_round) {
             var yearsOff = player.years_off || 0;
 
             if (yearsOff === 0) {
                 emotionType = 'exact';
-                emotionText = 'NAILED IT!';
-                subtitle = 'Perfect guess!';
+                emotionText = randomFrom(exactTexts);
+                subtitle = randomFrom(exactSubtitles);
             } else if (yearsOff <= 2) {
                 emotionType = 'close';
-                emotionText = 'SO CLOSE!';
-                subtitle = 'Off by ' + yearsOff + ' year' + (yearsOff > 1 ? 's' : '');
+                emotionText = randomFrom(closeTexts);
+                subtitle = randomFrom(closeSubtitles) + ' Off by ' + yearsOff + ' year' + (yearsOff > 1 ? 's' : '') + '!';
             } else if (yearsOff <= 5) {
                 emotionType = 'close';
-                emotionText = 'Not bad!';
+                emotionText = randomFrom(closeTexts);
                 subtitle = 'Off by ' + yearsOff + ' years';
             } else {
                 emotionType = 'wrong';
-                emotionText = 'Oops!';
-                subtitle = 'Off by ' + yearsOff + ' years';
+                emotionText = randomFrom(wrongTexts);
+                subtitle = randomFrom(wrongSubtitles) + ' Off by ' + yearsOff + ' years!';
             }
         } else if (player && player.missed_round) {
             emotionType = 'missed';
-            emotionText = 'No guess';
-            subtitle = 'Time ran out';
+            emotionText = randomFrom(missedTexts);
+            subtitle = randomFrom(missedSubtitles);
         }
 
         // Build emotion HTML
@@ -1114,6 +1187,63 @@
             '<div class="result-score">+' + player.round_score + ' pts</div>' +
             streakBonusHtml +
             (streakBonus > 0 ? '<div class="result-total">Total: +' + totalScore + ' pts</div>' : '');
+    }
+
+    /**
+     * Render player result cards on reveal (Story 9.10)
+     * Shows all players' guesses, years off, and points in horizontal scroll
+     * @param {Array} players - All players from state
+     */
+    function renderPlayerResultCards(players) {
+        var container = document.getElementById('reveal-results-cards');
+        if (!container) return;
+
+        if (!players || players.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        // Sort players by round_score descending (best first)
+        var sorted = players.slice().sort(function(a, b) {
+            return (b.round_score || 0) - (a.round_score || 0);
+        });
+
+        var html = '<div class="results-cards-header">All Players</div>';
+        html += '<div class="results-cards-scroll">';
+
+        sorted.forEach(function(player) {
+            var isCurrentPlayer = player.name === playerName;
+            var isMissed = player.missed_round === true;
+            var yearsOff = player.years_off || 0;
+            var roundScore = player.round_score || 0;
+
+            // Determine score-based class per AC #13 (Code Review fix)
+            var scoreClass = isMissed ? 'is-score-zero' :
+                             roundScore >= 10 ? 'is-score-high' :
+                             roundScore >= 1 ? 'is-score-medium' : 'is-score-zero';
+
+            // Guess display
+            var guessDisplay = isMissed ? '—' : player.guess;
+            var yearsOffDisplay = isMissed ? 'No guess' :
+                                  yearsOff === 0 ? 'Exact!' :
+                                  yearsOff + ' off';
+
+            // Bet indicator
+            var betIndicator = player.bet ? '<span class="card-bet">🎲</span>' : '';
+
+            // Admin badge
+            var adminBadge = player.is_admin ? '<span class="admin-badge">👑</span>' : '';
+
+            html += '<div class="result-card ' + scoreClass + (isCurrentPlayer ? ' is-current' : '') + '">' +
+                '<div class="card-name">' + escapeHtml(player.name) + adminBadge + betIndicator + '</div>' +
+                '<div class="card-guess">' + guessDisplay + '</div>' +
+                '<div class="card-accuracy">' + yearsOffDisplay + '</div>' +
+                '<div class="card-score">+' + roundScore + '</div>' +
+            '</div>';
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
     }
 
     // ============================================

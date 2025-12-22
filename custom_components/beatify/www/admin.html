@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/beatify/static/css/styles.css">
 </head>
-<body>
+<body class="theme-dark">
     <header>
         <h1 class="wordmark"><span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span></h1>
     </header>
@@ -31,12 +31,9 @@
             </div>
         </section>
 
-        <!-- Game controls added in Epic 2 -->
-        <section id="game-controls" class="card-section hidden">
-            <h2>Game Controls</h2>
-            <p id="playlist-validation-msg" class="status-error" style="margin-bottom: 12px;">Select at least one playlist</p>
-            <button id="start-game" class="btn btn-primary" disabled>Start Game</button>
-        </section>
+        <!-- Start Game button (Story 9.10: moved from Game Controls card) -->
+        <p id="playlist-validation-msg" class="status-error hidden" style="margin: var(--space-md) 0;">Select at least one playlist</p>
+        <button id="start-game" class="btn btn-primary btn-large btn-full-width hidden" disabled>Start Game</button>
 
         <!-- Lobby view (Story 2.3) -->
         <section id="lobby-section" class="card-section hidden">
@@ -95,6 +92,19 @@
             <div class="modal-actions">
                 <button id="admin-join-btn" class="btn btn-primary" disabled>Join</button>
                 <button id="admin-cancel-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Game confirmation modal (Story 9.10) -->
+    <div id="end-game-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="end-game-modal-title">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <h2 id="end-game-modal-title">End Game?</h2>
+            <p>All players will be disconnected.</p>
+            <div class="modal-actions">
+                <button id="end-game-confirm-btn" class="btn btn-primary">End Game</button>
+                <button id="end-game-cancel-btn" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>

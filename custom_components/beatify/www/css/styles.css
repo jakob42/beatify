@@ -285,8 +285,8 @@ header h1 {
 }
 
 .playlist-checkbox {
-    width: 44px;
-    height: 44px;
+    width: 20px;
+    height: 20px;
     margin-right: var(--space-sm);
     cursor: pointer;
     flex-shrink: 0;
@@ -322,8 +322,8 @@ header h1 {
 }
 
 .media-player-radio {
-    width: 44px;
-    height: 44px;
+    width: 20px;
+    height: 20px;
     margin-right: var(--space-sm);
     cursor: pointer;
     flex-shrink: 0;
@@ -653,7 +653,6 @@ body.theme-dark .timer--warning {
 body.theme-dark .timer--critical {
     color: var(--color-error-neon);
     text-shadow: 0 0 15px var(--color-error-neon);
-    box-shadow: 0 0 30px var(--color-error-neon);
     animation: timer-pulse-intense 0.5s ease-in-out infinite;
 }
 
@@ -732,8 +731,8 @@ body.theme-dark .correct-year-label {
 
 body.theme-dark .correct-year {
     color: var(--color-success-neon);
-    text-shadow: 0 0 20px var(--color-success-neon),
-                 0 0 40px var(--color-success-neon);
+    text-shadow: 0 0 10px var(--color-success-neon),
+                 0 0 20px var(--color-success-neon);
 }
 
 body.theme-dark .song-title {
@@ -1581,10 +1580,19 @@ body.theme-dark .qr-modal-label {
     display: none;
 }
 
+/* Story 9.10: Remove gradient background in dark theme */
+body.theme-dark .admin-controls {
+    background: transparent;
+}
+
 .btn-large {
     min-height: 56px;
     font-size: var(--font-size-xl);
     padding: var(--space-md) var(--space-xl);
+}
+
+.btn-full-width {
+    width: 100%;
 }
 
 .btn-icon {
@@ -1805,7 +1813,6 @@ body.theme-dark .qr-modal-label {
 
 .timer--critical {
     color: var(--color-error);
-    box-shadow: 0 0 30px var(--color-error);
     animation: timer-pulse-intense 0.5s ease-in-out infinite;
 }
 
@@ -1871,6 +1878,16 @@ body.theme-dark .qr-modal-label {
     align-items: center;
     min-width: 48px;
     flex-shrink: 0;
+    position: relative;
+}
+
+/* Story 9.10: Betting indicator on submission tracker */
+.player-indicator.is-betting::after {
+    content: '🎲';
+    position: absolute;
+    top: -4px;
+    right: 0;
+    font-size: 12px;
 }
 
 .player-avatar {
@@ -2039,7 +2056,7 @@ body.theme-dark .qr-modal-label {
 /* Submit Button */
 .submit-btn {
     width: 100%;
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--space-lg) var(--space-lg);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-white);
@@ -2493,6 +2510,19 @@ body.theme-dark .qr-modal-label {
     0%, 100% { transform: rotate(0deg); }
     25% { transform: rotate(-10deg); }
     75% { transform: rotate(10deg); }
+}
+
+/* Dark theme bet toggle (Story 9.10) */
+body.theme-dark .bet-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--color-text-white);
+}
+
+body.theme-dark .bet-toggle.is-active {
+    background: var(--color-warning);
+    border-color: var(--color-warning);
+    color: var(--color-text-primary);
 }
 
 /* Bet outcomes */
@@ -3067,6 +3097,147 @@ body.theme-dark .qr-modal-label {
 
 .next-round-btn.is-final:hover {
     background: var(--color-success-hover);
+}
+
+/* ============================================
+   Player Result Cards (Story 9.10)
+   ============================================ */
+
+.reveal-results-cards {
+    margin-top: var(--space-lg);
+}
+
+.results-cards-header {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+    text-align: center;
+}
+
+/* Horizontal scroll container per AC #13 (Code Review fix) */
+.results-cards-scroll {
+    display: flex;
+    gap: var(--space-sm);
+    overflow-x: auto;
+    padding-bottom: var(--space-sm);
+    -webkit-overflow-scrolling: touch;
+}
+
+.results-cards-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+
+.results-cards-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-border-light);
+    border-radius: 2px;
+}
+
+.result-card {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm);
+    text-align: center;
+    border: 2px solid var(--color-border-light);
+    transition: all var(--transition-fast);
+    min-width: 90px;
+    flex-shrink: 0;
+}
+
+.result-card.is-current {
+    border-color: var(--color-accent-brand);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* Score-based classes per AC #13 (Code Review fix) */
+.result-card.is-score-high {
+    border-color: var(--color-success);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.result-card.is-score-medium {
+    border-color: var(--color-warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.result-card.is-score-zero {
+    opacity: 0.6;
+}
+
+.card-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.card-guess {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.card-accuracy {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.result-card.is-score-high .card-accuracy {
+    color: var(--color-success);
+    font-weight: var(--font-weight-semibold);
+}
+
+.card-score {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+    margin-top: 2px;
+}
+
+.card-bet {
+    margin-left: 4px;
+}
+
+/* Dark theme result cards */
+body.theme-dark .result-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.theme-dark .result-card.is-current {
+    border-color: var(--color-accent-neon);
+    background: rgba(0, 245, 255, 0.1);
+}
+
+/* Dark theme score-based classes (Code Review fix) */
+body.theme-dark .result-card.is-score-high {
+    border-color: var(--color-success-neon);
+    background: rgba(0, 255, 136, 0.1);
+}
+
+body.theme-dark .result-card.is-score-medium {
+    border-color: var(--color-warning);
+    background: rgba(245, 158, 11, 0.15);
+}
+
+body.theme-dark .card-name,
+body.theme-dark .card-guess {
+    color: var(--color-text-white);
+}
+
+body.theme-dark .card-accuracy {
+    color: var(--color-text-neon-muted);
+}
+
+body.theme-dark .result-card.is-score-high .card-accuracy {
+    color: var(--color-success-neon);
+}
+
+body.theme-dark .card-score {
+    color: var(--color-success-neon);
 }
 
 /* ============================================

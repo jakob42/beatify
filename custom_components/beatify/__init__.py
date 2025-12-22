@@ -10,6 +10,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from homeassistant.components.frontend import (
+    async_register_built_in_panel,
+    async_remove_panel,
+)
+
 from .const import DOMAIN
 from .game.playlist import (
     async_discover_playlists,
@@ -21,6 +26,7 @@ from .server.views import (
     AdminView,
     EndGameView,
     GameStatusView,
+    LauncherView,
     PlayerView,
     StartGameplayView,
     StartGameView,
@@ -77,6 +83,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Register HTTP views
     hass.http.register_view(AdminView(hass))
+    hass.http.register_view(LauncherView(hass))
     hass.http.register_view(StatusView(hass))
     hass.http.register_view(StartGameView(hass))
     hass.http.register_view(StartGameplayView(hass))
@@ -90,6 +97,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Register static file paths
     await async_register_static_paths(hass)
 
+    # Register sidebar panel (Story 10.3)
+    # Uses iframe to launcher page which opens admin in new tab
+    async_register_built_in_panel(
+        hass,
+        component_name="iframe",
+        sidebar_title="Beatify",
+        sidebar_icon="mdi:music-circle",
+        frontend_url_path="beatify",
+        config={"url": "/beatify/launcher"},
+        require_admin=False,
+    )
+    _LOGGER.debug("Beatify sidebar panel registered")
+
     _LOGGER.info("Beatify integration setup complete")
     return True
 
@@ -97,6 +117,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:  # noqa: ARG001
     """Unload a config entry."""
     _LOGGER.debug("Unloading Beatify integration")
+
+    # Remove sidebar panel (Story 10.3)
+    try:
+        async_remove_panel(hass, "beatify")
+        _LOGGER.debug("Beatify sidebar panel removed")
+    except KeyError:
+        _LOGGER.debug("Beatify sidebar panel was not registered, skipping removal")
 
     # Clean up domain data
     if DOMAIN in hass.data:

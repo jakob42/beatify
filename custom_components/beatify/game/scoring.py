@@ -53,8 +53,8 @@ def calculate_speed_multiplier(elapsed_time: float, round_duration: float) -> fl
     """
     Calculate speed bonus multiplier based on submission timing.
 
-    Formula: speed_multiplier = 1.5 - (0.5 * submission_time_ratio)
-    - Instant submission (0s): 1.5x multiplier
+    Formula: speed_multiplier = 2.0 - (1.0 * submission_time_ratio)
+    - Instant submission (0s): 2.0x multiplier (double points!)
     - At deadline (30s): 1.0x multiplier (no bonus)
 
     Args:
@@ -62,7 +62,7 @@ def calculate_speed_multiplier(elapsed_time: float, round_duration: float) -> fl
         round_duration: Total round duration in seconds (default 30)
 
     Returns:
-        Multiplier between 1.0 and 1.5
+        Multiplier between 1.0 and 2.0
 
     """
     if round_duration <= 0:
@@ -74,8 +74,8 @@ def calculate_speed_multiplier(elapsed_time: float, round_duration: float) -> fl
     # Clamp to valid range [0.0, 1.0]
     submission_time_ratio = max(0.0, min(1.0, submission_time_ratio))
 
-    # Formula: 1.5x at instant, 1.0x at deadline (linear)
-    return 1.5 - (0.5 * submission_time_ratio)
+    # Formula: 2.0x at instant, 1.0x at deadline (linear)
+    return 2.0 - (1.0 * submission_time_ratio)
 
 
 def calculate_round_score(

@@ -52,6 +52,29 @@ class AdminView(HomeAssistantView):
         return web.Response(text=html_content, content_type="text/html")
 
 
+class LauncherView(HomeAssistantView):
+    """Serve the launcher page for HA sidebar (opens admin in new tab)."""
+
+    url = "/beatify/launcher"
+    name = "beatify:launcher"
+    requires_auth = False
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the launcher view."""
+        self.hass = hass
+
+    async def get(self, request: web.Request) -> web.Response:  # noqa: ARG002
+        """Serve the launcher HTML page."""
+        html_path = Path(__file__).parent.parent / "www" / "launcher.html"
+
+        if not html_path.exists():
+            _LOGGER.error("Launcher page not found: %s", html_path)
+            return web.Response(text="Launcher page not found", status=500)
+
+        html_content = await self.hass.async_add_executor_job(_read_file, html_path)
+        return web.Response(text=html_content, content_type="text/html")
+
+
 class StatusView(HomeAssistantView):
     """API endpoint for admin page status."""
 

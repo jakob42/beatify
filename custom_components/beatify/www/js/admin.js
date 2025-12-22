@@ -15,8 +15,8 @@ let currentView = 'setup';
 let currentGame = null;
 let cachedQRUrl = null;
 
-// Setup sections to hide/show as a group
-const setupSections = ['media-players', 'playlists', 'game-controls'];
+// Setup sections to hide/show as a group (Story 9.10: game-controls removed, button is standalone)
+const setupSections = ['media-players', 'playlists'];
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Wire event listeners
@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Admin join setup
     setupAdminJoin();
+
+    // End game modal setup (Story 9.10)
+    setupEndGameModal();
 
     await loadStatus();
 });
@@ -191,8 +194,8 @@ function renderPlaylists(playlists, playlistDir) {
                 ${docsLink ? `<p style="margin-top: 12px;">${docsLink}</p>` : ''}
             </div>
         `;
-        // Hide game controls when no playlists
-        document.getElementById('game-controls').classList.add('hidden');
+        // Hide start button when no playlists (Story 9.10)
+        document.getElementById('start-game')?.classList.add('hidden');
         return;
     }
 
@@ -231,11 +234,11 @@ function renderPlaylists(playlists, playlistDir) {
         });
     });
 
-    // Show game controls if we have valid playlists
+    // Show start button if we have valid playlists (Story 9.10)
     if (hasValidPlaylists) {
-        document.getElementById('game-controls').classList.remove('hidden');
+        document.getElementById('start-game')?.classList.remove('hidden');
     } else {
-        document.getElementById('game-controls').classList.add('hidden');
+        document.getElementById('start-game')?.classList.add('hidden');
     }
 
     // Initialize summary as hidden
@@ -357,6 +360,12 @@ function showSetupView() {
         if (el) el.classList.remove('hidden');
     });
 
+    // Show start button if there are valid playlists (Story 9.10)
+    const hasValidPlaylists = playlistData.some(p => p.is_valid);
+    if (hasValidPlaylists) {
+        document.getElementById('start-game')?.classList.remove('hidden');
+    }
+
     // Hide other views
     document.getElementById('lobby-section')?.classList.add('hidden');
     document.getElementById('existing-game-section')?.classList.add('hidden');
@@ -375,6 +384,10 @@ function showLobbyView(gameData) {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
+
+    // Hide start button and validation message (Story 9.10)
+    document.getElementById('start-game')?.classList.add('hidden');
+    document.getElementById('playlist-validation-msg')?.classList.add('hidden');
 
     // Hide existing game view
     document.getElementById('existing-game-section')?.classList.add('hidden');
@@ -425,6 +438,10 @@ function showExistingGameView(gameData) {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
+
+    // Hide start button and validation message (Story 9.10)
+    document.getElementById('start-game')?.classList.add('hidden');
+    document.getElementById('playlist-validation-msg')?.classList.add('hidden');
 
     // Hide lobby
     document.getElementById('lobby-section')?.classList.add('hidden');
@@ -491,12 +508,37 @@ async function startGame() {
 }
 
 /**
- * End the current game
+ * Show end game confirmation modal (Story 9.10)
  */
-async function endGame() {
-    if (!confirm('End the current game? All players will be disconnected.')) {
-        return;
+function showEndGameModal() {
+    const modal = document.getElementById('end-game-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
     }
+}
+
+/**
+ * Close end game confirmation modal (Story 9.10)
+ */
+function closeEndGameModal() {
+    const modal = document.getElementById('end-game-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+/**
+ * End the current game - shows confirmation modal (Story 9.10)
+ */
+function endGame() {
+    showEndGameModal();
+}
+
+/**
+ * Actually end the game after confirmation
+ */
+async function confirmEndGame() {
+    closeEndGameModal();
 
     try {
         const response = await fetch('/beatify/api/end-game', { method: 'POST' });
@@ -511,6 +553,21 @@ async function endGame() {
         console.error('End game error:', err);
         showError('Network error. Please try again.');
     }
+}
+
+/**
+ * Setup end game modal event listeners (Story 9.10)
+ */
+function setupEndGameModal() {
+    const confirmBtn = document.getElementById('end-game-confirm-btn');
+    const cancelBtn = document.getElementById('end-game-cancel-btn');
+    const backdrop = document.querySelector('#end-game-modal .modal-backdrop');
+
+    confirmBtn?.addEventListener('click', confirmEndGame);
+    cancelBtn?.addEventListener('click', closeEndGameModal);
+    backdrop?.addEventListener('click', closeEndGameModal);
+
+    // ESC key handling added to global handler below
 }
 
 /**
@@ -605,11 +662,18 @@ function setupAdminJoin() {
 
     joinBtn?.addEventListener('click', handleAdminJoin);
 
-    // Close on Escape
+    // Close modals on Escape (Story 9.10: also handles end-game-modal)
     document.addEventListener('keydown', function(e) {
-        const modal = document.getElementById('admin-join-modal');
-        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
-            closeAdminJoinModal();
+        if (e.key === 'Escape') {
+            const adminModal = document.getElementById('admin-join-modal');
+            const endGameModal = document.getElementById('end-game-modal');
+
+            if (adminModal && !adminModal.classList.contains('hidden')) {
+                closeAdminJoinModal();
+            }
+            if (endGameModal && !endGameModal.classList.contains('hidden')) {
+                closeEndGameModal();
+            }
         }
     });
 }

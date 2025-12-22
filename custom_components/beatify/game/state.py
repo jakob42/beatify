@@ -360,6 +360,21 @@ class GameState:
 
         return True
 
+    def get_average_score(self) -> int:
+        """
+        Calculate average score of all current players.
+
+        Used for late joiners (Story 10.2) to start with a fair score.
+
+        Returns:
+            Average score rounded to nearest integer, or 0 if no players
+
+        """
+        if not self.players:
+            return 0
+        total = sum(p.score for p in self.players.values())
+        return round(total / len(self.players))
+
     def add_player(
         self, name: str, ws: web.WebSocketResponse
     ) -> tuple[bool, str | None]:
@@ -410,14 +425,25 @@ class GameState:
         # Determine if late joiner
         joined_late = self.phase != GamePhase.LOBBY
 
+        # Calculate initial score (Story 10.2: late joiners get average)
+        initial_score = self.get_average_score() if joined_late else 0
+
         # Add new player
         self.players[name] = PlayerSession(
-            name=name, ws=ws, score=0, streak=0, joined_late=joined_late
+            name=name, ws=ws, score=initial_score, streak=0, joined_late=joined_late
         )
-        _LOGGER.info(
-            "Player joined: %s (total: %d, late: %s)",
-            name, len(self.players), joined_late
-        )
+
+        # Log join with score info
+        if joined_late and initial_score > 0:
+            _LOGGER.info(
+                "Late joiner %s inherits average score: %d (from %d players)",
+                name, initial_score, len(self.players) - 1
+            )
+        else:
+            _LOGGER.info(
+                "Player joined: %s (total: %d, late: %s)",
+                name, len(self.players), joined_late
+            )
         return True, None
 
     def get_player(self, name: str) -> PlayerSession | None:
