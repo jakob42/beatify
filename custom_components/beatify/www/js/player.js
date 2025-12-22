@@ -167,7 +167,6 @@
 
             return '<div class="' + classes + '" data-player="' + escapeHtml(player.name) + '">' +
                 '<span class="player-name">' +
-                    (player.is_admin ? '<span class="admin-badge">👑</span>' : '') +
                     escapeHtml(player.name) +
                     (isYou ? '<span class="you-badge">(You)</span>' : '') +
                 '</span>' +
@@ -532,7 +531,6 @@
 
             var rankClass = entry.rank <= 3 ? 'is-top-' + entry.rank : '';
             var currentClass = entry.is_current ? 'is-current' : '';
-            var adminBadge = entry.is_admin ? '<span class="admin-badge">👑</span>' : '';
 
             // Rank change animation class (Story 9.5)
             var animationClass = '';
@@ -559,7 +557,7 @@
 
             html += '<div class="leaderboard-entry ' + rankClass + ' ' + currentClass + ' ' + animationClass + '" data-rank="' + entry.rank + '">' +
                 '<span class="entry-rank">#' + entry.rank + '</span>' +
-                '<span class="entry-name">' + escapeHtml(entry.name) + adminBadge + '</span>' +
+                '<span class="entry-name">' + escapeHtml(entry.name) + '</span>' +
                 '<span class="entry-meta">' +
                     streakIndicator +
                     changeIndicator +
@@ -1231,11 +1229,8 @@
             // Bet indicator
             var betIndicator = player.bet ? '<span class="card-bet">🎲</span>' : '';
 
-            // Admin badge
-            var adminBadge = player.is_admin ? '<span class="admin-badge">👑</span>' : '';
-
             html += '<div class="result-card ' + scoreClass + (isCurrentPlayer ? ' is-current' : '') + '">' +
-                '<div class="card-name">' + escapeHtml(player.name) + adminBadge + betIndicator + '</div>' +
+                '<div class="card-name">' + escapeHtml(player.name) + betIndicator + '</div>' +
                 '<div class="card-guess">' + guessDisplay + '</div>' +
                 '<div class="card-accuracy">' + yearsOffDisplay + '</div>' +
                 '<div class="card-score">+' + roundScore + '</div>' +
@@ -1294,10 +1289,9 @@
         if (listEl) {
             listEl.innerHTML = leaderboard.map(function(entry) {
                 var currentClass = entry.is_current ? 'is-current' : '';
-                var adminBadge = entry.is_admin ? ' 👑' : '';
                 return '<div class="final-entry ' + currentClass + '">' +
                     '<span class="final-rank">#' + entry.rank + '</span>' +
-                    '<span class="final-name">' + escapeHtml(entry.name) + adminBadge + '</span>' +
+                    '<span class="final-name">' + escapeHtml(entry.name) + '</span>' +
                     '<span class="final-score">' + entry.score + '</span>' +
                 '</div>';
             }).join('');

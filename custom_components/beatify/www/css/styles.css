@@ -1449,10 +1449,6 @@ body.theme-dark .qr-modal-label {
     color: var(--color-text-primary);
 }
 
-.admin-badge {
-    font-size: var(--font-size-lg);
-}
-
 .you-badge {
     font-size: var(--font-size-sm);
     color: var(--color-accent-blue);
