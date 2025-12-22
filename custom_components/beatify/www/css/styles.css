@@ -2587,8 +2587,15 @@ body.theme-dark .bet-toggle.is-active {
     margin: var(--space-sm) 0;
 }
 
-.result-value.is-bet-won {
-    color: var(--color-success-hover);
+/* Bet rows have light backgrounds - need dark text even in dark mode */
+.bet-won-row .result-label,
+body.theme-dark .bet-won-row .result-label {
+    color: #166534;
+}
+
+.result-value.is-bet-won,
+body.theme-dark .result-value.is-bet-won {
+    color: #166534;
     font-weight: var(--font-weight-bold);
 }
 
@@ -2599,8 +2606,15 @@ body.theme-dark .bet-toggle.is-active {
     margin: var(--space-sm) 0;
 }
 
-.result-value.is-bet-lost {
-    color: var(--color-error-dark);
+/* Bet rows have light backgrounds - need dark text even in dark mode */
+.bet-lost-row .result-label,
+body.theme-dark .bet-lost-row .result-label {
+    color: #991b1b;
+}
+
+.result-value.is-bet-lost,
+body.theme-dark .result-value.is-bet-lost {
+    color: #991b1b;
     font-weight: var(--font-weight-bold);
 }
 
