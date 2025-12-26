@@ -107,28 +107,31 @@ async def async_ensure_playlist_directory(hass: HomeAssistant) -> Path:
         playlist_dir.mkdir(parents=True, exist_ok=True)
         _LOGGER.info("Created playlist directory: %s", playlist_dir)
 
-    # Copy sample playlist if directory is empty
-    existing_playlists = list(playlist_dir.glob("*.json"))
-    if not existing_playlists:
-        await _copy_sample_playlist(playlist_dir)
+    # Copy bundled playlists if they don't exist in destination
+    await _copy_bundled_playlists(playlist_dir)
 
     return playlist_dir
 
 
-async def _copy_sample_playlist(dest_dir: Path) -> None:
-    """Copy sample playlist to destination directory."""
-    # Sample playlist is bundled with the integration
-    sample_dir = Path(__file__).parent.parent / "playlists"
-    sample_file = sample_dir / "greatest-hits-of-all-time.json"
+async def _copy_bundled_playlists(dest_dir: Path) -> None:
+    """Copy all bundled playlists to destination directory (if not exists)."""
+    # Bundled playlists are in custom_components/beatify/playlists/
+    bundled_dir = Path(__file__).parent.parent / "playlists"
 
-    if sample_file.exists():
-        dest_file = dest_dir / sample_file.name
+    if not bundled_dir.exists():
+        return
+
+    for playlist_file in bundled_dir.glob("*.json"):
+        dest_file = dest_dir / playlist_file.name
+        if dest_file.exists():
+            # Don't overwrite existing playlists
+            continue
         try:
-            content = sample_file.read_text(encoding="utf-8")
+            content = playlist_file.read_text(encoding="utf-8")
             dest_file.write_text(content, encoding="utf-8")
-            _LOGGER.info("Copied sample playlist to: %s", dest_file)
+            _LOGGER.info("Copied bundled playlist to: %s", dest_file)
         except Exception as err:  # noqa: BLE001
-            _LOGGER.warning("Failed to copy sample playlist: %s", err)
+            _LOGGER.warning("Failed to copy playlist %s: %s", playlist_file.name, err)
 
 
 def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
