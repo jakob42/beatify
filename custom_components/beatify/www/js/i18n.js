@@ -1,0 +1,241 @@
+/**
+ * Beatify Internationalization (i18n) Module
+ * Provides translation functionality for all UI text
+ */
+var BeatifyI18n = (function() {
+    'use strict';
+
+    // Current language code
+    var currentLanguage = 'en';
+
+    // Loaded translations
+    var translations = {};
+
+    // Fallback translations (English)
+    var fallbackTranslations = {};
+
+    // Loading state
+    var isLoaded = false;
+    var loadPromise = null;
+
+    /**
+     * Load translations for a specific language
+     * @param {string} langCode - Language code ('en' or 'de')
+     * @returns {Promise<Object>} - Loaded translations
+     */
+    async function fetchTranslations(langCode) {
+        try {
+            var response = await fetch('/beatify/static/i18n/' + langCode + '.json');
+            if (!response.ok) {
+                console.warn('[i18n] Failed to load ' + langCode + '.json:', response.status);
+                return {};
+            }
+            return await response.json();
+        } catch (err) {
+            console.warn('[i18n] Error loading ' + langCode + '.json:', err);
+            return {};
+        }
+    }
+
+    /**
+     * Load translations for current language
+     * @returns {Promise<void>}
+     */
+    async function loadTranslations() {
+        // Load English as fallback first
+        if (Object.keys(fallbackTranslations).length === 0) {
+            fallbackTranslations = await fetchTranslations('en');
+        }
+
+        // Load current language
+        if (currentLanguage === 'en') {
+            translations = fallbackTranslations;
+        } else {
+            translations = await fetchTranslations(currentLanguage);
+        }
+
+        isLoaded = true;
+    }
+
+    /**
+     * Get nested value from object using dot notation
+     * @param {Object} obj - Object to traverse
+     * @param {string} key - Dot-separated key path
+     * @returns {string|undefined} - Found value or undefined
+     */
+    function getNestedValue(obj, key) {
+        if (!obj || !key) return undefined;
+
+        var parts = key.split('.');
+        var current = obj;
+
+        for (var i = 0; i < parts.length; i++) {
+            if (current === undefined || current === null) {
+                return undefined;
+            }
+            current = current[parts[i]];
+        }
+
+        return current;
+    }
+
+    /**
+     * Translate a key to the current language
+     * @param {string} key - Translation key (e.g., 'lobby.title')
+     * @param {Object} [params] - Optional parameters for interpolation
+     * @returns {string} - Translated string
+     */
+    function t(key, params) {
+        // Try current language first
+        var value = getNestedValue(translations, key);
+
+        // Fall back to English if not found
+        if (value === undefined && currentLanguage !== 'en') {
+            value = getNestedValue(fallbackTranslations, key);
+            if (value !== undefined) {
+                console.warn('[i18n] Missing translation for "' + key + '" in ' + currentLanguage + ', using English');
+            }
+        }
+
+        // Return key itself as last resort
+        if (value === undefined) {
+            console.warn('[i18n] Missing translation key: "' + key + '"');
+            return key;
+        }
+
+        // Interpolate parameters if provided
+        if (params && typeof value === 'string') {
+            Object.keys(params).forEach(function(param) {
+                value = value.replace(new RegExp('\\{' + param + '\\}', 'g'), params[param]);
+            });
+        }
+
+        return value;
+    }
+
+    /**
+     * Get error message for error code
+     * @param {string} code - Error code from server
+     * @returns {string} - Translated error message
+     */
+    function getErrorMessage(code) {
+        return t('errors.' + code) || t('errors.UNKNOWN');
+    }
+
+    /**
+     * Set the current language
+     * @param {string} langCode - Language code ('en' or 'de')
+     * @returns {Promise<void>}
+     */
+    async function setLanguage(langCode) {
+        // Validate language code
+        if (langCode !== 'en' && langCode !== 'de') {
+            console.warn('[i18n] Invalid language code: ' + langCode + ', defaulting to en');
+            langCode = 'en';
+        }
+
+        if (langCode === currentLanguage && isLoaded) {
+            return;
+        }
+
+        currentLanguage = langCode;
+        await loadTranslations();
+    }
+
+    /**
+     * Get current language code
+     * @returns {string} - Current language code
+     */
+    function getLanguage() {
+        return currentLanguage;
+    }
+
+    /**
+     * Initialize page translations by replacing data-i18n elements
+     * Call this after translations are loaded and DOM is ready
+     */
+    function initPageTranslations() {
+        var elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(function(el) {
+            var key = el.getAttribute('data-i18n');
+            if (key) {
+                var translated = t(key);
+                // Only update if we got a real translation (not the key back)
+                if (translated !== key) {
+                    el.textContent = translated;
+                }
+            }
+        });
+
+        // Handle placeholders
+        var placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+        placeholderElements.forEach(function(el) {
+            var key = el.getAttribute('data-i18n-placeholder');
+            if (key) {
+                var translated = t(key);
+                if (translated !== key) {
+                    el.placeholder = translated;
+                }
+            }
+        });
+
+        // Handle title attributes
+        var titleElements = document.querySelectorAll('[data-i18n-title]');
+        titleElements.forEach(function(el) {
+            var key = el.getAttribute('data-i18n-title');
+            if (key) {
+                var translated = t(key);
+                if (translated !== key) {
+                    el.title = translated;
+                }
+            }
+        });
+    }
+
+    /**
+     * Detect browser language and return 'de' or 'en'
+     * @returns {string} - Detected language code
+     */
+    function detectBrowserLanguage() {
+        var browserLang = navigator.language || navigator.userLanguage || 'en';
+        return browserLang.toLowerCase().startsWith('de') ? 'de' : 'en';
+    }
+
+    /**
+     * Initialize i18n with optional language
+     * @param {string} [langCode] - Language code, or auto-detect if not provided
+     * @returns {Promise<void>}
+     */
+    async function init(langCode) {
+        if (loadPromise) {
+            return loadPromise;
+        }
+
+        var lang = langCode || detectBrowserLanguage();
+        loadPromise = setLanguage(lang);
+        await loadPromise;
+    }
+
+    /**
+     * Check if translations are loaded
+     * @returns {boolean}
+     */
+    function isReady() {
+        return isLoaded;
+    }
+
+    // Public API
+    return {
+        t: t,
+        getErrorMessage: getErrorMessage,
+        setLanguage: setLanguage,
+        getLanguage: getLanguage,
+        initPageTranslations: initPageTranslations,
+        detectBrowserLanguage: detectBrowserLanguage,
+        init: init,
+        isReady: isReady
+    };
+})();
+
+// Shorthand for translation function
+var t = BeatifyI18n.t;

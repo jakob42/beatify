@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Beatify Admin</title>
+    <title data-i18n="admin.title">Beatify Admin</title>
     <!-- Preconnect for faster font loading (Story 9.8) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,62 +17,77 @@
 
     <main>
         <section id="media-players" class="card-section">
-            <h2>Media Players</h2>
-            <div id="media-players-list">Loading...</div>
-            <p id="media-player-validation-msg" class="status-error hidden" style="margin-top: 12px;">Select a media player</p>
+            <h2 data-i18n="admin.mediaPlayers">Media Players</h2>
+            <div id="media-players-list" data-i18n="common.loading">Loading...</div>
+            <p id="media-player-validation-msg" class="status-error hidden" style="margin-top: 12px;" data-i18n="admin.selectMediaPlayerHint">Select a media player</p>
         </section>
 
         <section id="playlists" class="card-section">
-            <h2>Playlists</h2>
-            <div id="playlists-list">Loading...</div>
+            <h2 data-i18n="admin.playlists">Playlists</h2>
+            <div id="playlists-list" data-i18n="common.loading">Loading...</div>
             <div id="playlist-summary" class="selection-summary hidden">
-                Selected: <span id="selected-count">0</span> playlists,
-                <span id="total-songs">0</span> songs
+                <span data-i18n="admin.selected">Selected:</span> <span id="selected-count">0</span> <span data-i18n="admin.playlistsLabel">playlists,</span>
+                <span id="total-songs">0</span> <span data-i18n="admin.songsLabel">songs</span>
+            </div>
+        </section>
+
+        <!-- Language Selector (Story 12.4) -->
+        <section id="language-section" class="card-section">
+            <h2 data-i18n="admin.selectLanguage">Game Language</h2>
+            <div class="language-selector">
+                <button type="button" id="lang-en" class="lang-btn lang-btn--active" data-lang="en">
+                    <span class="lang-flag">🇬🇧</span>
+                    <span class="lang-name">English</span>
+                </button>
+                <button type="button" id="lang-de" class="lang-btn" data-lang="de">
+                    <span class="lang-flag">🇩🇪</span>
+                    <span class="lang-name">Deutsch</span>
+                </button>
             </div>
         </section>
 
         <!-- Start Game button (Story 9.10: moved from Game Controls card) -->
-        <p id="playlist-validation-msg" class="status-error hidden" style="margin: var(--space-md) 0;">Select at least one playlist</p>
-        <button id="start-game" class="btn btn-primary btn-large btn-full-width hidden" disabled>Start Game</button>
+        <p id="playlist-validation-msg" class="status-error hidden" style="margin: var(--space-md) 0;" data-i18n="admin.selectPlaylistHint">Select at least one playlist</p>
+        <button id="start-game" class="btn btn-primary btn-large btn-full-width hidden" disabled data-i18n="admin.startGame">Start Game</button>
 
         <!-- Lobby view (Story 2.3) -->
         <section id="lobby-section" class="card-section hidden">
-            <h2>Game Lobby</h2>
+            <h2 data-i18n="lobby.gameLobby">Game Lobby</h2>
             <div class="qr-print-area">
                 <div class="qr-container">
                     <div id="qr-code" aria-label="QR code to join Beatify game"></div>
                 </div>
-                <p class="qr-instruction">Scan to Play Beatify!</p>
+                <p class="qr-instruction" data-i18n="admin.scanToPlay">Scan to Play Beatify!</p>
                 <p id="join-url" class="join-url"></p>
             </div>
             <div class="lobby-controls no-print">
-                <button id="print-qr" class="btn btn-secondary">Print QR Code</button>
+                <button id="print-qr" class="btn btn-secondary" data-i18n="admin.printQr">Print QR Code</button>
             </div>
             <div id="lobby-players" class="player-list">
-                <p class="empty-state">Waiting for players to join...</p>
+                <p class="empty-state" data-i18n="lobby.waitingForPlayers">Waiting for players to join...</p>
             </div>
             <div class="admin-lobby-actions no-print">
                 <button id="participate-btn" class="btn btn-primary btn-large">
                     <span class="btn-icon">🎮</span>
-                    Join as Player
+                    <span data-i18n="admin.joinAsPlayer">Join as Player</span>
                 </button>
             </div>
             <div class="game-controls-bar no-print">
-                <button id="end-game-lobby" class="btn btn-secondary">End Game</button>
+                <button id="end-game-lobby" class="btn btn-secondary" data-i18n="admin.endGame">End Game</button>
             </div>
         </section>
 
         <!-- Existing game view (Story 2.3) -->
         <section id="existing-game-section" class="card-section hidden">
-            <h2>Game In Progress</h2>
+            <h2 data-i18n="admin.gameInProgress">Game In Progress</h2>
             <div class="game-info">
-                <p><strong>Game ID:</strong> <span id="existing-game-id"></span></p>
-                <p><strong>Phase:</strong> <span id="existing-game-phase"></span></p>
-                <p><strong>Players:</strong> <span id="existing-game-players"></span></p>
+                <p><strong data-i18n="admin.gameId">Game ID:</strong> <span id="existing-game-id"></span></p>
+                <p><strong data-i18n="admin.phase">Phase:</strong> <span id="existing-game-phase"></span></p>
+                <p><strong data-i18n="admin.players">Players:</strong> <span id="existing-game-players"></span></p>
             </div>
             <div class="game-controls-bar">
-                <button id="rejoin-game" class="btn btn-primary">Rejoin Game</button>
-                <button id="end-game" class="btn btn-secondary">End Current Game</button>
+                <button id="rejoin-game" class="btn btn-primary" data-i18n="admin.rejoinGame">Rejoin Game</button>
+                <button id="end-game" class="btn btn-secondary" data-i18n="admin.endCurrentGame">End Current Game</button>
             </div>
         </section>
     </main>
@@ -81,17 +96,18 @@
     <div id="admin-join-modal" class="modal hidden">
         <div class="modal-backdrop"></div>
         <div class="modal-content">
-            <h2>Join the Game</h2>
-            <p>Enter your display name to join as a player with admin controls.</p>
+            <h2 data-i18n="admin.joinTheGame">Join the Game</h2>
+            <p data-i18n="admin.enterDisplayName">Enter your display name to join as a player with admin controls.</p>
             <div class="form-group">
                 <input type="text" id="admin-name-input" class="name-input"
+                       data-i18n-placeholder="join.namePlaceholder"
                        placeholder="Your name" maxlength="20"
                        autocomplete="off" autocapitalize="words">
                 <p id="admin-name-error" class="validation-msg hidden"></p>
             </div>
             <div class="modal-actions">
-                <button id="admin-join-btn" class="btn btn-primary" disabled>Join</button>
-                <button id="admin-cancel-btn" class="btn btn-secondary">Cancel</button>
+                <button id="admin-join-btn" class="btn btn-primary" disabled data-i18n="join.joinButton">Join</button>
+                <button id="admin-cancel-btn" class="btn btn-secondary" data-i18n="common.cancel">Cancel</button>
             </div>
         </div>
     </div>
@@ -100,20 +116,21 @@
     <div id="end-game-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="end-game-modal-title">
         <div class="modal-backdrop"></div>
         <div class="modal-content">
-            <h2 id="end-game-modal-title">End Game?</h2>
-            <p>All players will be disconnected.</p>
+            <h2 id="end-game-modal-title" data-i18n="admin.endGameConfirm">End Game?</h2>
+            <p data-i18n="admin.endGameWarning">All players will be disconnected.</p>
             <div class="modal-actions">
-                <button id="end-game-confirm-btn" class="btn btn-primary">End Game</button>
-                <button id="end-game-cancel-btn" class="btn btn-secondary">Cancel</button>
+                <button id="end-game-confirm-btn" class="btn btn-primary" data-i18n="admin.endGame">End Game</button>
+                <button id="end-game-cancel-btn" class="btn btn-secondary" data-i18n="common.cancel">Cancel</button>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>Beatify v0.9.7</p>
+        <p>Beatify v0.11.0</p>
     </footer>
 
     <script src="/beatify/static/js/vendor/qrcode.min.js"></script>
+    <script src="/beatify/static/js/i18n.js"></script>
     <script src="/beatify/static/js/admin.js"></script>
 </body>
 </html>

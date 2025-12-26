@@ -100,6 +100,9 @@ class GameState:
         # Admin disconnect tracking (Epic 7)
         self.disconnected_admin_name: str | None = None
 
+        # Language setting (Epic 12)
+        self.language: str = "en"
+
     def create_game(
         self,
         playlists: list[str],
@@ -180,6 +183,7 @@ class GameState:
             "phase": self.phase.value,
             "player_count": len(self.players),
             "players": self.get_players_state(),
+            "language": self.language,
         }
 
         # Phase-specific data
@@ -279,6 +283,9 @@ class GameState:
 
         # Reset admin disconnect tracking (Epic 7)
         self.disconnected_admin_name = None
+
+        # Reset language (Epic 12)
+        self.language = "en"
 
     async def pause_game(self, reason: str) -> bool:
         """

@@ -2151,6 +2151,13 @@
         const nameInput = document.getElementById('name-input');
 
         if (data.type === 'state') {
+            // Apply language from game state (Story 12.4)
+            if (data.language && data.language !== BeatifyI18n.getLanguage()) {
+                BeatifyI18n.setLanguage(data.language).then(function() {
+                    BeatifyI18n.initPageTranslations();
+                });
+            }
+
             // Update isAdmin from players list (Story 6.1)
             var players = data.players || [];
             var currentPlayer = players.find(function(p) { return p.name === playerName; });
@@ -2650,7 +2657,11 @@
     }
 
     // Initialize form, QR modal, and admin controls when DOM ready
-    function initAll() {
+    async function initAll() {
+        // Initialize i18n (Story 12.4)
+        await BeatifyI18n.init();
+        BeatifyI18n.initPageTranslations();
+
         setupJoinForm();
         setupQRModal();
         setupAdminControls();

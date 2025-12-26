@@ -15,10 +15,19 @@ let currentView = 'setup';
 let currentGame = null;
 let cachedQRUrl = null;
 
+// Language state (Story 12.4)
+let selectedLanguage = 'en';
+
 // Setup sections to hide/show as a group (Story 9.10: game-controls removed, button is standalone)
-const setupSections = ['media-players', 'playlists'];
+const setupSections = ['media-players', 'playlists', 'language-section'];
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize i18n based on browser language (Story 12.4)
+    await BeatifyI18n.init();
+    BeatifyI18n.initPageTranslations();
+    selectedLanguage = BeatifyI18n.getLanguage();
+    updateLanguageButtons(selectedLanguage);
+
     // Wire event listeners
     document.getElementById('start-game')?.addEventListener('click', startGame);
     document.getElementById('print-qr')?.addEventListener('click', printQRCode);
@@ -31,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // End game modal setup (Story 9.10)
     setupEndGameModal();
+
+    // Language selector setup (Story 12.4)
+    setupLanguageSelector();
 
     await loadStatus();
 });
@@ -480,7 +492,8 @@ async function startGame() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 playlists: selectedPlaylists.map(p => p.path),
-                media_player: selectedMediaPlayer?.entityId
+                media_player: selectedMediaPlayer?.entityId,
+                language: selectedLanguage
             })
         });
 
@@ -710,4 +723,53 @@ function handleAdminJoin() {
         joinBtn.disabled = false;
         joinBtn.textContent = 'Join';
     }
+}
+
+/**
+ * Setup language selector buttons (Story 12.4)
+ */
+function setupLanguageSelector() {
+    var langButtons = document.querySelectorAll('.lang-btn');
+
+    langButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var lang = btn.getAttribute('data-lang');
+            if (lang && lang !== selectedLanguage) {
+                setLanguage(lang);
+            }
+        });
+    });
+}
+
+/**
+ * Update language button states (Story 12.4)
+ * @param {string} lang - Language code ('en' or 'de')
+ */
+function updateLanguageButtons(lang) {
+    var langButtons = document.querySelectorAll('.lang-btn');
+    langButtons.forEach(function(btn) {
+        var btnLang = btn.getAttribute('data-lang');
+        if (btnLang === lang) {
+            btn.classList.add('lang-btn--active');
+        } else {
+            btn.classList.remove('lang-btn--active');
+        }
+    });
+}
+
+/**
+ * Set language and update UI (Story 12.4)
+ * @param {string} lang - Language code ('en' or 'de')
+ */
+async function setLanguage(lang) {
+    if (lang !== 'en' && lang !== 'de') {
+        lang = 'en';
+    }
+
+    selectedLanguage = lang;
+    updateLanguageButtons(lang);
+
+    // Update i18n and re-render page
+    await BeatifyI18n.setLanguage(lang);
+    BeatifyI18n.initPageTranslations();
 }

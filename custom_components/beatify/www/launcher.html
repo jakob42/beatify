@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beatify</title>
+    <title data-i18n="launcher.title">Beatify</title>
     <style>
         :root {
             --color-bg-primary: #0a0a12;
@@ -89,26 +89,32 @@
     <div class="logo">
         <span class="beat">Beat</span><span class="ify">ify</span>
     </div>
-    <p class="message" id="message">Opening Beatify in a new tab...</p>
-    <button class="btn" id="openBtn" onclick="openBeatify()">Open Beatify</button>
+    <p class="message" id="message" data-i18n="launcher.openingInNewTab">Opening Beatify in a new tab...</p>
+    <button class="btn" id="openBtn" onclick="openBeatify()" data-i18n="launcher.openBeatify">Open Beatify</button>
     <p class="hint" id="hint"></p>
 
+    <script src="/beatify/static/js/i18n.js"></script>
     <script>
         function openBeatify() {
-            const adminUrl = window.location.origin + '/beatify/admin';
-            const newWindow = window.open(adminUrl, '_blank', 'noopener,noreferrer');
+            var adminUrl = window.location.origin + '/beatify/admin';
+            var newWindow = window.open(adminUrl, '_blank', 'noopener,noreferrer');
+
+            var messageEl = document.getElementById('message');
+            var hintEl = document.getElementById('hint');
 
             if (newWindow) {
-                document.getElementById('message').textContent = 'Beatify opened in a new tab!';
-                document.getElementById('hint').textContent = 'Click the button to open another window, or navigate elsewhere in Home Assistant.';
+                messageEl.textContent = BeatifyI18n.t('launcher.openedInNewTab');
+                hintEl.textContent = BeatifyI18n.t('launcher.clickToOpenAnother');
             } else {
-                document.getElementById('message').textContent = 'Pop-up blocked! Click the button below.';
-                document.getElementById('hint').textContent = 'Your browser blocked the pop-up. Please allow pop-ups for this site.';
+                messageEl.textContent = BeatifyI18n.t('launcher.popupBlocked');
+                hintEl.textContent = BeatifyI18n.t('launcher.allowPopups');
             }
         }
 
-        // Auto-open on page load
-        window.addEventListener('load', function() {
+        // Initialize i18n and auto-open
+        window.addEventListener('load', async function() {
+            await BeatifyI18n.init();
+            BeatifyI18n.initPageTranslations();
             // Small delay to ensure the page is fully rendered
             setTimeout(openBeatify, 100);
         });

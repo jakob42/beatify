@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Beatify - Join Game</title>
+    <title data-i18n="join.title">Beatify - Join Game</title>
     <!-- Preconnect for faster font loading (Story 9.8) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,32 +17,32 @@
             <h1 class="wordmark wordmark-hero logo-loading">
                 <span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span>
             </h1>
-            <p>Connecting to game...</p>
+            <p data-i18n="common.connecting">Connecting to game...</p>
         </div>
 
         <!-- Error: Game not found -->
         <div id="not-found-view" class="view hidden">
             <div class="error-icon">🎵</div>
-            <h1>Game Not Found</h1>
-            <p>This game doesn't exist or the link is incorrect.</p>
-            <p class="hint">Ask the host for a new QR code.</p>
-            <button id="refresh-btn" class="btn btn-primary btn-glow">Try Again</button>
+            <h1 data-i18n="errors.gameNotFound">Game Not Found</h1>
+            <p data-i18n="errors.gameNotFoundHint">This game doesn't exist or the link is incorrect.</p>
+            <p class="hint" data-i18n="errors.askHostQr">Ask the host for a new QR code.</p>
+            <button id="refresh-btn" class="btn btn-primary btn-glow" data-i18n="common.retry">Try Again</button>
         </div>
 
         <!-- Error: Game ended -->
         <div id="ended-view" class="view hidden">
             <div class="error-icon">🎉</div>
-            <h1>Game Has Ended</h1>
-            <p>Thanks for playing Beatify!</p>
-            <p class="hint">Ask the host to start a new game.</p>
+            <h1 data-i18n="errors.gameHasEnded">Game Has Ended</h1>
+            <p data-i18n="errors.thanksForPlaying">Thanks for playing Beatify!</p>
+            <p class="hint" data-i18n="errors.askHostNewGame">Ask the host to start a new game.</p>
         </div>
 
         <!-- Error: Game in progress (can't join mid-reveal) -->
         <div id="in-progress-view" class="view hidden">
             <div class="error-icon">⏳</div>
-            <h1>Game In Progress</h1>
-            <p>The game is currently in a round. Try again in a moment.</p>
-            <button id="retry-btn" class="btn btn-primary btn-glow">Try Again</button>
+            <h1 data-i18n="errors.gameInProgress">Game In Progress</h1>
+            <p data-i18n="errors.gameInProgressHint">The game is currently in a round. Try again in a moment.</p>
+            <button id="retry-btn" class="btn btn-primary btn-glow" data-i18n="common.retry">Try Again</button>
         </div>
 
         <!-- Join form -->
@@ -51,15 +51,16 @@
                 <h1 class="wordmark wordmark-hero">
                     <span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span>
                 </h1>
-                <p>Enter your name to play</p>
+                <p data-i18n="join.enterName">Enter your name to play</p>
                 <div class="form-group">
                     <input type="text" id="name-input" class="name-input"
+                           data-i18n-placeholder="join.namePlaceholder"
                            placeholder="Your name" maxlength="20"
                            autocomplete="off" autocapitalize="words"
                            aria-describedby="name-validation-msg">
                     <p id="name-validation-msg" class="validation-msg hidden"></p>
                 </div>
-                <button id="join-btn" class="btn btn-primary btn-glow join-btn" disabled>Join Game</button>
+                <button id="join-btn" class="btn btn-primary btn-glow join-btn" disabled data-i18n="join.joinButton">Join Game</button>
             </div>
         </div>
 
@@ -67,7 +68,7 @@
         <div id="lobby-view" class="view hidden">
             <div class="lobby-container">
                 <header class="lobby-header">
-                    <h1>Game Lobby</h1>
+                    <h1 data-i18n="lobby.gameLobby">Game Lobby</h1>
                     <p id="player-count" class="player-count">0 players</p>
                 </header>
 
@@ -78,23 +79,24 @@
                 <div id="qr-share-area" class="qr-share-area">
                     <p class="qr-label">
                         <span class="qr-icon">📲</span>
-                        Invite friends
+                        <span data-i18n="lobby.inviteFriends">Invite friends</span>
                     </p>
                     <div id="player-qr-code" class="qr-container" role="button" tabindex="0"
                          aria-label="Tap to enlarge QR code">
                         <!-- QR code rendered here by JS -->
                     </div>
-                    <p class="qr-hint">Tap to enlarge</p>
+                    <p class="qr-hint" data-i18n="lobby.tapToEnlarge">Tap to enlarge</p>
                 </div>
 
                 <div id="lobby-status" class="lobby-status">
-                    <p>Waiting for host to start the game...</p>
+                    <p data-i18n="lobby.waitingForHost">Waiting for host to start the game...</p>
                 </div>
 
                 <!-- Leave Game button (Story 11.5) - hidden for admin -->
                 <div id="leave-game-container" class="leave-game-container hidden">
                     <button id="leave-game-btn" class="btn btn-secondary btn-leave"
-                            aria-label="Leave game and return to join screen">
+                            aria-label="Leave game and return to join screen"
+                            data-i18n="lobby.leaveGame">
                         Leave Game
                     </button>
                 </div>
@@ -102,9 +104,9 @@
                 <div id="admin-controls" class="admin-controls hidden">
                     <button id="start-game-btn" class="btn btn-primary btn-glow btn-large">
                         <span class="btn-icon">🎉</span>
-                        Start Game
+                        <span data-i18n="lobby.startGame">Start Game</span>
                     </button>
-                    <p class="admin-hint">Press when everyone is ready</p>
+                    <p class="admin-hint" data-i18n="lobby.pressWhenReady">Press when everyone is ready</p>
                 </div>
             </div>
         </div>
@@ -114,9 +116,9 @@
             <div class="game-container">
                 <!-- Round Indicator -->
                 <div id="round-indicator" class="round-indicator">
-                    Round <span id="current-round">1</span> of <span id="total-rounds">10</span>
+                    <span data-i18n="game.roundLabel">Round</span> <span id="current-round">1</span> <span data-i18n="game.ofLabel">of</span> <span id="total-rounds">10</span>
                 </div>
-                <div id="last-round-banner" class="last-round-banner hidden">
+                <div id="last-round-banner" class="last-round-banner hidden" data-i18n="game.finalRound">
                     Final Round!
                 </div>
 
@@ -168,17 +170,17 @@
                         <div class="bet-container">
                             <button id="bet-toggle" class="bet-toggle" type="button">
                                 <span class="bet-icon">🎲</span>
-                                <span class="bet-label">Double or Nothing</span>
+                                <span class="bet-label" data-i18n="game.bet">Double or Nothing</span>
                             </button>
                         </div>
 
-                        <button id="submit-btn" class="submit-btn">
+                        <button id="submit-btn" class="submit-btn" data-i18n="game.submitGuess">
                             Submit Guess
                         </button>
 
                         <div id="submitted-confirmation" class="submitted-confirmation hidden">
                             <span class="checkmark">✓</span>
-                            <span>Submitted!</span>
+                            <span data-i18n="game.submitted">Submitted!</span>
                         </div>
                     </div>
                 </div>
@@ -186,7 +188,7 @@
                 <!-- Leaderboard (Story 5.5 - moved below year selector per Story 9.10) -->
                 <div id="game-leaderboard" class="leaderboard is-compact">
                     <div class="leaderboard-header">
-                        <span class="leaderboard-title">Leaderboard</span>
+                        <span class="leaderboard-title" data-i18n="leaderboard.title">Leaderboard</span>
                         <button id="leaderboard-toggle" class="leaderboard-toggle" type="button">
                             <span class="toggle-icon">▼</span>
                         </button>
@@ -206,7 +208,7 @@
             <div class="reveal-container">
                 <!-- Round Info -->
                 <div class="reveal-round-info">
-                    Round <span id="reveal-round">1</span> of <span id="reveal-total">10</span>
+                    <span data-i18n="game.roundLabel">Round</span> <span id="reveal-round">1</span> <span data-i18n="game.ofLabel">of</span> <span id="reveal-total">10</span>
                 </div>
 
                 <!-- Album Cover (smaller) -->
@@ -225,7 +227,7 @@
 
                 <!-- Correct Year -->
                 <div class="correct-year-container">
-                    <div class="correct-year-label">The year was</div>
+                    <div class="correct-year-label" data-i18n="reveal.theYearWas">The year was</div>
                     <div id="correct-year" class="correct-year text-glow">1984</div>
                 </div>
 
@@ -245,7 +247,7 @@
 
                 <!-- Personal Result -->
                 <div id="personal-result" class="personal-result">
-                    <div class="result-header">Your Result</div>
+                    <div class="result-header" data-i18n="reveal.yourResult">Your Result</div>
                     <div id="result-content" class="result-content">
                         <!-- Populated dynamically -->
                     </div>
@@ -259,7 +261,7 @@
                 <!-- Reveal Leaderboard (Story 5.5) -->
                 <div id="reveal-leaderboard" class="leaderboard is-prominent">
                     <div class="leaderboard-header">
-                        <span class="leaderboard-title">Standings</span>
+                        <span class="leaderboard-title" data-i18n="leaderboard.standings">Standings</span>
                     </div>
                     <div id="reveal-leaderboard-list" class="leaderboard-list">
                         <!-- Populated by JavaScript -->
@@ -268,7 +270,7 @@
 
                 <!-- Admin Controls -->
                 <div id="reveal-admin-controls" class="reveal-admin-controls hidden">
-                    <button id="next-round-btn" class="next-round-btn">
+                    <button id="next-round-btn" class="next-round-btn" data-i18n="admin.nextRound">
                         Next Round
                     </button>
                 </div>
@@ -279,12 +281,12 @@
         <div id="paused-view" class="view hidden">
             <div class="paused-container">
                 <div class="paused-icon">⏸️</div>
-                <h1>Game Paused</h1>
-                <p id="pause-message">Waiting for host to reconnect...</p>
+                <h1 data-i18n="game.paused">Game Paused</h1>
+                <p id="pause-message" data-i18n="game.waitingForHost">Waiting for host to reconnect...</p>
                 <div class="paused-spinner">
                     <div class="spinner"></div>
                 </div>
-                <p class="paused-hint">The game will resume when the host returns</p>
+                <p class="paused-hint" data-i18n="game.pausedHint">The game will resume when the host returns</p>
             </div>
         </div>
 
@@ -293,8 +295,8 @@
             <div class="end-container">
                 <!-- Header -->
                 <div class="end-header">
-                    <h1 class="end-title">Game Over!</h1>
-                    <p class="end-subtitle">Thanks for playing Beatify</p>
+                    <h1 class="end-title" data-i18n="leaderboard.gameOver">Game Over!</h1>
+                    <p class="end-subtitle" data-i18n="leaderboard.thanksForPlaying">Thanks for playing Beatify</p>
                 </div>
 
                 <!-- Podium for top 3 -->
@@ -321,28 +323,28 @@
 
                 <!-- Your result -->
                 <div class="your-result">
-                    <div class="your-result-header">Your Result</div>
+                    <div class="your-result-header" data-i18n="reveal.yourResult">Your Result</div>
                     <div class="your-result-rank" id="your-final-rank">#?</div>
                     <div class="your-result-score" id="your-final-score">0 points</div>
                     <div class="your-result-stats">
                         <div class="stat">
                             <span class="stat-value" id="stat-best-streak">0</span>
-                            <span class="stat-label">Best Streak</span>
+                            <span class="stat-label" data-i18n="leaderboard.bestStreak">Best Streak</span>
                         </div>
                         <div class="stat">
                             <span class="stat-value" id="stat-rounds">0</span>
-                            <span class="stat-label">Rounds Played</span>
+                            <span class="stat-label" data-i18n="leaderboard.roundsPlayed">Rounds Played</span>
                         </div>
                         <div class="stat">
                             <span class="stat-value" id="stat-bets">0</span>
-                            <span class="stat-label">Bets Won</span>
+                            <span class="stat-label" data-i18n="leaderboard.betsWon">Bets Won</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Full leaderboard -->
                 <div class="final-leaderboard">
-                    <div class="final-leaderboard-header">Full Rankings</div>
+                    <div class="final-leaderboard-header" data-i18n="leaderboard.fullRankings">Full Rankings</div>
                     <div id="final-leaderboard-list" class="final-leaderboard-list">
                         <!-- Populated by JavaScript -->
                     </div>
@@ -350,15 +352,15 @@
 
                 <!-- Admin controls -->
                 <div id="end-admin-controls" class="end-admin-controls hidden">
-                    <button id="new-game-btn" class="new-game-btn">
+                    <button id="new-game-btn" class="new-game-btn" data-i18n="admin.startNewGame">
                         Start New Game
                     </button>
                 </div>
 
                 <!-- Player message -->
                 <div id="end-player-message" class="end-player-message hidden">
-                    <p>Thanks for playing! 🎉</p>
-                    <p class="end-hint">Wait for the host to start a new game</p>
+                    <p data-i18n="leaderboard.thanksEmoji">Thanks for playing! 🎉</p>
+                    <p class="end-hint" data-i18n="leaderboard.waitForHost">Wait for the host to start a new game</p>
                 </div>
             </div>
         </div>
@@ -369,7 +371,7 @@
             <div id="volume-indicator" class="volume-indicator hidden">🔊 50%</div>
             <button id="stop-song-btn" class="control-btn" type="button">
                 <span class="control-icon">⏹️</span>
-                <span class="control-label">Stop</span>
+                <span class="control-label" data-i18n="admin.stop">Stop</span>
             </button>
             <button id="volume-down-btn" class="control-btn" type="button">
                 <span class="control-icon">🔉</span>
@@ -379,11 +381,11 @@
             </button>
             <button id="next-round-admin-btn" class="control-btn" type="button">
                 <span class="control-icon">⏭️</span>
-                <span class="control-label">Next</span>
+                <span class="control-label" data-i18n="admin.next">Next</span>
             </button>
             <button id="end-game-btn" class="control-btn control-btn--danger" type="button">
                 <span class="control-icon">🛑</span>
-                <span class="control-label">End</span>
+                <span class="control-label" data-i18n="admin.end">End</span>
             </button>
         </div>
     </main>
@@ -394,7 +396,7 @@
             <div class="reconnecting-spinner">
                 <div class="spinner"></div>
             </div>
-            <p id="reconnect-status" class="reconnect-status">Reconnecting...</p>
+            <p id="reconnect-status" class="reconnect-status" data-i18n="errors.RECONNECTING">Reconnecting...</p>
         </div>
     </div>
 
@@ -402,10 +404,10 @@
     <div id="connection-lost-view" class="view hidden">
         <div class="connection-lost-container">
             <div class="connection-lost-icon">📡</div>
-            <h1>Connection Lost</h1>
-            <p>We couldn't reconnect to the game server.</p>
-            <button id="retry-connection-btn" class="btn btn-primary btn-glow">Try Again</button>
-            <p class="connection-lost-hint">Make sure you're connected to the network</p>
+            <h1 data-i18n="errors.CONNECTION_LOST">Connection Lost</h1>
+            <p data-i18n="errors.connectionLostHint">We couldn't reconnect to the game server.</p>
+            <button id="retry-connection-btn" class="btn btn-primary btn-glow" data-i18n="common.retry">Try Again</button>
+            <p class="connection-lost-hint" data-i18n="errors.checkNetwork">Make sure you're connected to the network</p>
         </div>
     </div>
 
@@ -414,17 +416,18 @@
          aria-labelledby="qr-modal-title">
         <div class="qr-modal-backdrop"></div>
         <div class="qr-modal-content">
-            <h2 id="qr-modal-title" class="sr-only">Join Game QR Code</h2>
+            <h2 id="qr-modal-title" class="sr-only" data-i18n="lobby.joinGameQr">Join Game QR Code</h2>
             <div id="qr-modal-code" class="qr-modal-code">
                 <!-- Large QR code rendered here -->
             </div>
-            <p class="qr-modal-label">Scan to join the game</p>
+            <p class="qr-modal-label" data-i18n="lobby.scanToJoin">Scan to join the game</p>
             <button id="qr-modal-close" class="btn btn-secondary qr-modal-close"
-                    aria-label="Close QR code">Close</button>
+                    aria-label="Close QR code" data-i18n="common.close">Close</button>
         </div>
     </div>
 
     <script src="/beatify/static/js/vendor/qrcode.min.js"></script>
+    <script src="/beatify/static/js/i18n.js"></script>
     <script src="/beatify/static/js/player.js"></script>
 </body>
 </html>

@@ -144,6 +144,7 @@ class StartGameView(HomeAssistantView):
 
         playlist_paths = body.get("playlists", [])
         media_player = body.get("media_player")
+        language = body.get("language", "en")
 
         if not playlist_paths:
             return web.json_response(
@@ -228,6 +229,10 @@ class StartGameView(HomeAssistantView):
 
         result = game_state.create_game(playlist_paths, songs, media_player, base_url)
         result["warnings"] = warnings
+
+        # Set game language (Story 12.4)
+        if language in ("en", "de"):
+            game_state.language = language
 
         # Broadcast to WebSocket clients
         ws_handler = data.get("ws_handler")

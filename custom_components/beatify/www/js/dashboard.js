@@ -124,6 +124,13 @@
     function handleStateUpdate(data) {
         var phase = data.phase;
 
+        // Apply language from game state (Story 12.5)
+        if (data.language && data.language !== BeatifyI18n.getLanguage()) {
+            BeatifyI18n.setLanguage(data.language).then(function() {
+                BeatifyI18n.initPageTranslations();
+            });
+        }
+
         if (!phase || phase === 'END' && !data.game_id) {
             // No active game
             showView('dashboard-no-game');
@@ -607,8 +614,11 @@
     /**
      * Initialize dashboard
      */
-    function init() {
+    async function init() {
         console.log('[Dashboard] Initializing...');
+        // Initialize i18n (Story 12.5)
+        await BeatifyI18n.init();
+        BeatifyI18n.initPageTranslations();
         connectWebSocket();
     }
 

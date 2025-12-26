@@ -484,6 +484,52 @@ body.theme-dark .game-info span {
     color: var(--color-text-primary);
 }
 
+/* Language Selector (Story 12.4) */
+.language-selector {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.lang-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border: 2px solid var(--color-border-medium);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-white);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.lang-btn:hover {
+    border-color: var(--color-accent-brand);
+    background: var(--color-bg-card-alt);
+}
+
+.lang-btn--active {
+    border-color: var(--color-accent-brand);
+    background: var(--color-accent-brand);
+    color: var(--color-text-white);
+}
+
+.lang-btn--active:hover {
+    background: var(--color-accent-brand-hover);
+}
+
+.lang-flag {
+    font-size: 1.25em;
+}
+
+.lang-name {
+    font-weight: 600;
+}
+
 /* Modal content in dark mode needs dark text on light backgrounds */
 body.theme-dark .modal-content {
     color: var(--color-text-primary);

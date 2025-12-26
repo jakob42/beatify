@@ -363,6 +363,26 @@ class BeatifyWebSocketHandler:
                 # Cleanup pending tasks (Story 7-5)
                 await self.cleanup_game_tasks()
 
+            elif action == "set_language":
+                # Language selection (Story 12.4) - only in LOBBY phase
+                if game_state.phase != GamePhase.LOBBY:
+                    await ws.send_json({
+                        "type": "error",
+                        "code": ERR_INVALID_ACTION,
+                        "message": "Can only change language in lobby",
+                    })
+                    return
+
+                language = data.get("language", "en")
+                if language not in ("en", "de"):
+                    language = "en"  # Default to English for invalid codes
+
+                game_state.language = language
+                _LOGGER.info("Game language set to: %s", language)
+
+                # Broadcast state with updated language
+                await self.broadcast_state()
+
             else:
                 _LOGGER.warning("Unknown admin action: %s", action)
 
