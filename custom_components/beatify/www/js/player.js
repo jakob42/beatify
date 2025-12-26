@@ -84,8 +84,10 @@
 
             if (data.can_join) {
                 // Check for admin redirect first (from admin.js) - let initAll() handle it
+                // Only check beatify_admin_name since beatify_is_admin may be cleared
+                // by checkAdminStatus() before this async function completes
                 var adminName = sessionStorage.getItem('beatify_admin_name');
-                if (adminName && sessionStorage.getItem('beatify_is_admin') === 'true') {
+                if (adminName) {
                     // Admin redirect - initAll() will handle connection
                     return;
                 }
@@ -2232,6 +2234,13 @@
             // Handle join acknowledgment with session_id (Story 11.1)
             if (data.session_id) {
                 setSessionCookie(data.session_id);
+            }
+            // Clear admin redirect storage - connection established, session cookie handles reconnect
+            try {
+                sessionStorage.removeItem('beatify_admin_name');
+                sessionStorage.removeItem('beatify_is_admin');
+            } catch (e) {
+                // Ignore storage errors
             }
         } else if (data.type === 'reconnect_ack') {
             // Handle session-based reconnect acknowledgment (Story 11.2)
