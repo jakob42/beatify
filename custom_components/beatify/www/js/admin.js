@@ -88,6 +88,8 @@ async function loadStatus() {
  */
 function renderMediaPlayers(players) {
     const container = document.getElementById('media-players-list');
+    // Remove data-i18n to prevent initPageTranslations from overwriting rendered content
+    container?.removeAttribute('data-i18n');
     const totalPlayers = players ? players.length : 0;
 
     // Reset selection state
@@ -186,6 +188,8 @@ function handleMediaPlayerSelect(radio) {
  */
 function renderPlaylists(playlists, playlistDir) {
     const container = document.getElementById('playlists-list');
+    // Remove data-i18n to prevent initPageTranslations from overwriting rendered content
+    container?.removeAttribute('data-i18n');
 
     // Reset selection state
     selectedPlaylists = [];
