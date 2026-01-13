@@ -1536,7 +1536,7 @@
 
         // Handle empty or invalid data
         if (!allGuesses || allGuesses.length === 0) {
-            return '<div class="histogram-empty">No guesses</div>';
+            return '<div class="histogram-empty">' + t('analytics.noGuesses') + '</div>';
         }
 
         // Extract guess years
@@ -1772,7 +1772,7 @@
             var missedHtml =
                 '<div class="result-missed-container">' +
                     '<div class="result-missed-icon">⏰</div>' +
-                    '<div class="result-missed-text">No guess submitted</div>' +
+                    '<div class="result-missed-text">' + t('reveal.noSubmission') + '</div>' +
                 '</div>';
 
             // Show broken streak if they had one (>= 2)
@@ -1791,9 +1791,9 @@
         }
 
         var yearsOff = player.years_off || 0;
-        var yearsOffText = yearsOff === 0 ? 'Exact!' :
-                           yearsOff === 1 ? '1 year off' :
-                           yearsOff + ' years off';
+        var yearsOffText = yearsOff === 0 ? t('reveal.exact') :
+                           yearsOff === 1 ? t('reveal.yearOff', { years: 1 }) :
+                           t('reveal.yearsOff', { years: yearsOff });
 
         var resultClass = yearsOff === 0 ? 'is-exact' :
                           yearsOff <= 3 ? 'is-close' : 'is-far';
@@ -1810,11 +1810,11 @@
         if (hasSpeedBonus && baseScore > 0) {
             scoreBreakdown =
                 '<div class="result-row">' +
-                    '<span class="result-label">Base score</span>' +
+                    '<span class="result-label">' + t('reveal.baseScore') + '</span>' +
                     '<span class="result-value">' + baseScore + ' pts</span>' +
                 '</div>' +
                 '<div class="result-row">' +
-                    '<span class="result-label">Speed bonus</span>' +
+                    '<span class="result-label">' + t('reveal.speedBonus') + '</span>' +
                     '<span class="result-value is-bonus">' + speedMultiplier.toFixed(2) + 'x</span>' +
                 '</div>';
         }
@@ -1824,14 +1824,14 @@
         if (player.bet_outcome === 'won') {
             betOutcomeHtml =
                 '<div class="result-row bet-won-row">' +
-                    '<span class="result-label">🎲 Bet paid off!</span>' +
+                    '<span class="result-label">🎲 ' + t('reveal.betWon').replace('! 2x points', '') + '</span>' +
                     '<span class="result-value is-bet-won">2x</span>' +
                 '</div>';
         } else if (player.bet_outcome === 'lost') {
             betOutcomeHtml =
                 '<div class="result-row bet-lost-row">' +
-                    '<span class="result-label">🎲 Bet lost</span>' +
-                    '<span class="result-value is-bet-lost">No bonus</span>' +
+                    '<span class="result-label">🎲 ' + t('reveal.betLost') + '</span>' +
+                    '<span class="result-value is-bet-lost">-</span>' +
                 '</div>';
         }
 
@@ -1857,22 +1857,22 @@
 
         resultContent.innerHTML =
             '<div class="result-row">' +
-                '<span class="result-label">Your guess</span>' +
+                '<span class="result-label">' + t('reveal.yourGuess') + '</span>' +
                 '<span class="result-value">' + player.guess + '</span>' +
             '</div>' +
             '<div class="result-row">' +
-                '<span class="result-label">Correct year</span>' +
+                '<span class="result-label">' + t('reveal.correctYear') + '</span>' +
                 '<span class="result-value">' + correctYear + '</span>' +
             '</div>' +
             '<div class="result-row">' +
-                '<span class="result-label">Accuracy</span>' +
+                '<span class="result-label">' + t('reveal.accuracy') + '</span>' +
                 '<span class="result-value ' + resultClass + '">' + yearsOffText + '</span>' +
             '</div>' +
             scoreBreakdown +
             betOutcomeHtml +
             '<div class="result-score" id="personal-result-score">+<span class="score-value">0</span> pts</div>' +
             streakBonusHtml +
-            (streakBonus > 0 ? '<div class="result-total">Total: +<span class="total-value">0</span> pts</div>' : '');
+            (streakBonus > 0 ? '<div class="result-total">' + t('reveal.total') + ': +<span class="total-value">0</span> pts</div>' : '');
 
         // Story 13.2: Animate personal score with visual effects
         var scoreValueEl = resultContent.querySelector('.score-value');
@@ -1938,7 +1938,7 @@
             return (b.round_score || 0) - (a.round_score || 0);
         });
 
-        var html = '<div class="results-cards-header">All Players</div>';
+        var html = '<div class="results-cards-header">' + t('reveal.allPlayers') + '</div>';
         html += '<div class="results-cards-scroll">';
 
         sorted.forEach(function(player) {
@@ -1954,9 +1954,9 @@
 
             // Guess display
             var guessDisplay = isMissed ? '—' : player.guess;
-            var yearsOffDisplay = isMissed ? 'No guess' :
-                                  yearsOff === 0 ? 'Exact!' :
-                                  yearsOff + ' off';
+            var yearsOffDisplay = isMissed ? t('reveal.noGuessShort') :
+                                  yearsOff === 0 ? t('reveal.exact') :
+                                  t('reveal.shortOff', { years: yearsOff });
 
             // Bet indicator
             var betIndicator = player.bet ? '<span class="card-bet">🎲</span>' : '';

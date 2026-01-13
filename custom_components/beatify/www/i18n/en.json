@@ -64,16 +64,26 @@
     "theYearWas": "The year was",
     "funFact": "Fun fact",
     "yourGuess": "Your guess",
+    "correctYear": "Correct year",
+    "accuracy": "Accuracy",
     "yourResult": "Your Result",
     "points": "points",
     "pointsEarned": "+{points} points",
     "noPoints": "No points",
     "streak": "{count} streak!",
     "streakLost": "Lost {count}-streak",
-    "speedBonus": "Speed bonus!",
+    "baseScore": "Base score",
+    "speedBonus": "Speed bonus",
     "betWon": "Bet won! 2x points",
     "betLost": "Bet lost",
-    "noSubmission": "No guess submitted"
+    "noSubmission": "No guess submitted",
+    "allPlayers": "All Players",
+    "exact": "Exact!",
+    "yearOff": "{years} year off",
+    "yearsOff": "{years} years off",
+    "shortOff": "{years} off",
+    "noGuessShort": "No guess",
+    "total": "Total"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -176,6 +186,7 @@
     "speedChampion": "Speed champion",
     "furthestGuess": "Most off",
     "noSubmissions": "No submissions this round",
+    "noGuesses": "No guesses",
     "histogram": "Guess distribution"
   },
   "errors": {

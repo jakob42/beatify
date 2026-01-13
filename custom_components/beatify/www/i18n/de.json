@@ -64,16 +64,26 @@
     "theYearWas": "Das Jahr war",
     "funFact": "Fun Fact",
     "yourGuess": "Dein Tipp",
+    "correctYear": "Richtiges Jahr",
+    "accuracy": "Genauigkeit",
     "yourResult": "Dein Ergebnis",
     "points": "Punkte",
     "pointsEarned": "+{points} Punkte",
     "noPoints": "Keine Punkte",
     "streak": "{count}er Serie!",
     "streakLost": "{count}er Serie verloren",
-    "speedBonus": "Schnellbonus!",
+    "baseScore": "Basispunkte",
+    "speedBonus": "Schnellbonus",
     "betWon": "Wette gewonnen! 2x Punkte",
     "betLost": "Wette verloren",
-    "noSubmission": "Kein Tipp abgegeben"
+    "noSubmission": "Kein Tipp abgegeben",
+    "allPlayers": "Alle Spieler",
+    "exact": "Volltreffer!",
+    "yearOff": "{years} Jahr daneben",
+    "yearsOff": "{years} Jahre daneben",
+    "shortOff": "{years} daneben",
+    "noGuessShort": "Kein Tipp",
+    "total": "Gesamt"
   },
   "leaderboard": {
     "title": "Rangliste",
@@ -176,6 +186,7 @@
     "speedChampion": "Schnellster Spieler",
     "furthestGuess": "Am weitesten daneben",
     "noSubmissions": "Keine Antworten in dieser Runde",
+    "noGuesses": "Keine Tipps",
     "histogram": "Antwort-Verteilung"
   },
   "errors": {
