@@ -1201,28 +1201,20 @@
 
         var slider = document.getElementById('year-slider');
         var submitBtn = document.getElementById('submit-btn');
-        var artistInput = document.getElementById('artist-input');
 
         if (!slider || !submitBtn) return;
 
         var year = parseInt(slider.value, 10);
-        var artist = artistInput ? artistInput.value.trim() : '';
 
         // Disable and show loading
         submitBtn.disabled = true;
         submitBtn.classList.add('is-loading');
 
-        // Disable artist input while submitting (Story 10.1)
-        if (artistInput) {
-            artistInput.disabled = true;
-        }
-
-        // Send submission via WebSocket (with bet flag - Story 5.3, artist - Story 10.1)
+        // Send submission via WebSocket (with bet flag - Story 5.3)
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 type: 'submit',
                 year: year,
-                artist: artist,
                 bet: betActive
             }));
         } else {
@@ -1230,10 +1222,6 @@
             showSubmitError('Connection lost. Please refresh.');
             submitBtn.disabled = false;
             submitBtn.classList.remove('is-loading');
-            // Re-enable artist input (Story 10.1)
-            if (artistInput) {
-                artistInput.disabled = false;
-            }
         }
     }
 
@@ -1272,7 +1260,6 @@
      */
     function handleSubmitError(data) {
         var submitBtn = document.getElementById('submit-btn');
-        var artistInput = document.getElementById('artist-input');
 
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -1284,14 +1271,11 @@
             // Disable further attempts
             hasSubmitted = true;
             if (submitBtn) submitBtn.disabled = true;
-            if (artistInput) artistInput.disabled = true;
         } else if (data.code === 'ALREADY_SUBMITTED') {
             // Already submitted, update UI
             handleSubmitAck();
         } else {
             showSubmitError(data.message || 'Submission failed');
-            // Re-enable artist input (Story 10.1)
-            if (artistInput) artistInput.disabled = false;
         }
     }
 
@@ -1323,7 +1307,6 @@
         var confirmation = document.getElementById('submitted-confirmation');
         var slider = document.getElementById('year-slider');
         var betToggle = document.getElementById('bet-toggle');
-        var artistInput = document.getElementById('artist-input');
 
         if (yearSelector) {
             yearSelector.classList.remove('is-submitted');
@@ -1338,12 +1321,6 @@
         // Reset bet toggle (Story 5.3)
         if (betToggle) {
             betToggle.classList.remove('hidden', 'is-active');
-        }
-
-        // Reset artist input (Story 10.1)
-        if (artistInput) {
-            artistInput.value = '';
-            artistInput.disabled = false;
         }
 
         if (confirmation) {
@@ -1785,41 +1762,6 @@
         // Streak bonus display (Story 5.2)
         var streakBonus = player.streak_bonus || 0;
 
-        // Artist scoring display (Story 10.1)
-        var artistGuess = player.artist_guess || null;
-        var artistScore = player.artist_score || 0;
-        var artistMatch = player.artist_match || null;
-        var correctArtist = (song && song.artist) ? song.artist : 'Unknown';
-
-        // Artist result row (Story 10.1)
-        var artistResultHtml = '';
-        if (artistGuess) {
-            var artistClass = artistMatch === 'exact' ? 'is-exact' :
-                              artistMatch === 'partial' ? 'is-close' : 'is-far';
-            var artistResultText = artistMatch === 'exact' ? 'Exact!' :
-                                   artistMatch === 'partial' ? 'Partial' : 'No match';
-            artistResultHtml =
-                '<div class="result-row artist-row">' +
-                    '<span class="result-label">Artist guess</span>' +
-                    '<span class="result-value ' + artistClass + '">' + escapeHtml(artistGuess) + '</span>' +
-                '</div>' +
-                '<div class="result-row">' +
-                    '<span class="result-label">Correct artist</span>' +
-                    '<span class="result-value">' + escapeHtml(correctArtist) + '</span>' +
-                '</div>' +
-                (artistScore > 0 ?
-                '<div class="result-row">' +
-                    '<span class="result-label">Artist points</span>' +
-                    '<span class="result-value is-bonus">+' + artistScore + ' pts</span>' +
-                '</div>' : '');
-        } else {
-            artistResultHtml =
-                '<div class="result-row artist-row">' +
-                    '<span class="result-label">Artist guess</span>' +
-                    '<span class="result-value is-muted">No guess</span>' +
-                '</div>';
-        }
-
         var scoreBreakdown = '';
         if (hasSpeedBonus && baseScore > 0) {
             scoreBreakdown =
@@ -1882,7 +1824,6 @@
                 '<span class="result-label">Accuracy</span>' +
                 '<span class="result-value ' + resultClass + '">' + yearsOffText + '</span>' +
             '</div>' +
-            artistResultHtml +
             scoreBreakdown +
             betOutcomeHtml +
             '<div class="result-score" id="personal-result-score">+<span class="score-value">0</span> pts</div>' +

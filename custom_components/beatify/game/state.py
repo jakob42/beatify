@@ -30,7 +30,6 @@ from .player import PlayerSession
 from .playlist import PlaylistManager
 from .scoring import (
     apply_bet_multiplier,
-    calculate_artist_score,
     calculate_round_score,
     calculate_streak_bonus,
 )
@@ -827,9 +826,8 @@ class GameState:
         # Store current ranks before scoring for rank change detection (5.5)
         self._store_previous_ranks()
 
-        # Get correct year and artist from current song
+        # Get correct year from current song
         correct_year = self.current_song.get("year") if self.current_song else None
-        correct_artist = self.current_song.get("artist", "") if self.current_song else ""
 
         # Calculate scores for all players
         for player in self.players.values():
@@ -843,8 +841,8 @@ class GameState:
                 else:
                     elapsed = self.round_duration  # No bonus if timing unavailable
 
-                # Calculate year score with speed bonus (gets year base and speed multiplier)
-                year_speed_score, player.base_score, player.speed_multiplier = (
+                # Calculate score with speed bonus
+                speed_score, player.base_score, player.speed_multiplier = (
                     calculate_round_score(
                         player.current_guess,
                         correct_year,
@@ -854,16 +852,6 @@ class GameState:
                 )
                 player.years_off = abs(player.current_guess - correct_year)
                 player.missed_round = False
-
-                # Calculate artist score (Story 10.1)
-                player.artist_score, player.artist_match = calculate_artist_score(
-                    player.artist_guess, correct_artist
-                )
-
-                # Combined score: (year_base + artist) * speed_multiplier
-                # Artist score is added to base before speed multiplier
-                combined_base = player.base_score + player.artist_score
-                speed_score = int(combined_base * player.speed_multiplier)
 
                 # Apply bet multiplier (Story 5.3)
                 player.round_score, player.bet_outcome = apply_bet_multiplier(
@@ -966,10 +954,6 @@ class GameState:
                 "bet_outcome": p.bet_outcome,
                 # Missed round data (Story 5.4)
                 "previous_streak": p.previous_streak,
-                # Artist data (Story 10.1)
-                "artist_guess": p.artist_guess,
-                "artist_score": p.artist_score,
-                "artist_match": p.artist_match,
             }
             for p in self.players.values()
         ]
