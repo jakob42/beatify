@@ -73,17 +73,20 @@
             <h2 data-i18n="admin.selectDifficulty">Difficulty</h2>
             <div class="difficulty-selector" role="group" aria-label="Scoring difficulty">
                 <button type="button" class="difficulty-btn" data-difficulty="easy" tabindex="0">
-                    <span class="difficulty-label" data-i18n="admin.difficultyEasy">Easy (±7 years)</span>
+                    <span class="difficulty-icon" aria-hidden="true">😊</span>
+                    <span class="difficulty-label" data-i18n="admin.difficultyEasy">Easy</span>
                 </button>
                 <button type="button" class="difficulty-btn difficulty-btn--active" data-difficulty="normal" tabindex="0">
-                    <span class="difficulty-label" data-i18n="admin.difficultyNormal">Normal (±3 years)</span>
+                    <span class="difficulty-icon" aria-hidden="true">🎯</span>
+                    <span class="difficulty-label" data-i18n="admin.difficultyNormal">Normal</span>
                 </button>
                 <button type="button" class="difficulty-btn" data-difficulty="hard" tabindex="0">
-                    <span class="difficulty-label" data-i18n="admin.difficultyHard">Hard (±2 years)</span>
+                    <span class="difficulty-icon" aria-hidden="true">🔥</span>
+                    <span class="difficulty-label" data-i18n="admin.difficultyHard">Hard</span>
                 </button>
             </div>
             <p class="difficulty-description" id="difficulty-description" data-i18n="admin.difficultyNormalDesc">
-                Exact=10, ±3yrs=5, ±5yrs=1
+                Guess within 3 years for points. Exact year = 10 points.
             </p>
         </section>
 

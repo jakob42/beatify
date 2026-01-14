@@ -629,14 +629,14 @@ body.theme-dark .game-info span {
     justify-content: center;
     gap: var(--space-2xs);
     padding: var(--space-sm) var(--space-md);
+    min-width: 90px;
+    border: 2px solid var(--color-border-light);
     border-radius: var(--radius-md);
-    border: 2px solid var(--color-border-neon);
     background: var(--color-bg-card);
-    color: var(--color-text-primary);
+    color: var(--color-text-secondary);
     font-family: inherit;
     cursor: pointer;
     transition: all 0.15s ease;
-    min-width: 100px;
 }
 
 .difficulty-btn:hover {
@@ -647,7 +647,7 @@ body.theme-dark .game-info span {
 .difficulty-btn:focus {
     outline: none;
     border-color: var(--color-accent-brand);
-    box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.3);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
 }
 
 .difficulty-btn:focus-visible {
@@ -665,17 +665,24 @@ body.theme-dark .game-info span {
     background: var(--color-accent-brand-hover);
 }
 
+.difficulty-icon {
+    font-size: 1.5em;
+}
+
 .difficulty-label {
     font-weight: 600;
     font-size: 0.875rem;
-    text-align: center;
 }
 
 .difficulty-description {
     text-align: center;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     color: var(--color-text-muted);
-    margin-top: var(--space-xs);
+    margin-top: var(--space-sm);
+    line-height: 1.5;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Difficulty Badge (Story 14.1) */

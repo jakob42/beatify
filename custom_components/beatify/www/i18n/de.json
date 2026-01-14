@@ -167,12 +167,12 @@
     "timerNormal": "Normal",
     "timerRelaxed": "Entspannt",
     "selectDifficulty": "Schwierigkeit",
-    "difficultyEasy": "Leicht (±7 Jahre)",
-    "difficultyNormal": "Normal (±3 Jahre)",
-    "difficultyHard": "Schwer (±2 Jahre)",
-    "difficultyEasyDesc": "Exakt=10, ±7J=5, ±10J=1",
-    "difficultyNormalDesc": "Exakt=10, ±3J=5, ±5J=1",
-    "difficultyHardDesc": "Exakt=10, ±2J=3, sonst=0"
+    "difficultyEasy": "Leicht",
+    "difficultyNormal": "Normal",
+    "difficultyHard": "Schwer",
+    "difficultyEasyDesc": "Nachsichtige Wertung: Tipps bis 7 Jahre daneben zählen. Volltreffer = 10 Pkt, bis 7 Jahre = 5 Pkt, bis 10 Jahre = 1 Pkt.",
+    "difficultyNormalDesc": "Standard-Wertung: Tipps bis 3 Jahre daneben zählen. Volltreffer = 10 Pkt, bis 3 Jahre = 5 Pkt, bis 5 Jahre = 1 Pkt.",
+    "difficultyHardDesc": "Anspruchsvolle Wertung: Nur knappe Tipps zählen. Volltreffer = 10 Pkt, bis 2 Jahre = 3 Pkt, sonst keine Punkte."
   },
   "dashboard": {
     "title": "Beatify - Dashboard",

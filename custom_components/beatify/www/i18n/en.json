@@ -167,12 +167,12 @@
     "timerNormal": "Normal",
     "timerRelaxed": "Relaxed",
     "selectDifficulty": "Difficulty",
-    "difficultyEasy": "Easy (±7 years)",
-    "difficultyNormal": "Normal (±3 years)",
-    "difficultyHard": "Hard (±2 years)",
-    "difficultyEasyDesc": "Exact=10, ±7yrs=5, ±10yrs=1",
-    "difficultyNormalDesc": "Exact=10, ±3yrs=5, ±5yrs=1",
-    "difficultyHardDesc": "Exact=10, ±2yrs=3, else=0"
+    "difficultyEasy": "Easy",
+    "difficultyNormal": "Normal",
+    "difficultyHard": "Hard",
+    "difficultyEasyDesc": "Forgiving scoring: Guess within 7 years to score. Exact match = 10 pts, within 7 years = 5 pts, within 10 years = 1 pt.",
+    "difficultyNormalDesc": "Standard scoring: Guess within 3 years to score. Exact match = 10 pts, within 3 years = 5 pts, within 5 years = 1 pt.",
+    "difficultyHardDesc": "Challenging scoring: Only close guesses count. Exact match = 10 pts, within 2 years = 3 pts, otherwise no points."
   },
   "dashboard": {
     "title": "Beatify - Dashboard",
