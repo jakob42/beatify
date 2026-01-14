@@ -31,10 +31,12 @@ from .server.views import (
     PlayerView,
     StartGameplayView,
     StartGameView,
+    StatsView,
     StatusView,
 )
 from .server.websocket import BeatifyWebSocketHandler
 from .services.media_player import async_get_media_players
+from .services.stats import StatsService
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -66,6 +68,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Initialize game state
     game_state = GameState()
 
+    # Initialize stats service (Story 14.4)
+    stats_service = StatsService(hass)
+    await stats_service.load()
+    _LOGGER.debug("Stats service initialized: %d games played", stats_service.games_played)
+
+    # Connect stats service to game state for performance tracking (Story 14.4)
+    game_state.set_stats_service(stats_service)
+
     # Initialize WebSocket handler
     ws_handler = BeatifyWebSocketHandler(hass)
 
@@ -80,6 +90,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "playlist_dir": str(playlist_dir),
         "game": game_state,
         "ws_handler": ws_handler,
+        "stats": stats_service,
     }
 
     # Register HTTP views
@@ -92,6 +103,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.http.register_view(PlayerView(hass))
     hass.http.register_view(GameStatusView(hass))
     hass.http.register_view(DashboardView(hass))
+    hass.http.register_view(StatsView(hass))
 
     # Register WebSocket endpoint
     hass.http.app.router.add_get("/beatify/ws", ws_handler.handle)

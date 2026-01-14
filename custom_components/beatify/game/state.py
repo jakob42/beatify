@@ -42,6 +42,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
     from custom_components.beatify.services.media_player import MediaPlayerService
+    from custom_components.beatify.services.stats import StatsService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -162,6 +163,9 @@ class GameState:
 
         # Round analytics (Story 13.3)
         self.round_analytics: RoundAnalytics | None = None
+
+        # Stats service reference (Story 14.4)
+        self._stats_service: StatsService | None = None
 
     def create_game(
         self,
@@ -314,6 +318,10 @@ class GameState:
             # Round analytics (Story 13.3 AC4)
             if self.round_analytics:
                 state["round_analytics"] = self.round_analytics.to_dict()
+            # Game performance comparison (Story 14.4 AC2, AC3, AC4, AC6)
+            game_performance = self.get_game_performance()
+            if game_performance:
+                state["game_performance"] = game_performance
 
         elif self.phase == GamePhase.PAUSED:
             state["pause_reason"] = self.pause_reason
@@ -329,8 +337,62 @@ class GameState:
             if self.players:
                 winner = max(self.players.values(), key=lambda p: p.score)
                 state["winner"] = {"name": winner.name, "score": winner.score}
+            # Game performance comparison for end screen (Story 14.4 AC5, AC6)
+            game_performance = self.get_game_performance()
+            if game_performance:
+                state["game_performance"] = game_performance
 
         return state
+
+    def finalize_game(self) -> dict[str, Any]:
+        """
+        Calculate final stats before ending the game (Story 14.4).
+
+        Must be called BEFORE end_game() to capture statistics.
+        Returns summary dict for StatsService.record_game().
+
+        Returns:
+            Game summary dict with playlist, rounds, player_count,
+            winner, winner_score, total_points, avg_score_per_round
+
+        """
+        # Calculate totals
+        total_points = sum(p.score for p in self.players.values())
+        player_count = len(self.players)
+        rounds_played = self.round
+
+        # Determine winner
+        winner_name = "Unknown"
+        winner_score = 0
+        if self.players:
+            winner = max(self.players.values(), key=lambda p: p.score)
+            winner_name = winner.name
+            winner_score = winner.score
+
+        # Calculate average score per round
+        avg_score_per_round = 0.0
+        if rounds_played > 0 and player_count > 0:
+            avg_score_per_round = total_points / (rounds_played * player_count)
+
+        # Determine playlist name (use first playlist or "mixed")
+        playlist_name = "unknown"
+        if self.playlists:
+            # Extract playlist name from path
+            playlist_path = self.playlists[0]
+            if "/" in playlist_path:
+                playlist_name = playlist_path.split("/")[-1].replace(".json", "")
+            else:
+                playlist_name = playlist_path.replace(".json", "")
+
+        return {
+            "playlist": playlist_name,
+            "rounds": rounds_played,
+            "player_count": player_count,
+            "winner": winner_name,
+            "winner_score": winner_score,
+            "total_points": total_points,
+            "avg_score_per_round": round(avg_score_per_round, 2),
+        }
 
     def end_game(self) -> None:
         """End the current game and reset state."""
@@ -650,6 +712,61 @@ class GameState:
 
         """
         self._on_round_end = callback
+
+    def set_stats_service(self, stats_service: StatsService) -> None:
+        """
+        Set stats service reference (Story 14.4).
+
+        Args:
+            stats_service: StatsService instance for game performance tracking
+
+        """
+        self._stats_service = stats_service
+
+    def _calculate_current_avg(self) -> float:
+        """
+        Calculate current game's average score per round (Story 14.4).
+
+        Used for in-game comparison to all-time average.
+
+        Returns:
+            Current game average score per round, or 0.0 if no data
+
+        """
+        if self.round == 0 or not self.players:
+            return 0.0
+
+        total_points = sum(p.score for p in self.players.values())
+        player_count = len(self.players)
+
+        return total_points / (self.round * player_count)
+
+    def get_game_performance(self) -> dict[str, Any] | None:
+        """
+        Get game performance comparison data (Story 14.4).
+
+        Used during REVEAL and END phases to show motivational feedback.
+
+        Returns:
+            Performance dict with comparison data, or None if no stats service
+
+        """
+        if not self._stats_service:
+            return None
+
+        current_avg = self._calculate_current_avg()
+        comparison = self._stats_service.get_game_comparison(current_avg)
+        message_data = self._stats_service.get_motivational_message(comparison)
+
+        return {
+            "current_avg": round(current_avg, 2),
+            "all_time_avg": comparison["all_time_avg"],
+            "difference": comparison["difference"],
+            "is_above_average": comparison["is_above_average"],
+            "is_new_record": comparison["is_new_record"],
+            "is_first_game": comparison["is_first_game"],
+            "message": message_data,
+        }
 
     def set_admin(self, name: str) -> bool:
         """

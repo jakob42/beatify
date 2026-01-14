@@ -472,3 +472,37 @@ class DashboardView(HomeAssistantView):
 
         html_content = await self.hass.async_add_executor_job(_read_file, html_path)
         return web.Response(text=html_content, content_type="text/html")
+
+
+class StatsView(HomeAssistantView):
+    """API endpoint for game statistics (Story 14.4)."""
+
+    url = "/beatify/api/stats"
+    name = "beatify:api:stats"
+    requires_auth = False
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize view."""
+        self.hass = hass
+
+    async def get(self, request: web.Request) -> web.Response:  # noqa: ARG002
+        """Get game statistics summary and history."""
+        stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
+
+        if not stats_service:
+            return web.json_response({
+                "summary": {
+                    "games_played": 0,
+                    "highest_avg_score": 0.0,
+                    "all_time_avg": 0.0,
+                },
+                "history": [],
+            })
+
+        summary = await stats_service.get_summary()
+        history = await stats_service.get_history(limit=10)
+
+        return web.json_response({
+            "summary": summary,
+            "history": history,
+        })

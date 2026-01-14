@@ -1,0 +1,725 @@
+{
+  "name": "Eurovision Winners (1956-2025)",
+  "songs": [
+    {
+      "year": 1956,
+      "uri": "spotify:track:3ijeTyo5ggRvM0DTfZflBB",
+      "artist": "Lys Assia",
+      "title": "Refrain",
+      "chart_info": {"eurovision_position": 1, "country": "Switzerland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1956"],
+      "fun_fact": "Refrain won the very first Eurovision Song Contest held in Lugano, Switzerland. Lys Assia was the only competitor from Switzerland and won with a simple, elegant performance. The 1956 contest had no public voting system - only jury votes counted."
+    },
+    {
+      "year": 1957,
+      "uri": "spotify:track:1I9fugKDEYETuxJME3aesv",
+      "artist": "Corry Brokken",
+      "title": "Net Als Toen",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 31, "country": "Netherlands"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1957"],
+      "fun_fact": "Net Als Toen (Just Like Then) gave the Netherlands their first Eurovision victory. Corry Brokken had previously competed in 1956, placing seventh. She remains one of few artists to win after a previous Eurovision appearance."
+    },
+    {
+      "year": 1958,
+      "uri": "spotify:track:3W05oiilHd4xRcLb66N51o",
+      "artist": "Andre Claveau",
+      "title": "Dors mon amour",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 27, "country": "France"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1958"],
+      "fun_fact": "Dors mon amour (Sleep My Love) was a gentle lullaby that won France their first Eurovision title. Andre Claveau was already a well-established French chansonnier before his victory, known for his smooth vocal style."
+    },
+    {
+      "year": 1959,
+      "uri": "spotify:track:6fQfOgajFEdUTOvAQNoinK",
+      "artist": "Teddy Scholten",
+      "title": "Een Beetje",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 21, "country": "Netherlands"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1959"],
+      "fun_fact": "Een Beetje (A Little Bit) became a surprise international hit, reaching the charts in multiple countries. Teddy Scholten's playful performance gave the Netherlands their second Eurovision victory in three years."
+    },
+    {
+      "year": 1960,
+      "uri": "spotify:track:2ExzWeo5f3FL9pn61hhOJp",
+      "artist": "Jacqueline Boyer",
+      "title": "Tom Pillibi",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 32, "country": "France"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1960"],
+      "fun_fact": "Tom Pillibi tells the story of a charming liar who makes up fantastic tales. Jacqueline Boyer was only 18 years old when she won, and her mother Lucienne Boyer was also a famous French singer."
+    },
+    {
+      "year": 1961,
+      "uri": "spotify:track:35PWl4T8d2U3a5AboajXXw",
+      "artist": "Jean-Claude Pascal",
+      "title": "Nous les amoureux",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 31, "country": "Luxembourg"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1961"],
+      "fun_fact": "Nous les amoureux (We the Lovers) was Luxembourg's first Eurovision victory. Jean-Claude Pascal was primarily known as a film actor before his singing career. The song's theme of forbidden love resonated with audiences across Europe."
+    },
+    {
+      "year": 1962,
+      "uri": "spotify:track:64EE5jxbZLyb2SElNSyuUD",
+      "artist": "Isabelle Aubret",
+      "title": "Un premier amour",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 26, "country": "France"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1962"],
+      "fun_fact": "Un premier amour (A First Love) secured France's third Eurovision victory. Isabelle Aubret survived a near-fatal car accident in 1963 but made a remarkable comeback. She represented France again in 1968, finishing third."
+    },
+    {
+      "year": 1963,
+      "uri": "spotify:track:1oIVUqdVUFouSa6xsSN5aM",
+      "artist": "Grethe Ingmann;Jorgen Ingmann",
+      "title": "Dansevise",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 42, "country": "Denmark"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1963"],
+      "fun_fact": "Dansevise (Dancing Ballad) gave Denmark their first and only Eurovision victory for 37 years. Grethe and Jorgen Ingmann were a married couple, and Jorgen was already internationally known for his guitar instrumental 'Apache'."
+    },
+    {
+      "year": 1964,
+      "uri": "spotify:track:07rZol7bEXJSUHIcwah0eq",
+      "artist": "Gigliola Cinquetti",
+      "title": "Non ho l'eta (Per amarti)",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 49, "country": "Italy"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1964"],
+      "fun_fact": "Non ho l'eta (I'm Not Old Enough) was performed by 16-year-old Gigliola Cinquetti, one of the youngest ever Eurovision winners. The song became a massive international hit and is considered one of Eurovision's greatest winning songs."
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:68jKFhKRqnatqtLYIiz3c1",
+      "artist": "France Gall",
+      "title": "Poupee de cire poupee de son",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 32, "country": "Luxembourg"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1965"],
+      "fun_fact": "Poupee de cire, poupee de son (Wax Doll, Rag Doll) was written by legendary French songwriter Serge Gainsbourg. France Gall was only 17 and reportedly unaware of the song's double meanings. It became a defining ye-ye pop classic."
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:07MEgnJdMyU2vNjOMskxSu",
+      "artist": "Udo Jurgens",
+      "title": "Merci Cherie",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 31, "country": "Austria"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1966"],
+      "fun_fact": "Merci Cherie was Austria's first Eurovision victory. Udo Jurgens had competed twice before (1964, 1965) before finally winning. He became one of Europe's most successful artists, selling over 100 million records worldwide."
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:7f5w4aiYgVZrp9w4bNaBLu",
+      "artist": "Sandie Shaw",
+      "title": "Puppet On A String",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 47, "country": "United Kingdom"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1967"],
+      "fun_fact": "Puppet On A String gave the UK their first Eurovision victory. Sandie Shaw famously performed barefoot, which became her trademark. She reportedly disliked the song but it became one of the biggest hits of 1967."
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:1ApXNkjfjxkSDoezO8Kh8g",
+      "artist": "Massiel",
+      "title": "La, La, La",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 29, "country": "Spain"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1968"],
+      "fun_fact": "La, La, La won Spain's first Eurovision by just one point over Cliff Richard's 'Congratulations'. Massiel replaced the original singer Joan Manuel Serrat just days before the contest after he refused to sing in Spanish instead of Catalan."
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:31VRNSB6FA4KP7TOkW3k3A",
+      "artist": "Lenny Kuhr",
+      "title": "De Troubadour",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 18, "country": "Netherlands"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1969 (4-way tie)"],
+      "fun_fact": "De Troubadour was part of Eurovision's only four-way tie in history. The Netherlands, France, Spain, and UK all shared first place with 18 points each. This controversial result led to rule changes to prevent future ties."
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:0vaRIQTdMIEnXjhWlVS95p",
+      "artist": "Lulu",
+      "title": "Boom Bang a Bang",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 18, "country": "United Kingdom"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1969 (4-way tie)"],
+      "fun_fact": "Boom Bang a Bang was one of four joint winners in 1969. Scottish singer Lulu was already famous for 'Shout' and 'To Sir with Love'. The upbeat, catchy song became a UK chart success despite the shared victory."
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:059G9tpE3kl6wz3kiddaN0",
+      "artist": "Salome",
+      "title": "Vivo Cantando",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 18, "country": "Spain"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1969 (4-way tie)"],
+      "fun_fact": "Vivo Cantando (I Live Singing) gave Spain a joint victory in 1969. Salome's powerful vocals and dramatic performance style made her a star across the Spanish-speaking world. She went on to have a successful recording career."
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:1XNnJeGSYasJctGndU8mCu",
+      "artist": "Frida Boccara",
+      "title": "Un jour, un enfant",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 18, "country": "France"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1969 (4-way tie)"],
+      "fun_fact": "Un jour, un enfant (One Day, A Child) completed the historic four-way tie of 1969. Frida Boccara was born in Morocco and became one of France's most respected chanteuses. Her emotional ballad stood out among the tied winners."
+    },
+    {
+      "year": 1970,
+      "uri": "spotify:track:2kwAhlh7BDsJkES19zaYqs",
+      "artist": "Dana",
+      "title": "All Kinds Of Everything",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 32, "country": "Ireland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1970"],
+      "fun_fact": "All Kinds Of Everything launched Ireland's Eurovision dominance. Dana was only 18 and still a schoolgirl when she won. The gentle song topped charts across Europe and she later became a member of the European Parliament."
+    },
+    {
+      "year": 1971,
+      "uri": "spotify:track:15mVQWoiwjwXrs5LBybM0A",
+      "artist": "Severine",
+      "title": "Un Banc, Un Arbre, Une Rue",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 128, "country": "Monaco"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1971"],
+      "fun_fact": "Un Banc, Un Arbre, Une Rue (A Bench, A Tree, A Street) gave Monaco their only Eurovision victory. Severine was actually French and the song was written by Yves Dessca. The win came at the same contest where new voting rules were introduced."
+    },
+    {
+      "year": 1972,
+      "uri": "spotify:track:13tx9je0ftBgu6BKpsQDo4",
+      "artist": "Vicky Leandros",
+      "title": "Apres toi",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 128, "country": "Luxembourg"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1972"],
+      "fun_fact": "Apres toi (After You) is considered one of Eurovision's most beautiful winning songs. Greek-German singer Vicky Leandros had previously represented Luxembourg in 1967. The song became a massive hit across Europe in multiple language versions."
+    },
+    {
+      "year": 1973,
+      "uri": "spotify:track:3682WlWtLmx44QNpB6Py4X",
+      "artist": "Anne-Marie David",
+      "title": "Tu te reconnaitras",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 129, "country": "Luxembourg"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1973"],
+      "fun_fact": "Tu te reconnaitras (You Will Recognize Yourself) was Luxembourg's fourth win in 12 years. Anne-Marie David represented France at Eurovision in 1979, making her one of few artists to compete for two different countries."
+    },
+    {
+      "year": 1974,
+      "uri": "spotify:track:1CsuK5dlnWAkWhffeteqH3",
+      "artist": "ABBA",
+      "title": "Waterloo",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 24, "country": "Sweden"},
+      "certifications": ["Gold (US)", "Platinum (UK)"],
+      "awards": ["Eurovision Winner 1974", "Best Eurovision Song Ever (2005 poll)"],
+      "fun_fact": "Waterloo launched ABBA to global superstardom and is considered the greatest Eurovision song ever. The UK jury gave them zero points, yet they won anyway. In 2005, it was voted the best Eurovision song of all time in a 50th anniversary poll."
+    },
+    {
+      "year": 1975,
+      "uri": "spotify:track:4ARCWS3l327M1YulCf74Uu",
+      "artist": "Teach In",
+      "title": "Ding-A-Dong",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 152, "country": "Netherlands"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1975"],
+      "fun_fact": "Ding-A-Dong gave the Netherlands their fourth Eurovision victory. The catchy pop song faced tough competition in a year featuring many strong entries. Teach-In had a brief international career following their win."
+    },
+    {
+      "year": 1976,
+      "uri": "spotify:track:0E19RAvUkhjMM0rdICkidE",
+      "artist": "Brotherhood of Man",
+      "title": "Save Your Kisses For Me",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 164, "country": "United Kingdom"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1976"],
+      "fun_fact": "Save Your Kisses For Me was the UK's third Eurovision victory and became one of the best-selling singles of 1976 worldwide. The song appears to be about romantic love but reveals at the end it's about a three-year-old daughter."
+    },
+    {
+      "year": 1977,
+      "uri": "spotify:track:7Hy0CZtFcREucLDXB5jp6m",
+      "artist": "Marie Myriam",
+      "title": "L'oiseau et l'enfant",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 136, "country": "France"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1977"],
+      "fun_fact": "L'oiseau et l'enfant (The Bird and the Child) remains France's last Eurovision victory to date. Marie Myriam's soaring vocals made the song a classic. France has since had the longest drought of any former winning country."
+    },
+    {
+      "year": 1978,
+      "uri": "spotify:track:1njC0GQXuhxnplvR9DK6NZ",
+      "artist": "Izhar Cohen",
+      "title": "A-Ba-Ni-Bi",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 157, "country": "Israel"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1978"],
+      "fun_fact": "A-Ba-Ni-Bi was Israel's first Eurovision victory and used a Hebrew children's language game in its lyrics. Izhar Cohen and the Alphabeta performed with high energy choreography that was groundbreaking for the era."
+    },
+    {
+      "year": 1979,
+      "uri": "spotify:track:557ZG0nAvOppPxR3e1DP42",
+      "artist": "Gali Atari",
+      "title": "Hallelujah",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 125, "country": "Israel"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1979"],
+      "fun_fact": "Hallelujah gave Israel back-to-back victories. Performed by Gali Atari with Milk and Honey, the song's message of peace resonated deeply during tense Middle East times. Israel hosted Eurovision 1979 in Jerusalem following their 1978 win."
+    },
+    {
+      "year": 1980,
+      "uri": "spotify:track:2VPyWgAjdIRlMvk4XQCO44",
+      "artist": "Johnny Logan",
+      "title": "What's Another Year",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 143, "country": "Ireland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1980"],
+      "fun_fact": "What's Another Year began Johnny Logan's legendary Eurovision career. He would win again in 1987 as a performer and 1992 as a songwriter, making him the only person to win Eurovision three times. He's known as 'Mr. Eurovision'."
+    },
+    {
+      "year": 1981,
+      "uri": "spotify:track:5tK13ThQnZJF1YOVjQ0FAx",
+      "artist": "Bucks Fizz",
+      "title": "Making Your Mind Up",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 136, "country": "United Kingdom"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1981"],
+      "fun_fact": "Making Your Mind Up is famous for the skirt-ripping routine where the men tore off the women's skirts to reveal shorter ones underneath. This moment became one of Eurovision's most iconic performances and boosted Bucks Fizz to stardom."
+    },
+    {
+      "year": 1982,
+      "uri": "spotify:track:7JZHsMxhcaRKug5kA0DmDE",
+      "artist": "Nicole",
+      "title": "Ein bisschen Frieden",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 161, "country": "Germany"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1982"],
+      "fun_fact": "Ein bisschen Frieden (A Little Peace) was Germany's first Eurovision victory and topped charts across Europe. The anti-war ballad resonated during Cold War tensions. Nicole was only 17 and performed with a simple, heartfelt presentation."
+    },
+    {
+      "year": 1983,
+      "uri": "spotify:track:0u8AjgsFdyKA1rAca57GC4",
+      "artist": "Corinne Hermes",
+      "title": "Si la vie est cadeau",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 142, "country": "Luxembourg"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1983"],
+      "fun_fact": "Si la vie est cadeau (If Life Is a Gift) gave Luxembourg their fifth and final Eurovision victory. The power ballad showcased Corinne Hermes' impressive vocal range. Luxembourg withdrew from Eurovision in 1994 and hasn't returned since."
+    },
+    {
+      "year": 1984,
+      "uri": "spotify:track:4NzirQ4BrNkVaPEla2ipG4",
+      "artist": "Herreys",
+      "title": "Diggiloo Diggiley",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 145, "country": "Sweden"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1984"],
+      "fun_fact": "Diggi-Loo Diggi-Ley was performed by three brothers in shiny gold boots that became their trademark. The upbeat Eurodisco song gave Sweden their second victory after ABBA. The Herreys' energetic choreography defined 80s Eurovision style."
+    },
+    {
+      "year": 1985,
+      "uri": "spotify:track:0LmEzNrxk0lecRm8X58jiC",
+      "artist": "Bobbysocks",
+      "title": "La det swinge",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 123, "country": "Norway"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1985"],
+      "fun_fact": "La det swinge (Let It Swing) ended Norway's notorious streak of poor Eurovision results with their first-ever victory. The Norwegian female duo Bobbysocks broke through with an energetic pop-rock performance that charmed voters across Europe."
+    },
+    {
+      "year": 1986,
+      "uri": "spotify:track:0Kr57gzJjexm8TF0l0JPLD",
+      "artist": "Sandra Kim",
+      "title": "J'aime la vie",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 176, "country": "Belgium"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1986"],
+      "fun_fact": "J'aime la vie (I Love Life) remains Belgium's only Eurovision victory. Sandra Kim claimed to be 15 but was actually only 13, making her the youngest ever Eurovision winner. The truth only emerged after her victory."
+    },
+    {
+      "year": 1987,
+      "uri": "spotify:track:3wAfLEy1KQjpmbZdBrAW1U",
+      "artist": "Johnny Logan",
+      "title": "Hold Me Now",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 172, "country": "Ireland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1987"],
+      "fun_fact": "Hold Me Now made Johnny Logan the first artist to win Eurovision twice as a performer. He wrote this power ballad himself, unlike his 1980 entry. Logan would win a third time in 1992 as songwriter for Linda Martin's 'Why Me?'."
+    },
+    {
+      "year": 1988,
+      "uri": "spotify:track:0Kv4i96E41jbULmUajBYOe",
+      "artist": "Celine Dion",
+      "title": "Ne partez pas sans moi",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 137, "country": "Switzerland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1988"],
+      "fun_fact": "Ne partez pas sans moi (Don't Leave Without Me) launched Celine Dion to European fame. She won by just one point in a nail-biting finish. Dion represented Switzerland because Canadian artists weren't eligible for their own country."
+    },
+    {
+      "year": 1989,
+      "uri": "spotify:track:2WXogQGOO7qo2hlHyzpwhg",
+      "artist": "Riva",
+      "title": "Rock Me",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 137, "country": "Yugoslavia"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1989"],
+      "fun_fact": "Rock Me was Yugoslavia's only Eurovision victory before the country dissolved. The Croatian band Riva performed with infectious energy. Tragically, the breakup of Yugoslavia meant no unified country could celebrate this historic win for long."
+    },
+    {
+      "year": 1990,
+      "uri": "spotify:track:44noNMO0iv87Tds7dwcpQU",
+      "artist": "Toto Cutugno",
+      "title": "Insieme: 1992",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 149, "country": "Italy"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1990"],
+      "fun_fact": "Insieme: 1992 (Together: 1992) celebrated European unity ahead of the EU single market. Toto Cutugno had competed at Eurovision many times before finally winning. The song became an anthem for European integration during a pivotal historical moment."
+    },
+    {
+      "year": 1991,
+      "uri": "spotify:track:5I6eq9wK0SOkeUWEPHqD39",
+      "artist": "Carola",
+      "title": "Fangad av en stormvind",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 146, "country": "Sweden"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1991"],
+      "fun_fact": "Fangad av en stormvind (Captured by a Lovestorm) won in a contest held in Rome. Carola had previously represented Sweden in 1983. The dramatic ballad showcased Sweden's knack for producing Eurovision winners."
+    },
+    {
+      "year": 1992,
+      "uri": "spotify:track:3Y81Q8dLI74Mgi1wbXvscv",
+      "artist": "Linda Martin",
+      "title": "Why Me?",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 155, "country": "Ireland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1992"],
+      "fun_fact": "Why Me? was written by Johnny Logan, giving him his third Eurovision victory (this time as songwriter). Linda Martin had previously competed in 1984. This began Ireland's unprecedented streak of four consecutive wins."
+    },
+    {
+      "year": 1993,
+      "uri": "spotify:track:7LBBL20GLOtjBJwxgVmzPK",
+      "artist": "Niamh Kavanagh",
+      "title": "In Your Eyes",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 187, "country": "Ireland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1993"],
+      "fun_fact": "In Your Eyes extended Ireland's winning streak to two consecutive years. Niamh Kavanagh's powerful vocals earned the highest points total to that date. She returned to Eurovision in 2010, representing Ireland again."
+    },
+    {
+      "year": 1994,
+      "uri": "spotify:track:4qVX2nHuFlVNp6AOVrDBGb",
+      "artist": "Paul Harrington;Charlie McGettigan",
+      "title": "Rock 'n' Roll Kids",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 226, "country": "Ireland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1994"],
+      "fun_fact": "Rock 'n' Roll Kids was Ireland's third consecutive victory. The nostalgic duet about childhood dreams broke the points record. This contest also featured the interval act 'Riverdance', which became a global phenomenon."
+    },
+    {
+      "year": 1995,
+      "uri": "spotify:track:4zHzxmGa8ywcOBBvPvnYcp",
+      "artist": "Rolf Lovland;Secret Garden",
+      "title": "Nocturne",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 148, "country": "Norway"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1995"],
+      "fun_fact": "Nocturne is the only mostly instrumental song to win Eurovision, featuring just 24 words of lyrics. Secret Garden's haunting violin melody captivated Europe. The Norwegian-Irish duo proved Eurovision wasn't just about catchy pop songs."
+    },
+    {
+      "year": 1996,
+      "uri": "spotify:track:6SA7BxY6zh5SaxUBp3tCtb",
+      "artist": "Eimear Quinn",
+      "title": "The Voice",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 162, "country": "Ireland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1996"],
+      "fun_fact": "The Voice gave Ireland their record-breaking seventh Eurovision victory (fourth in five years). Eimear Quinn's ethereal Celtic performance continued Ireland's dominance. No country has won Eurovision more times than Ireland."
+    },
+    {
+      "year": 1997,
+      "uri": "spotify:track:3QzYNbqWxef2iBsRWUyCUc",
+      "artist": "Katrina & The Waves",
+      "title": "Love Shine a Light",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 227, "country": "United Kingdom"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1997"],
+      "fun_fact": "Love Shine a Light was the UK's fifth and most recent Eurovision victory. Katrina & The Waves won by the largest margin ever at that time, with 70 points ahead of second place. Katrina Leskanich was already famous for 'Walking on Sunshine'."
+    },
+    {
+      "year": 1998,
+      "uri": "spotify:track:2v2SuFiCqmxqlqRyonSycx",
+      "artist": "Dana International",
+      "title": "Diva",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 172, "country": "Israel"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1998"],
+      "fun_fact": "Diva made history as Dana International became the first transgender winner of Eurovision. Her victory was controversial in some quarters but celebrated as a milestone for LGBTQ+ representation. The song became a global dance hit."
+    },
+    {
+      "year": 1999,
+      "uri": "spotify:track:4omWhsNIPxarzpBgMsWBmB",
+      "artist": "Charlotte Perrelli",
+      "title": "Take Me to Your Heaven",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 163, "country": "Sweden"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 1999"],
+      "fun_fact": "Take Me to Your Heaven was Sweden's fourth Eurovision victory. Charlotte Nilsson (later Perrelli) performed a classic Scandinavian pop song. She returned to Eurovision in 2008 with 'Hero', finishing 18th."
+    },
+    {
+      "year": 2000,
+      "uri": "spotify:track:4v2RaPHSsTvNkggw3RqyeT",
+      "artist": "Olsen Brothers",
+      "title": "Fly on the Wings of Love",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 195, "country": "Denmark"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2000"],
+      "fun_fact": "Fly on the Wings of Love ended Denmark's 37-year Eurovision drought since 1963. The Olsen Brothers (Jorgen and Niels) were veteran musicians in their 50s when they won. Their victory proved age was no barrier to Eurovision success."
+    },
+    {
+      "year": 2001,
+      "uri": "spotify:track:3h5mWmIOf44J2AzSfZ1pbN",
+      "artist": "Tanel Padar;Dave Benton",
+      "title": "Everybody",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 198, "country": "Estonia"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2001"],
+      "fun_fact": "Everybody was Estonia's first Eurovision victory and the first for any former Soviet republic. Dave Benton became the oldest winner at 50 and the first Black performer to win. Estonia went from debut in 1994 to champions in just seven years."
+    },
+    {
+      "year": 2002,
+      "uri": "spotify:track:70tFqMdkFXCPeirRaLAKKM",
+      "artist": "Marie N",
+      "title": "I Wanna",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 176, "country": "Latvia"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2002"],
+      "fun_fact": "I Wanna gave Latvia their first Eurovision victory at only their third attempt. Marie N's sultry performance and costume changes during the song created a memorable spectacle. Latvia hosted Eurovision 2003 in Riga."
+    },
+    {
+      "year": 2003,
+      "uri": "spotify:track:5I8ENb7zzrbYLwhGESY9CF",
+      "artist": "Sertab Erener",
+      "title": "Every Way That I Can",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 167, "country": "Turkey"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2003"],
+      "fun_fact": "Everyway That I Can was Turkey's first and only Eurovision victory. Sertab Erener's belly dancing and Turkish-influenced pop sound brought something new to the contest. The song featured backing dancers and elaborate choreography."
+    },
+    {
+      "year": 2004,
+      "uri": "spotify:track:1Lav2Z3RKu71MJLIjQz4dQ",
+      "artist": "Ruslana",
+      "title": "Wild Dances",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 280, "country": "Ukraine"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2004"],
+      "fun_fact": "Wild Dances was Ukraine's first Eurovision victory and featured Hutsul folk music elements from the Carpathian Mountains. Ruslana's high-energy performance with fire and tribal dancing was revolutionary. She later became a prominent activist during Ukraine's political upheavals."
+    },
+    {
+      "year": 2005,
+      "uri": "spotify:track:6LkCvCc9oFoLDv4DLhzTox",
+      "artist": "Helena Paparizou",
+      "title": "My Number One",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 230, "country": "Greece"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2005"],
+      "fun_fact": "My Number One was Greece's first Eurovision victory after decades of participation. Helena Paparizou's Greek-Swedish background and polished pop performance captivated voters. She previously competed in 2001 as part of the duo Antique."
+    },
+    {
+      "year": 2006,
+      "uri": "spotify:track:7BxBHNoIqiybZHlbeqMmvP",
+      "artist": "Lordi",
+      "title": "Hard Rock Hallelujah",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 292, "country": "Finland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2006"],
+      "fun_fact": "Hard Rock Hallelujah shocked Eurovision with Finnish monster-costumed heavy metal winning the contest. Lordi's theatrical rock performance proved Eurovision could embrace all genres. Finland had never won before despite competing since 1961."
+    },
+    {
+      "year": 2007,
+      "uri": "spotify:track:1ue71r2sNUvl4LSqvgVVcZ",
+      "artist": "Marija Serifovic",
+      "title": "Molitva",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 268, "country": "Serbia"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2007"],
+      "fun_fact": "Molitva (Prayer) was Serbia's first entry and first victory as an independent nation after Yugoslavia's dissolution. Marija Serifovic's emotional ballad, performed entirely in Serbian, won overwhelmingly. The powerful song needed no gimmicks."
+    },
+    {
+      "year": 2008,
+      "uri": "spotify:track:3tYLiiS9VlIXWaB677KJjQ",
+      "artist": "Dima Bilan",
+      "title": "Believe",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 272, "country": "Russia"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2008"],
+      "fun_fact": "Believe gave Russia their first and only Eurovision victory. Dima Bilan performed with Hungarian violinist Edvin Marton and an Olympic ice skater on stage. He had finished second in 2006, making 2008 his redemption year."
+    },
+    {
+      "year": 2009,
+      "uri": "spotify:track:2kWAsHovOITGRmAwXoWoJE",
+      "artist": "Alexander Rybak",
+      "title": "Fairytale",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 387, "country": "Norway"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2009"],
+      "fun_fact": "Fairytale won with 387 points, the highest score ever achieved at the time under the voting system. Alexander Rybak's folk-pop song and violin playing charmed all of Europe. The Belarusian-Norwegian performer was just 22 years old."
+    },
+    {
+      "year": 2010,
+      "uri": "spotify:track:6V3OVnS8A0P2I7j5e7YRBb",
+      "artist": "Lena",
+      "title": "Satellite",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 246, "country": "Germany"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2010"],
+      "fun_fact": "Satellite gave Germany their second Eurovision victory and first since 1982. Lena Meyer-Landrut's quirky, charming performance captured hearts across Europe. She was discovered through the German TV show 'Unser Star fur Oslo'."
+    },
+    {
+      "year": 2011,
+      "uri": "spotify:track:5UoNgkMxD3JbWGFW9hmQAg",
+      "artist": "Ell/Nikki",
+      "title": "Running Scared",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 221, "country": "Azerbaijan"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2011"],
+      "fun_fact": "Running Scared was Azerbaijan's first Eurovision victory after debuting only in 2008. The romantic duet by Ell and Nikki narrowly beat Italy. The win led Azerbaijan to host Eurovision 2012 in their specially-built Crystal Hall."
+    },
+    {
+      "year": 2012,
+      "uri": "spotify:track:1xN7BpTAWnZkuSLOtRP6Qc",
+      "artist": "Loreen",
+      "title": "Euphoria",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 372, "country": "Sweden"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2012"],
+      "fun_fact": "Euphoria is considered one of Eurovision's greatest winning songs ever. Loreen received first place votes from 18 countries - a record. The haunting dance track topped charts worldwide and has over 300 million Spotify streams."
+    },
+    {
+      "year": 2013,
+      "uri": "spotify:track:3yRwgprKX3If2zcuGfKFBu",
+      "artist": "Emmelie de Forest",
+      "title": "Only Teardrops",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 281, "country": "Denmark"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2013"],
+      "fun_fact": "Only Teardrops gave Denmark their third Eurovision victory. Emmelie de Forest's ethereal folk-pop performance featured barefoot dancing and tin whistle. The song's message about letting go of pain resonated with viewers across Europe."
+    },
+    {
+      "year": 2014,
+      "uri": "spotify:track:1ijX03QOR6a1wI322HifSV",
+      "artist": "Conchita Wurst",
+      "title": "Rise Like a Phoenix",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 290, "country": "Austria"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2014"],
+      "fun_fact": "Rise Like a Phoenix made Conchita Wurst (drag persona of Tom Neuwirth) a global icon and LGBTQ+ symbol. The bearded drag queen's powerful ballad was Austria's second win. She performed without backup dancers - the first winner to do so since 1970."
+    },
+    {
+      "year": 2015,
+      "uri": "spotify:track:33lbkEAr4M93uGWveuCPCf",
+      "artist": "Mans Zelmerlow",
+      "title": "Heroes",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 365, "country": "Sweden"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2015"],
+      "fun_fact": "Heroes featured groundbreaking visual effects with animated stick figures interacting with the performer live on stage. Mans Zelmerlow's performance revolutionized Eurovision staging. The technology used cost over one million euros to develop."
+    },
+    {
+      "year": 2016,
+      "uri": "spotify:track:2nxTpjhxLXeyBOxYnRnT76",
+      "artist": "Jamala",
+      "title": "1944",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 534, "country": "Ukraine"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2016"],
+      "fun_fact": "1944 told the story of Stalin's deportation of Crimean Tatars, including Jamala's great-grandmother. The politically charged song won controversially amid Russia-Ukraine tensions. It remains one of Eurovision's most powerful and emotional winning entries."
+    },
+    {
+      "year": 2017,
+      "uri": "spotify:track:3UjSOJ00E1eLMcayBm827Q",
+      "artist": "Salvador Sobral",
+      "title": "Amar Pelos Dois",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 758, "country": "Portugal"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2017"],
+      "fun_fact": "Amar Pelos Dois (Love for Both of Us) won with 758 points - the highest score ever in Eurovision history. Salvador Sobral's intimate jazz ballad, written by his sister Luisa, broke all records. He performed awaiting a heart transplant, which he received months later."
+    },
+    {
+      "year": 2018,
+      "uri": "spotify:track:7vuTcvFnvlqWlWb4u60nvY",
+      "artist": "Netta",
+      "title": "Toy",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 529, "country": "Israel"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2018"],
+      "fun_fact": "Toy's chicken sounds and loop-pedal performance made it unforgettable. Netta Barzilai's empowerment anthem with its 'I'm not your toy' message resonated with the #MeToo movement. The quirky electronic track divided opinions but won decisively."
+    },
+    {
+      "year": 2019,
+      "uri": "spotify:track:1Xi84slp6FryDSCbzq4UCD",
+      "artist": "Duncan Laurence",
+      "title": "Arcade",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 498, "country": "Netherlands"},
+      "certifications": ["4x Platinum (US)"],
+      "awards": ["Eurovision Winner 2019"],
+      "fun_fact": "Arcade became the biggest post-Eurovision hit in history after going viral on TikTok in 2021, two years after winning. The emotional piano ballad about lost love has over 1 billion streams. It gave the Netherlands their fifth Eurovision victory."
+    },
+    {
+      "year": 2021,
+      "uri": "spotify:track:1lWWoec2z1j88GRblI5anV",
+      "artist": "Maneskin",
+      "title": "ZITTI E BUONI",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 524, "country": "Italy"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2021"],
+      "fun_fact": "ZITTI E BUONI (Shut Up and Behave) was the first rock song to win Eurovision since Lordi in 2006. Maneskin went on to become global superstars, topping charts worldwide and performing at major festivals. Frontman Damiano faced false drug allegations that were quickly disproven."
+    },
+    {
+      "year": 2022,
+      "uri": "spotify:track:2vHzOWRKYPLu8umRPIFuOq",
+      "artist": "Kalush Orchestra",
+      "title": "Stefania",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 631, "country": "Ukraine"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2022"],
+      "fun_fact": "Stefania won Eurovision during Russia's invasion of Ukraine, with band members returning to fight after the contest. Originally written about frontman Oleh Psiuk's mother, the lyrics took on new meaning about the motherland. It received overwhelming public votes as solidarity with Ukraine."
+    },
+    {
+      "year": 2023,
+      "uri": "spotify:track:1DmW5Ep6ywYwxc2HMT5BG6",
+      "artist": "Loreen",
+      "title": "Tattoo",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 583, "country": "Sweden"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2023"],
+      "fun_fact": "Tattoo made Loreen only the second artist ever to win Eurovision twice (after Johnny Logan). Her haunting performance 11 years after 'Euphoria' proved lightning can strike twice. Sweden tied with Ireland for most Eurovision wins with seven victories."
+    },
+    {
+      "year": 2024,
+      "uri": "spotify:track:1EjIXKhNHI00ZLMRpS8iz8",
+      "artist": "Nemo",
+      "title": "The Code",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 591, "country": "Switzerland"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2024"],
+      "fun_fact": "The Code made history as Nemo became the first non-binary artist to win Eurovision. The theatrical performance combined opera, rap, and drum and bass. Switzerland's third victory came in a controversial contest held in Malmo, Sweden."
+    },
+    {
+      "year": 2025,
+      "uri": "spotify:track:321yySUTzRXUbzkRTeTzDB",
+      "artist": "JJ",
+      "title": "Wasted Love",
+      "chart_info": {"eurovision_position": 1, "eurovision_points": 436, "country": "Austria"},
+      "certifications": [],
+      "awards": ["Eurovision Winner 2025"],
+      "fun_fact": "Wasted Love showcased JJ's extraordinary countertenor opera voice in a song that builds from orchestral swells to a club finish. Johannes Pietsch, who performs at the Vienna State Opera, won jury support from 8 countries giving him douze points. Austria will host Eurovision 2026."
+    }
+  ]
+}

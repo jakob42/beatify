@@ -216,6 +216,19 @@
     "noGuesses": "No guesses",
     "histogram": "Guess distribution"
   },
+  "stats": {
+    "firstGame": "First game! Setting the benchmark",
+    "newRecord": "New Record! Highest scoring game ever!",
+    "strongGame": "Excellent! {diff} pts above average",
+    "aboveAverage": "Strong game! {diff} pts above average",
+    "closeToAverage": "Close to average! Just {diff} pts below",
+    "firstGameRecorded": "First game recorded! Avg: {avg} pts/round",
+    "newRecordEnd": "NEW RECORD! {avg} pts/round (prev: {prev})",
+    "aboveAverageEnd": "{avg} pts/round (+{diff} vs all-time avg)",
+    "belowAverageEnd": "{avg} pts/round ({diff} vs all-time avg)",
+    "ptsPerRound": "pts/round",
+    "vsAllTimeAvg": "vs all-time avg"
+  },
   "errors": {
     "NAME_TAKEN": "Name already taken",
     "NAME_INVALID": "Invalid name",

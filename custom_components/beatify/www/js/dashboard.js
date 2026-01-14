@@ -471,6 +471,42 @@
 
         // Render leaderboard with position changes
         renderRevealLeaderboard(data.leaderboard || []);
+
+        // Render motivational message (Story 14.4)
+        renderMotivationalMessage(data.game_performance);
+    }
+
+    /**
+     * Render motivational message during reveal phase (Story 14.4)
+     * @param {Object|null} performance - Game performance data from state
+     */
+    function renderMotivationalMessage(performance) {
+        var container = document.getElementById('reveal-motivational');
+        if (!container) return;
+
+        // Hide if no performance data or no message
+        if (!performance || !performance.message) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        var message = performance.message;
+        var iconEl = container.querySelector('.motivational-icon');
+        var textEl = container.querySelector('.motivational-text');
+
+        // Set type-based styling and icon
+        container.className = 'motivational-message motivational-message--' + message.type;
+
+        // Icons for different message types
+        var icons = {
+            'first': '🌟',
+            'record': '🏆',
+            'strong': '🔥',
+            'above': '📈',
+            'close': '💪'
+        };
+        if (iconEl) iconEl.textContent = icons[message.type] || '';
+        if (textEl) textEl.textContent = message.message || '';
     }
 
     /**
@@ -587,6 +623,9 @@
             if (scoreEl) scoreEl.textContent = player ? player.score : '0';
         });
 
+        // Render stats comparison (Story 14.4)
+        renderStatsComparison(data.game_performance);
+
         // Render full leaderboard (Story 11.4: disconnected styling)
         var container = document.getElementById('end-leaderboard');
         if (container) {
@@ -605,6 +644,51 @@
 
             container.innerHTML = html;
         }
+    }
+
+    /**
+     * Render stats comparison for end screen (Story 14.4)
+     * @param {Object|null} performance - Game performance data from state
+     */
+    function renderStatsComparison(performance) {
+        var container = document.getElementById('end-stats-comparison');
+        if (!container) return;
+
+        // Hide if no performance data
+        if (!performance) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        var iconEl = container.querySelector('.stats-comparison-icon');
+        var textEl = container.querySelector('.stats-comparison-text');
+
+        // Build comparison text based on performance
+        var icon = '';
+        var text = '';
+        var cssClass = 'stats-comparison';
+
+        if (performance.is_first_game) {
+            icon = '🌟';
+            text = 'First game recorded! Avg: ' + performance.current_avg.toFixed(1) + ' pts/round';
+            cssClass += ' stats-comparison--first';
+        } else if (performance.is_new_record) {
+            icon = '🏆';
+            text = 'NEW RECORD! ' + performance.current_avg.toFixed(1) + ' pts/round (prev: ' + performance.all_time_avg.toFixed(1) + ')';
+            cssClass += ' stats-comparison--record';
+        } else if (performance.is_above_average) {
+            icon = '📈';
+            text = performance.current_avg.toFixed(1) + ' pts/round (+' + performance.difference.toFixed(1) + ' vs all-time avg)';
+            cssClass += ' stats-comparison--above';
+        } else {
+            icon = '📊';
+            text = performance.current_avg.toFixed(1) + ' pts/round (' + performance.difference.toFixed(1) + ' vs all-time avg)';
+            cssClass += ' stats-comparison--below';
+        }
+
+        container.className = cssClass;
+        if (iconEl) iconEl.textContent = icon;
+        if (textEl) textEl.textContent = text;
     }
 
     // ============================================

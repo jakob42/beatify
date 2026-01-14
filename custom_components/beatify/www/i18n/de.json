@@ -216,6 +216,19 @@
     "noGuesses": "Keine Tipps",
     "histogram": "Antwort-Verteilung"
   },
+  "stats": {
+    "firstGame": "Erstes Spiel! Maßstab gesetzt",
+    "newRecord": "Neuer Rekord! Höchste Punktzahl aller Zeiten!",
+    "strongGame": "Excellent! {diff} Pkt über Durchschnitt",
+    "aboveAverage": "Starkes Spiel! {diff} Pkt über Durchschnitt",
+    "closeToAverage": "Knapp am Durchschnitt! Nur {diff} Pkt darunter",
+    "firstGameRecorded": "Erstes Spiel erfasst! Durchschnitt: {avg} Pkt/Runde",
+    "newRecordEnd": "NEUER REKORD! {avg} Pkt/Runde (vorher: {prev})",
+    "aboveAverageEnd": "{avg} Pkt/Runde (+{diff} vs Gesamtdurchschnitt)",
+    "belowAverageEnd": "{avg} Pkt/Runde ({diff} vs Gesamtdurchschnitt)",
+    "ptsPerRound": "Pkt/Runde",
+    "vsAllTimeAvg": "vs Gesamtdurchschnitt"
+  },
   "errors": {
     "NAME_TAKEN": "Name bereits vergeben",
     "NAME_INVALID": "Ungültiger Name",

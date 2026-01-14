@@ -253,6 +253,13 @@ class BeatifyWebSocketHandler:
                 elif game_state.phase == GamePhase.REVEAL:
                     # Start next round or end game
                     if game_state.last_round:
+                        # Record game stats before ending (Story 14.4)
+                        stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
+                        if stats_service:
+                            game_summary = game_state.finalize_game()
+                            await stats_service.record_game(game_summary)
+                            _LOGGER.debug("Game stats recorded for natural end")
+
                         # No more rounds, end game
                         game_state.phase = GamePhase.END
                         await self.broadcast_state()
@@ -262,6 +269,13 @@ class BeatifyWebSocketHandler:
                         if success:
                             await self.broadcast_state()
                         else:
+                            # Record stats before ending due to no songs (Story 14.4)
+                            stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
+                            if stats_service:
+                                game_summary = game_state.finalize_game()
+                                await stats_service.record_game(game_summary)
+                                _LOGGER.debug("Game stats recorded (no songs remaining)")
+
                             # No more songs
                             game_state.phase = GamePhase.END
                             await self.broadcast_state()
@@ -343,6 +357,13 @@ class BeatifyWebSocketHandler:
                 # Stop media playback
                 if game_state._media_player_service:
                     await game_state._media_player_service.stop()
+
+                # Record game stats BEFORE transitioning to END (Story 14.4)
+                stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
+                if stats_service:
+                    game_summary = game_state.finalize_game()
+                    await stats_service.record_game(game_summary)
+                    _LOGGER.debug("Game stats recorded for early end")
 
                 # Transition to END
                 game_state.phase = GamePhase.END

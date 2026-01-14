@@ -857,3 +857,188 @@
 .dashboard-leaderboard::-webkit-scrollbar-thumb:hover {
     background: var(--color-text-muted);
 }
+
+/* ==========================================
+   Motivational Message (Story 14.4)
+   ========================================== */
+
+.motivational-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-lg);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    animation: motivational-pop 0.5s ease;
+}
+
+@keyframes motivational-pop {
+    0% { transform: scale(0.9); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.motivational-message.hidden {
+    display: none;
+}
+
+.motivational-icon {
+    font-size: var(--font-size-2xl);
+}
+
+.motivational-text {
+    text-align: center;
+}
+
+/* First game - welcoming blue */
+.motivational-message--first {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: var(--color-text-white);
+}
+
+/* New record - gold celebration */
+.motivational-message--record {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 165, 0, 0.2) 100%);
+    border: 1px solid gold;
+    color: gold;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    animation: motivational-pop 0.5s ease, record-glow 2s ease-in-out infinite;
+}
+
+@keyframes record-glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); }
+}
+
+/* Strong performance - fire orange */
+.motivational-message--strong {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.3) 0%, rgba(234, 88, 12, 0.1) 100%);
+    border: 1px solid rgba(249, 115, 22, 0.5);
+    color: var(--color-warning);
+}
+
+/* Above average - green success */
+.motivational-message--above {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.1) 100%);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    color: var(--color-success-neon);
+}
+
+/* Close to average - subtle encouragement */
+.motivational-message--close {
+    background: linear-gradient(135deg, rgba(148, 163, 184, 0.2) 0%, rgba(100, 116, 139, 0.1) 100%);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: var(--color-text-neon-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .motivational-message,
+    .motivational-message--record {
+        animation: none;
+    }
+}
+
+/* ==========================================
+   Stats Comparison - End Screen (Story 14.4)
+   ========================================== */
+
+.stats-comparison {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+    max-width: 600px;
+    animation: stats-slide-up 0.6s ease;
+}
+
+@keyframes stats-slide-up {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+.stats-comparison.hidden {
+    display: none;
+}
+
+.stats-comparison-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.stats-comparison-icon {
+    font-size: var(--font-size-3xl);
+}
+
+.stats-comparison-text {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* First game recorded */
+.stats-comparison--first {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: var(--color-text-white);
+}
+
+/* New record - celebration */
+.stats-comparison--record {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 165, 0, 0.2) 100%);
+    border: 2px solid gold;
+    color: gold;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    animation: stats-slide-up 0.6s ease, record-pulse 2s ease-in-out infinite;
+}
+
+@keyframes record-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Above average - green success */
+.stats-comparison--above {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.1) 100%);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    color: var(--color-success-neon);
+}
+
+/* Below average - neutral info */
+.stats-comparison--below {
+    background: linear-gradient(135deg, rgba(100, 116, 139, 0.2) 0%, rgba(71, 85, 105, 0.1) 100%);
+    border: 1px solid rgba(100, 116, 139, 0.3);
+    color: var(--color-text-neon-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stats-comparison,
+    .stats-comparison--record {
+        animation: none;
+    }
+}
+
+/* TV Breakpoint for stats */
+@media (min-width: 1400px) {
+    .motivational-message {
+        font-size: var(--font-size-xl);
+        padding: var(--space-lg) var(--space-xl);
+    }
+
+    .motivational-icon {
+        font-size: var(--font-size-3xl);
+    }
+
+    .stats-comparison-text {
+        font-size: var(--font-size-2xl);
+    }
+
+    .stats-comparison-icon {
+        font-size: 48px;
+    }
+}
