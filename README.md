@@ -10,7 +10,7 @@ Turn any gathering into an unforgettable music trivia experience.
 Guests scan, songs play, everyone competes. It's that simple.
 
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.1+-41BDF5?style=for-the-badge&logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/Version-1.0.0-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
+[![Version](https://img.shields.io/badge/Version-1.1.0-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [**Get Started**](#-5-minute-setup) • [**See It In Action**](#-the-experience) • [**Install Now**](#-installation)
@@ -122,6 +122,9 @@ The year drops. The room erupts. Someone nailed it. Someone was *way* off. Every
 **Full Control**
 Skip tracks. Adjust volume. Pause the game. End early if needed. All from your phone.
 
+**Customize the Challenge**
+Set round timers (15s/30s/45s) and difficulty levels (Easy/Normal/Hard) to match your group.
+
 **Print the QR**
 Physical QR code printout for the coffee table. Guests join themselves.
 
@@ -145,12 +148,13 @@ Join as a player with admin controls. Compete and manage simultaneously.
 
 ### Scoring That Creates Drama
 
-| Performance | Points | The Vibe |
-|-------------|--------|----------|
-| Exact year | 10 × speed bonus | **LEGENDARY** |
-| Within 3 years | 5 × speed bonus | Solid! |
-| Within 5 years | 1 × speed bonus | At least you tried |
-| More than 5 off | 0 | Better luck next round |
+Choose your difficulty—each changes how points are awarded:
+
+| Difficulty | Exact | Close | Near | The Vibe |
+|------------|-------|-------|------|----------|
+| 😊 **Easy** | 10 pts | ±7 yrs = 5 pts | ±10 yrs = 1 pt | Forgiving |
+| 🎯 **Normal** | 10 pts | ±3 yrs = 5 pts | ±5 yrs = 1 pt | Balanced |
+| 🔥 **Hard** | 10 pts | ±2 yrs = 3 pts | — | Punishing |
 
 ### Speed Bonus
 Submit instantly: **2x multiplier**
@@ -370,11 +374,11 @@ The neon dark theme is built-in and looks stunning. Custom theming is on the roa
 
 ## What's New
 
-### v0.11 Highlights
-- **Multi-language support** — English and German
-- **Spectator dashboard** — Big-screen display for TV viewing
-- **Session persistence** — Reconnect without losing progress
-- **Sample playlists** — Start playing immediately
+### v1.1.0 Highlights
+- **Difficulty presets** — Easy, Normal, or Hard scoring modes
+- **Customizable round timer** — Quick (15s), Normal (30s), or Relaxed (45s)
+- **Round analytics** — See guess distribution, accuracy stats, and speed champions
+- **New playlist** — Movie's Greatest Themes with 162 iconic film songs
 
 [View full changelog →](https://github.com/mholzi/beatify/releases)
 
