@@ -250,8 +250,8 @@ class StartGameView(HomeAssistantView):
                 status=400,
             )
 
-        # Get base URL for join URL construction
-        base_url = self._get_base_url()
+        # Get base URL for join URL construction (from request URL)
+        base_url = self._get_base_url(request)
 
         # Initialize game state if needed
         if not game_state:
@@ -285,13 +285,11 @@ class StartGameView(HomeAssistantView):
 
         return web.json_response(result)
 
-    def _get_base_url(self) -> str:
-        """Get HA base URL for join URL construction."""
-        if self.hass.config.internal_url:
-            return self.hass.config.internal_url.rstrip("/")
-        if self.hass.config.external_url:
-            return self.hass.config.external_url.rstrip("/")
-        return "http://homeassistant.local:8123"
+    def _get_base_url(self, request: web.Request) -> str:
+        """Get base URL for join URL construction from request."""
+        # Use the request URL - this is what the user actually used to access the app
+        url = request.url
+        return f"{url.scheme}://{url.host}:{url.port}" if url.port else f"{url.scheme}://{url.host}"
 
 
 class EndGameView(HomeAssistantView):
