@@ -12,7 +12,6 @@ _bmad-output/
 # Development files
 docs/
 scripts/
-tests/
 pyproject.toml
 requirements*.txt
 .ruff.toml

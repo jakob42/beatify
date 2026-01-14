@@ -7,45 +7,58 @@ Advanced scoring (Epic 5) adds speed bonus, streaks, and betting.
 
 from __future__ import annotations
 
-from custom_components.beatify.const import STREAK_MILESTONES
-
-# Scoring thresholds (FR32)
-THRESHOLD_CLOSE = 3  # Within ±3 years = 5 points
-THRESHOLD_NEAR = 5  # Within ±5 years = 1 point
+from custom_components.beatify.const import (
+    DIFFICULTY_DEFAULT,
+    DIFFICULTY_SCORING,
+    STREAK_MILESTONES,
+)
 
 # Points awarded
 POINTS_EXACT = 10
-POINTS_CLOSE = 5
-POINTS_NEAR = 1
 POINTS_WRONG = 0
 
+# Artist scoring constants (Story 10.1)
+POINTS_ARTIST_EXACT = 10
+POINTS_ARTIST_PARTIAL = 5
 
-def calculate_accuracy_score(guess: int, actual: int) -> int:
+
+def calculate_accuracy_score(
+    guess: int,
+    actual: int,
+    difficulty: str = DIFFICULTY_DEFAULT,
+) -> int:
     """
     Calculate accuracy points based on guess vs actual year.
 
-    Scoring rules (FR32):
-    - Exact match: 10 points
-    - Within ±3 years: 5 points
-    - Within ±5 years: 1 point
-    - More than 5 years off: 0 points
+    Scoring rules vary by difficulty (Story 14.1):
+    - Easy: exact=10, ±7 years=5, ±10 years=1
+    - Normal: exact=10, ±3 years=5, ±5 years=1
+    - Hard: exact=10, ±2 years=3, else=0
 
     Args:
         guess: Player's guessed year
         actual: Correct year from playlist
+        difficulty: Difficulty level (easy/normal/hard)
 
     Returns:
-        Points earned (0, 1, 5, or 10)
+        Points earned based on accuracy and difficulty
 
     """
     diff = abs(guess - actual)
 
+    # Get config for current difficulty, fallback to default if unknown
+    scoring = DIFFICULTY_SCORING.get(difficulty, DIFFICULTY_SCORING[DIFFICULTY_DEFAULT])
+    close_range = scoring["close_range"]
+    close_points = scoring["close_points"]
+    near_range = scoring["near_range"]
+    near_points = scoring["near_points"]
+
     if diff == 0:
         return POINTS_EXACT
-    if diff <= THRESHOLD_CLOSE:
-        return POINTS_CLOSE
-    if diff <= THRESHOLD_NEAR:
-        return POINTS_NEAR
+    if close_range > 0 and diff <= close_range:
+        return close_points
+    if near_range > 0 and diff <= near_range:
+        return near_points
     return POINTS_WRONG
 
 
@@ -83,6 +96,7 @@ def calculate_round_score(
     actual: int,
     elapsed_time: float,
     round_duration: float,
+    difficulty: str = DIFFICULTY_DEFAULT,
 ) -> tuple[int, int, float]:
     """
     Calculate total round score with speed bonus.
@@ -92,12 +106,13 @@ def calculate_round_score(
         actual: Correct year from playlist
         elapsed_time: Seconds elapsed since round started
         round_duration: Total round duration in seconds
+        difficulty: Difficulty level (easy/normal/hard)
 
     Returns:
         Tuple of (final_score, base_score, speed_multiplier)
 
     """
-    base_score = calculate_accuracy_score(guess, actual)
+    base_score = calculate_accuracy_score(guess, actual, difficulty)
     speed_multiplier = calculate_speed_multiplier(elapsed_time, round_duration)
     final_score = int(base_score * speed_multiplier)
     return final_score, base_score, speed_multiplier
@@ -167,3 +182,38 @@ def calculate_years_off_text(diff: int) -> str:
     if diff == 1:
         return "1 year off"
     return f"{diff} years off"
+
+
+def calculate_artist_score(guess: str | None, actual: str) -> tuple[int, str | None]:
+    """
+    Calculate artist guess score (Story 10.1).
+
+    Matching rules (case-insensitive, whitespace-trimmed):
+    - Exact match: 10 points
+    - Partial match (substring): 5 points
+    - No match: 0 points
+
+    Args:
+        guess: Player's guessed artist name (can be None or empty)
+        actual: Correct artist name from song metadata
+
+    Returns:
+        Tuple of (points, match_type)
+        match_type is "exact", "partial", or None
+
+    """
+    if not guess or not guess.strip():
+        return 0, None
+
+    guess_clean = guess.strip().lower()
+    actual_clean = actual.strip().lower()
+
+    # Exact match (case-insensitive)
+    if guess_clean == actual_clean:
+        return POINTS_ARTIST_EXACT, "exact"
+
+    # Partial match (substring in either direction)
+    if guess_clean in actual_clean or actual_clean in guess_clean:
+        return POINTS_ARTIST_PARTIAL, "partial"
+
+    return 0, None

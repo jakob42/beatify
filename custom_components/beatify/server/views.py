@@ -11,6 +11,10 @@ from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
 
 from custom_components.beatify.const import (
+    DIFFICULTY_DEFAULT,
+    DIFFICULTY_EASY,
+    DIFFICULTY_HARD,
+    DIFFICULTY_NORMAL,
     DOMAIN,
     MEDIA_PLAYER_DOCS_URL,
     PLAYLIST_DOCS_URL,
@@ -148,6 +152,12 @@ class StartGameView(HomeAssistantView):
         media_player = body.get("media_player")
         language = body.get("language", "en")
         round_duration = body.get("round_duration")  # Story 13.1
+        difficulty = body.get("difficulty", DIFFICULTY_DEFAULT)  # Story 14.1
+
+        # Validate difficulty (Story 14.1)
+        valid_difficulties = (DIFFICULTY_EASY, DIFFICULTY_NORMAL, DIFFICULTY_HARD)
+        if difficulty not in valid_difficulties:
+            difficulty = DIFFICULTY_DEFAULT
 
         # Validate round_duration if provided (Story 13.1)
         if round_duration is not None:
@@ -248,12 +258,13 @@ class StartGameView(HomeAssistantView):
             game_state = GameState()
             self.hass.data[DOMAIN]["game"] = game_state
 
-        # Build create_game kwargs with optional round_duration (Story 13.1)
+        # Build create_game kwargs with optional round_duration (Story 13.1) and difficulty (Story 14.1)
         create_kwargs: dict[str, Any] = {
             "playlists": playlist_paths,
             "songs": songs,
             "media_player": media_player,
             "base_url": base_url,
+            "difficulty": difficulty,
         }
         if round_duration is not None:
             create_kwargs["round_duration"] = round_duration

@@ -24,6 +24,22 @@ VOLUME_STEP = 0.1
 # Key = streak count, Value = bonus points
 STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100}
 
+# Difficulty presets (Story 14.1)
+DIFFICULTY_EASY = "easy"
+DIFFICULTY_NORMAL = "normal"
+DIFFICULTY_HARD = "hard"
+DIFFICULTY_DEFAULT = DIFFICULTY_NORMAL
+
+# Scoring config per difficulty level (Story 14.1)
+# close_range/close_points: years off and points for "close" tier
+# near_range/near_points: years off and points for "near" tier
+# Exact match always awards 10 points (POINTS_EXACT)
+DIFFICULTY_SCORING: dict[str, dict[str, int]] = {
+    DIFFICULTY_EASY: {"close_range": 7, "close_points": 5, "near_range": 10, "near_points": 1},
+    DIFFICULTY_NORMAL: {"close_range": 3, "close_points": 5, "near_range": 5, "near_points": 1},
+    DIFFICULTY_HARD: {"close_range": 2, "close_points": 3, "near_range": 0, "near_points": 0},
+}
+
 # Error codes
 ERR_NAME_TAKEN = "NAME_TAKEN"
 ERR_NAME_INVALID = "NAME_INVALID"

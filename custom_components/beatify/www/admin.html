@@ -68,6 +68,25 @@
             </div>
         </section>
 
+        <!-- Difficulty Selector (Story 14.1) -->
+        <section id="difficulty-section" class="card-section">
+            <h2 data-i18n="admin.selectDifficulty">Difficulty</h2>
+            <div class="difficulty-selector" role="group" aria-label="Scoring difficulty">
+                <button type="button" class="difficulty-btn" data-difficulty="easy" tabindex="0">
+                    <span class="difficulty-label" data-i18n="admin.difficultyEasy">Easy (±7 years)</span>
+                </button>
+                <button type="button" class="difficulty-btn difficulty-btn--active" data-difficulty="normal" tabindex="0">
+                    <span class="difficulty-label" data-i18n="admin.difficultyNormal">Normal (±3 years)</span>
+                </button>
+                <button type="button" class="difficulty-btn" data-difficulty="hard" tabindex="0">
+                    <span class="difficulty-label" data-i18n="admin.difficultyHard">Hard (±2 years)</span>
+                </button>
+            </div>
+            <p class="difficulty-description" id="difficulty-description" data-i18n="admin.difficultyNormalDesc">
+                Exact=10, ±3yrs=5, ±5yrs=1
+            </p>
+        </section>
+
         <!-- Start Game button (Story 9.10: moved from Game Controls card) -->
         <p id="playlist-validation-msg" class="status-error hidden" style="margin: var(--space-md) 0;" data-i18n="admin.selectPlaylistHint">Select at least one playlist</p>
         <button id="start-game" class="btn btn-primary btn-large btn-full-width hidden" disabled data-i18n="admin.startGame">Start Game</button>

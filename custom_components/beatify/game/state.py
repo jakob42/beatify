@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any
 
 from custom_components.beatify.const import (
     DEFAULT_ROUND_DURATION,
+    DIFFICULTY_DEFAULT,
     ERR_GAME_ALREADY_STARTED,
     ERR_GAME_ENDED,
     ERR_GAME_FULL,
@@ -156,6 +157,9 @@ class GameState:
         # Language setting (Epic 12)
         self.language: str = "en"
 
+        # Difficulty setting (Story 14.1)
+        self.difficulty: str = DIFFICULTY_DEFAULT
+
         # Round analytics (Story 13.3)
         self.round_analytics: RoundAnalytics | None = None
 
@@ -166,6 +170,7 @@ class GameState:
         media_player: str,
         base_url: str,
         round_duration: int = DEFAULT_ROUND_DURATION,
+        difficulty: str = DIFFICULTY_DEFAULT,
     ) -> dict[str, Any]:
         """
         Create a new game session.
@@ -176,6 +181,7 @@ class GameState:
             media_player: Entity ID of media player
             base_url: HA base URL for join URL construction
             round_duration: Round timer duration in seconds (10-60, default 30)
+            difficulty: Difficulty level (easy/normal/hard, default normal)
 
         Returns:
             dict with game_id, join_url, song_count, phase
@@ -218,6 +224,9 @@ class GameState:
         self.round_start_time = None
         self.round_duration = round_duration
 
+        # Set difficulty (Story 14.1)
+        self.difficulty = difficulty
+
         # Reset song stopped flag (Story 6.2)
         self.song_stopped = False
 
@@ -255,6 +264,7 @@ class GameState:
             "player_count": len(self.players),
             "players": self.get_players_state(),
             "language": self.language,
+            "difficulty": self.difficulty,
         }
 
         # Phase-specific data
@@ -363,6 +373,9 @@ class GameState:
 
         # Reset language (Epic 12)
         self.language = "en"
+
+        # Reset difficulty (Story 14.1)
+        self.difficulty = DIFFICULTY_DEFAULT
 
     async def pause_game(self, reason: str) -> bool:
         """
@@ -848,6 +861,7 @@ class GameState:
                         correct_year,
                         elapsed,
                         self.round_duration,
+                        self.difficulty,
                     )
                 )
                 player.years_off = abs(player.current_guess - correct_year)

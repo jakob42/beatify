@@ -21,8 +21,11 @@ let selectedLanguage = 'en';
 // Timer state (Story 13.1)
 let selectedDuration = 30;
 
+// Difficulty state (Story 14.1)
+let selectedDifficulty = 'normal';
+
 // Setup sections to hide/show as a group (Story 9.10: game-controls removed, button is standalone)
-const setupSections = ['media-players', 'playlists', 'language-section', 'timer-section'];
+const setupSections = ['media-players', 'playlists', 'language-section', 'timer-section', 'difficulty-section'];
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize i18n based on browser language (Story 12.4)
@@ -49,6 +52,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Timer selector setup (Story 13.1)
     setupTimerSelector();
+
+    // Difficulty selector setup (Story 14.1)
+    setupDifficultySelector();
 
     await loadStatus();
 });
@@ -504,7 +510,8 @@ async function startGame() {
                 playlists: selectedPlaylists.map(p => p.path),
                 media_player: selectedMediaPlayer?.entityId,
                 language: selectedLanguage,
-                round_duration: selectedDuration  // Story 13.1
+                round_duration: selectedDuration,  // Story 13.1
+                difficulty: selectedDifficulty  // Story 14.1
             })
         });
 
@@ -833,4 +840,73 @@ function setTimerDuration(duration) {
 
     selectedDuration = duration;
     updateTimerButtons(duration);
+}
+
+// ==========================================
+// Difficulty Selector Functions (Story 14.1)
+// ==========================================
+
+// Mapping of difficulty levels to their description i18n keys
+const difficultyDescriptions = {
+    easy: 'admin.difficultyEasyDesc',
+    normal: 'admin.difficultyNormalDesc',
+    hard: 'admin.difficultyHardDesc'
+};
+
+/**
+ * Setup difficulty selector buttons
+ */
+function setupDifficultySelector() {
+    var difficultyButtons = document.querySelectorAll('.difficulty-btn');
+
+    difficultyButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var difficulty = btn.getAttribute('data-difficulty');
+            if (difficulty && difficulty !== selectedDifficulty) {
+                setDifficulty(difficulty);
+            }
+        });
+    });
+}
+
+/**
+ * Update difficulty button states
+ * @param {string} difficulty - Difficulty level ('easy', 'normal', or 'hard')
+ */
+function updateDifficultyButtons(difficulty) {
+    var difficultyButtons = document.querySelectorAll('.difficulty-btn');
+    difficultyButtons.forEach(function(btn) {
+        var btnDifficulty = btn.getAttribute('data-difficulty');
+        if (btnDifficulty === difficulty) {
+            btn.classList.add('difficulty-btn--active');
+        } else {
+            btn.classList.remove('difficulty-btn--active');
+        }
+    });
+}
+
+/**
+ * Set difficulty level and update UI
+ * @param {string} difficulty - Difficulty level ('easy', 'normal', or 'hard')
+ */
+function setDifficulty(difficulty) {
+    // Validate difficulty
+    var validDifficulties = ['easy', 'normal', 'hard'];
+    if (validDifficulties.indexOf(difficulty) === -1) {
+        difficulty = 'normal';
+    }
+
+    selectedDifficulty = difficulty;
+    updateDifficultyButtons(difficulty);
+
+    // Update description text
+    var descriptionEl = document.getElementById('difficulty-description');
+    if (descriptionEl) {
+        var descKey = difficultyDescriptions[difficulty];
+        descriptionEl.setAttribute('data-i18n', descKey);
+        // Use i18n translation if available
+        if (typeof BeatifyI18n !== 'undefined' && BeatifyI18n.t) {
+            descriptionEl.textContent = BeatifyI18n.t(descKey);
+        }
+    }
 }

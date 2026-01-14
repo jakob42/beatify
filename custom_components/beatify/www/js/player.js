@@ -627,6 +627,38 @@
     }
 
     // ============================================
+    // Difficulty Badge (Story 14.1)
+    // ============================================
+
+    /**
+     * Render difficulty badge in lobby and game views
+     * @param {string} difficulty - Difficulty level ('easy', 'normal', or 'hard')
+     */
+    function renderDifficultyBadge(difficulty) {
+        var labelKey = {
+            easy: 'game.difficultyEasy',
+            normal: 'game.difficultyNormal',
+            hard: 'game.difficultyHard'
+        }[difficulty] || 'game.difficultyNormal';
+
+        var label = t(labelKey);
+
+        // Update both lobby and game view badges
+        var lobbyBadge = document.getElementById('lobby-difficulty-badge');
+        var gameBadge = document.getElementById('game-difficulty-badge');
+
+        if (lobbyBadge) {
+            lobbyBadge.textContent = label;
+            lobbyBadge.className = 'difficulty-badge difficulty-badge--' + (difficulty || 'normal');
+        }
+
+        if (gameBadge) {
+            gameBadge.textContent = label;
+            gameBadge.className = 'difficulty-badge difficulty-badge--' + (difficulty || 'normal');
+        }
+    }
+
+    // ============================================
     // QR Code Sharing (Story 3.4)
     // ============================================
 
@@ -2719,6 +2751,10 @@
                 setEnergyLevel('warmup');  // Story 9.9
                 showView('lobby-view');
                 renderPlayerList(players);
+                // Render difficulty badge (Story 14.1)
+                if (data.difficulty) {
+                    renderDifficultyBadge(data.difficulty);
+                }
                 // Render QR code with join URL
                 if (data.join_url) {
                     renderQRCode(data.join_url);
@@ -2735,6 +2771,10 @@
                 setEnergyLevel('party');  // Story 9.9
                 showView('game-view');
                 updateGameView(data);
+                // Render difficulty badge (Story 14.1)
+                if (data.difficulty) {
+                    renderDifficultyBadge(data.difficulty);
+                }
                 if (data.deadline) {
                     startCountdown(data.deadline);
                 }

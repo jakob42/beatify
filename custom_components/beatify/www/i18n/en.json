@@ -55,7 +55,10 @@
     "artistPlaceholder": "Artist name",
     "paused": "Game Paused",
     "waitingForHost": "Waiting for host to reconnect...",
-    "pausedHint": "The game will resume when the host returns"
+    "pausedHint": "The game will resume when the host returns",
+    "difficultyEasy": "Easy",
+    "difficultyNormal": "Normal",
+    "difficultyHard": "Hard"
   },
   "reveal": {
     "correct": "Correct!",
@@ -162,7 +165,14 @@
     "selectTimer": "Round Timer",
     "timerQuick": "Quick",
     "timerNormal": "Normal",
-    "timerRelaxed": "Relaxed"
+    "timerRelaxed": "Relaxed",
+    "selectDifficulty": "Difficulty",
+    "difficultyEasy": "Easy (±7 years)",
+    "difficultyNormal": "Normal (±3 years)",
+    "difficultyHard": "Hard (±2 years)",
+    "difficultyEasyDesc": "Exact=10, ±7yrs=5, ±10yrs=1",
+    "difficultyNormalDesc": "Exact=10, ±3yrs=5, ±5yrs=1",
+    "difficultyHardDesc": "Exact=10, ±2yrs=3, else=0"
   },
   "dashboard": {
     "title": "Beatify - Dashboard",
