@@ -66,6 +66,26 @@ ERR_NO_STEAL_AVAILABLE = "NO_STEAL_AVAILABLE"  # Story 15.3 - player has no stea
 ERR_TARGET_NOT_SUBMITTED = "TARGET_NOT_SUBMITTED"  # Story 15.3 - target hasn't submitted
 ERR_CANNOT_STEAL_SELF = "CANNOT_STEAL_SELF"  # Story 15.3 - cannot target self
 
+# Song difficulty rating constants (Story 15.1)
+MIN_PLAYS_FOR_DIFFICULTY = 3  # Minimum plays before showing difficulty rating
+CORRECT_GUESS_THRESHOLD = 3  # Years off to count as "correct" for difficulty calc
+DIFFICULTY_LABELS: dict[int, str] = {
+    1: "easy",
+    2: "medium",
+    3: "hard",
+    4: "extreme",
+}
+# Accuracy thresholds: key = stars, value = min accuracy percentage
+DIFFICULTY_THRESHOLDS: dict[int, int] = {1: 70, 2: 40, 3: 20, 4: 0}
+
+# Superlative award constants (Story 15.2)
+MIN_SUBMISSIONS_FOR_SPEED = 3  # Minimum submissions to qualify for Speed Demon
+MIN_STREAK_FOR_AWARD = 3  # Minimum streak to qualify for Lucky Streak
+MIN_BETS_FOR_AWARD = 3  # Minimum bets placed to qualify for Risk Taker
+MIN_ROUNDS_FOR_CLUTCH = 3  # Minimum rounds played for Clutch Player
+MIN_CLOSE_CALLS = 2  # Minimum close guesses to qualify for Close Calls
+MAX_SUPERLATIVES = 5  # Maximum number of superlatives to display
+
 # External URLs
 PLAYLIST_DOCS_URL = "https://github.com/mholzi/beatify/wiki/Creating-Playlists"
 MEDIA_PLAYER_DOCS_URL = "https://www.home-assistant.io/integrations/#media-player"

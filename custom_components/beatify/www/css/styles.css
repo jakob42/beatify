@@ -2750,6 +2750,155 @@ body.theme-dark .admin-controls {
 }
 
 /* ============================================
+   Song Difficulty Rating (Story 15.1)
+   ============================================ */
+
+.song-difficulty {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    justify-content: center;
+    margin-top: var(--space-sm);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+    animation-delay: 0.3s;
+}
+
+.difficulty-stars {
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+}
+
+/* Easy (1-star): green glow */
+.difficulty-1 {
+    color: var(--color-success-neon);
+    text-shadow: 0 0 10px var(--color-success-neon);
+}
+
+/* Medium (2-star): yellow */
+.difficulty-2 {
+    color: var(--color-warning);
+    text-shadow: 0 0 10px var(--color-warning);
+}
+
+/* Hard (3-star): orange */
+.difficulty-3 {
+    color: var(--color-warning-alt);
+    text-shadow: 0 0 10px var(--color-warning-alt);
+}
+
+/* Extreme (4-star): red/pink neon */
+.difficulty-4 {
+    color: var(--color-accent-primary);
+    text-shadow: 0 0 10px var(--color-accent-primary);
+}
+
+.difficulty-label {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--font-size-sm);
+}
+
+.difficulty-accuracy {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
+/* ============================================
+   Superlatives / Fun Awards (Story 15.2)
+   ============================================ */
+
+.superlatives-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-md);
+    margin: var(--space-lg) 0;
+    padding: 0 var(--space-md);
+}
+
+.superlative-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-md);
+    min-width: 120px;
+    max-width: 160px;
+    background: var(--color-dark-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    animation: superlativeSlideIn 0.5s ease-out forwards;
+}
+
+@keyframes superlativeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.superlative-emoji {
+    font-size: 2rem;
+    margin-bottom: var(--space-xs);
+}
+
+.superlative-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--font-size-xs);
+    color: var(--color-accent-secondary);
+    text-align: center;
+    margin-bottom: var(--space-xs);
+}
+
+.superlative-player {
+    font-weight: bold;
+    font-size: var(--font-size-base);
+    color: var(--color-dark-text-primary);
+    text-align: center;
+    margin-bottom: var(--space-xs);
+}
+
+.superlative-value {
+    font-size: var(--font-size-sm);
+    color: var(--color-dark-text-secondary);
+    text-align: center;
+}
+
+/* Card-specific accent colors */
+.superlative-card--speed_demon {
+    border-color: var(--color-warning);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.superlative-card--lucky_streak {
+    border-color: var(--color-error);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+.superlative-card--risk_taker {
+    border-color: var(--color-purple-primary);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+.superlative-card--clutch_player {
+    border-color: var(--color-success-neon);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+}
+
+.superlative-card--close_calls {
+    border-color: var(--color-accent-secondary);
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
+}
+
+/* ============================================
    Round Analytics (Story 13.3)
    ============================================ */
 

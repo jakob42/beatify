@@ -443,3 +443,211 @@ class TestStatsServiceSummaryHistory:
         history = await stats_service.get_history(limit=10)
 
         assert len(history) == 10
+
+
+# =============================================================================
+# SONG DIFFICULTY TESTS (Story 15.1)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestSongDifficultyRecording:
+    """Tests for record_song_result method (Story 15.1 AC3)."""
+
+    @pytest.mark.asyncio
+    async def test_record_song_result_creates_entry(self, stats_service):
+        """record_song_result() creates song entry with correct stats."""
+        player_results = [
+            {"submitted": True, "years_off": 0},
+            {"submitted": True, "years_off": 2},
+            {"submitted": False, "years_off": 0},
+        ]
+
+        await stats_service.record_song_result("spotify:track:abc123", player_results)
+
+        songs = stats_service._stats["songs"]
+        assert "spotify_track_abc123" in songs
+        song = songs["spotify_track_abc123"]
+        assert song["times_played"] == 1
+        assert song["total_guesses"] == 2
+        assert song["correct_guesses"] == 2  # Both within threshold (0 and 2)
+
+    @pytest.mark.asyncio
+    async def test_record_song_result_accumulates_stats(self, stats_service):
+        """record_song_result() accumulates stats across multiple rounds."""
+        # First round: 2 guesses, both correct (within 3 years)
+        await stats_service.record_song_result("spotify:track:abc123", [
+            {"submitted": True, "years_off": 1},
+            {"submitted": True, "years_off": 2},
+        ])
+
+        # Second round: 2 guesses, 1 correct
+        await stats_service.record_song_result("spotify:track:abc123", [
+            {"submitted": True, "years_off": 0},
+            {"submitted": True, "years_off": 10},
+        ])
+
+        song = stats_service._stats["songs"]["spotify_track_abc123"]
+        assert song["times_played"] == 2
+        assert song["total_guesses"] == 4
+        assert song["correct_guesses"] == 3  # 3 within threshold
+
+    @pytest.mark.asyncio
+    async def test_record_song_result_correct_threshold(self, stats_service):
+        """record_song_result() uses CORRECT_GUESS_THRESHOLD (3 years)."""
+        player_results = [
+            {"submitted": True, "years_off": 3},  # Exactly 3 = correct
+            {"submitted": True, "years_off": 4},  # 4 = not correct
+        ]
+
+        await stats_service.record_song_result("spotify:track:test", player_results)
+
+        song = stats_service._stats["songs"]["spotify_track_test"]
+        assert song["correct_guesses"] == 1  # Only the 3-year-off guess
+
+    @pytest.mark.asyncio
+    async def test_record_song_result_tracks_total_years_off(self, stats_service):
+        """record_song_result() tracks total years off for future analytics."""
+        player_results = [
+            {"submitted": True, "years_off": 5},
+            {"submitted": True, "years_off": 10},
+        ]
+
+        await stats_service.record_song_result("spotify:track:test", player_results)
+
+        song = stats_service._stats["songs"]["spotify_track_test"]
+        assert song["total_years_off"] == 15
+
+
+@pytest.mark.unit
+class TestSongDifficultyCalculation:
+    """Tests for get_song_difficulty method (Story 15.1 AC1, AC2, AC4)."""
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_returns_none_insufficient_plays(self, stats_service):
+        """get_song_difficulty() returns None when times_played < 3 (AC4)."""
+        # Only play once
+        await stats_service.record_song_result("spotify:track:test", [
+            {"submitted": True, "years_off": 0},
+        ])
+
+        result = stats_service.get_song_difficulty("spotify:track:test")
+
+        assert result is None  # Need 3 plays minimum
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_returns_none_unknown_song(self, stats_service):
+        """get_song_difficulty() returns None for unknown song URI."""
+        result = stats_service.get_song_difficulty("spotify:track:unknown")
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_easy_high_accuracy(self, stats_service):
+        """get_song_difficulty() returns 1 star (easy) for high accuracy (70%+)."""
+        # Play song 3 times with high accuracy
+        for _ in range(3):
+            await stats_service.record_song_result("spotify:track:easy", [
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 2},
+                {"submitted": True, "years_off": 1},
+            ])
+
+        result = stats_service.get_song_difficulty("spotify:track:easy")
+
+        assert result is not None
+        assert result["stars"] == 1
+        assert result["label"] == "easy"
+        assert result["accuracy"] >= 70.0
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_medium_moderate_accuracy(self, stats_service):
+        """get_song_difficulty() returns 2 stars (medium) for 40-69% accuracy."""
+        # Play song 3 times with 50% accuracy
+        for _ in range(3):
+            await stats_service.record_song_result("spotify:track:medium", [
+                {"submitted": True, "years_off": 1},   # correct
+                {"submitted": True, "years_off": 10},  # wrong
+            ])
+
+        result = stats_service.get_song_difficulty("spotify:track:medium")
+
+        assert result is not None
+        assert result["stars"] == 2
+        assert result["label"] == "medium"
+        assert 40.0 <= result["accuracy"] < 70.0
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_hard_low_accuracy(self, stats_service):
+        """get_song_difficulty() returns 3 stars (hard) for 20-39% accuracy."""
+        # Play song 3 times with ~30% accuracy
+        for _ in range(3):
+            await stats_service.record_song_result("spotify:track:hard", [
+                {"submitted": True, "years_off": 1},   # correct
+                {"submitted": True, "years_off": 10},  # wrong
+                {"submitted": True, "years_off": 15},  # wrong
+            ])
+
+        result = stats_service.get_song_difficulty("spotify:track:hard")
+
+        assert result is not None
+        assert result["stars"] == 3
+        assert result["label"] == "hard"
+        assert 20.0 <= result["accuracy"] < 40.0
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_extreme_very_low_accuracy(self, stats_service):
+        """get_song_difficulty() returns 4 stars (extreme) for <20% accuracy."""
+        # Play song 3 times with very low accuracy (less than 20%)
+        for _ in range(3):
+            await stats_service.record_song_result("spotify:track:extreme", [
+                {"submitted": True, "years_off": 10},  # wrong
+                {"submitted": True, "years_off": 15},  # wrong
+                {"submitted": True, "years_off": 20},  # wrong
+                {"submitted": True, "years_off": 25},  # wrong
+                {"submitted": True, "years_off": 30},  # wrong
+                {"submitted": True, "years_off": 2},   # correct - 1 of 6 = 16.7%
+            ])
+
+        result = stats_service.get_song_difficulty("spotify:track:extreme")
+
+        assert result is not None
+        assert result["stars"] == 4
+        assert result["label"] == "extreme"
+        assert result["accuracy"] < 20.0
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_threshold_boundary_70(self, stats_service):
+        """get_song_difficulty() returns 1 star at exactly 70% accuracy."""
+        # 7 correct out of 10 = 70% exactly
+        for _ in range(3):
+            await stats_service.record_song_result("spotify:track:boundary70", [
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 1},
+                {"submitted": True, "years_off": 10},
+                {"submitted": True, "years_off": 10},
+                {"submitted": True, "years_off": 10},
+            ])
+
+        result = stats_service.get_song_difficulty("spotify:track:boundary70")
+
+        assert result is not None
+        assert result["stars"] == 1
+
+    @pytest.mark.asyncio
+    async def test_get_song_difficulty_returns_times_played(self, stats_service):
+        """get_song_difficulty() includes times_played in response."""
+        for _ in range(5):
+            await stats_service.record_song_result("spotify:track:test", [
+                {"submitted": True, "years_off": 2},
+            ])
+
+        result = stats_service.get_song_difficulty("spotify:track:test")
+
+        assert result is not None
+        assert result["times_played"] == 5

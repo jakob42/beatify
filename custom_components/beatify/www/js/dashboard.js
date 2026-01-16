@@ -479,6 +479,9 @@
         // Render motivational message (Story 14.4)
         renderMotivationalMessage(data.game_performance);
 
+        // Render song difficulty rating (Story 15.1)
+        renderSongDifficulty(data.song_difficulty);
+
         // Story 14.5 (AC1, AC2, AC7): Trigger celebration confetti on dashboard
         // M1 fix: Prioritize record over exact to avoid duplicate confetti
         if (data.game_performance && data.game_performance.is_new_record) {
@@ -525,6 +528,35 @@
         };
         if (iconEl) iconEl.textContent = icons[message.type] || '';
         if (textEl) textEl.textContent = message.message || '';
+    }
+
+    /**
+     * Render song difficulty rating (Story 15.1)
+     * @param {Object|null} difficulty - Difficulty data with stars, label, accuracy, times_played
+     */
+    function renderSongDifficulty(difficulty) {
+        var el = document.getElementById('song-difficulty');
+        if (!el) return;
+
+        // Hide if no difficulty data (AC4: insufficient plays)
+        if (!difficulty) {
+            el.classList.add('hidden');
+            return;
+        }
+
+        // Build stars string
+        var stars = '';
+        for (var i = 0; i < difficulty.stars; i++) {
+            stars += '<span class="star">&#9733;</span>';
+        }
+
+        // Render difficulty display
+        el.innerHTML =
+            '<div class="difficulty-stars difficulty-' + difficulty.stars + '">' + stars + '</div>' +
+            '<span class="difficulty-label">' + t('difficulty.' + difficulty.label) + '</span>' +
+            '<span class="difficulty-accuracy">' + difficulty.accuracy + '% ' + t('difficulty.accuracy') + '</span>';
+
+        el.classList.remove('hidden');
     }
 
     /**
@@ -644,6 +676,9 @@
         // Render stats comparison (Story 14.4)
         renderStatsComparison(data.game_performance);
 
+        // Render superlatives / fun awards (Story 15.2)
+        renderSuperlatives(data.superlatives);
+
         // Story 14.5 (AC3, AC7): Trigger winner confetti on dashboard
         // H2 fix: Only trigger if there's a valid winner with score > 0
         var winner = leaderboard.find(function(p) { return p.rank === 1; });
@@ -714,6 +749,55 @@
         container.className = cssClass;
         if (iconEl) iconEl.textContent = icon;
         if (textEl) textEl.textContent = text;
+    }
+
+    /**
+     * Render superlatives / fun awards (Story 15.2)
+     * @param {Array|null} superlatives - Array of award objects from state
+     */
+    function renderSuperlatives(superlatives) {
+        var container = document.getElementById('superlatives-container');
+        if (!container) return;
+
+        // Hide if no superlatives
+        if (!superlatives || superlatives.length === 0) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        var html = '';
+        superlatives.forEach(function(award, index) {
+            var valueText = '';
+            switch (award.value_label) {
+                case 'avg_time':
+                    valueText = award.value + 's ' + t('superlatives.avgTime');
+                    break;
+                case 'streak':
+                    valueText = award.value + ' ' + t('superlatives.streak');
+                    break;
+                case 'bets':
+                    valueText = award.value + ' ' + t('superlatives.bets');
+                    break;
+                case 'points':
+                    valueText = award.value + ' ' + t('superlatives.points');
+                    break;
+                case 'close_guesses':
+                    valueText = award.value + ' ' + t('superlatives.closeGuesses');
+                    break;
+                default:
+                    valueText = award.value;
+            }
+
+            html += '<div class="superlative-card superlative-card--' + award.id + '" style="animation-delay: ' + (index * 0.2) + 's">' +
+                '<div class="superlative-emoji">' + award.emoji + '</div>' +
+                '<div class="superlative-title">' + t('superlatives.' + award.title) + '</div>' +
+                '<div class="superlative-player">' + escapeHtml(award.player_name) + '</div>' +
+                '<div class="superlative-value">' + valueText + '</div>' +
+            '</div>';
+        });
+
+        container.innerHTML = html;
+        container.classList.remove('hidden');
     }
 
     // ============================================

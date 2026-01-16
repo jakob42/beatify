@@ -54,6 +54,12 @@ class PlayerSession:
     rounds_played: int = 0  # Rounds where player submitted
     bets_won: int = 0  # Successful bets
 
+    # Superlative tracking (Story 15.2) - CUMULATIVE, NOT reset in reset_round()
+    submission_times: list[float] = field(default_factory=list)  # Time-to-submit per round (seconds)
+    bets_placed: int = 0  # Total bets placed (distinct from bets_won)
+    close_calls: int = 0  # Number of +/-1 year guesses (not exact)
+    round_scores: list[int] = field(default_factory=list)  # All round scores for final 3 calc
+
     # Steal power-up tracking (Story 15.3)
     steal_available: bool = False  # True if steal unlocked and not yet used
     steal_used: bool = False  # True if steal was used this game (max 1 per game)
@@ -100,3 +106,37 @@ class PlayerSession:
         self.steal_available = False
         self.steal_used = True
         self.stole_from = target_name
+
+    def reset_for_new_game(self) -> None:
+        """Reset all game-level stats for a new game (Story 15.2)."""
+        # Reset score and streaks
+        self.score = 0
+        self.streak = 0
+        self.best_streak = 0
+        self.rounds_played = 0
+        self.bets_won = 0
+
+        # Reset superlative tracking
+        self.submission_times = []
+        self.bets_placed = 0
+        self.close_calls = 0
+        self.round_scores = []
+
+        # Reset steal tracking
+        self.steal_available = False
+        self.steal_used = False
+
+        # Also reset round-level state
+        self.reset_round()
+
+    @property
+    def avg_submission_time(self) -> float | None:
+        """Average submission time in seconds (Story 15.2)."""
+        if len(self.submission_times) < 3:
+            return None
+        return sum(self.submission_times) / len(self.submission_times)
+
+    @property
+    def final_three_score(self) -> int:
+        """Sum of last 3 round scores (Story 15.2)."""
+        return sum(self.round_scores[-3:]) if len(self.round_scores) >= 3 else 0

@@ -227,6 +227,26 @@
     "noGuesses": "No guesses",
     "histogram": "Guess distribution"
   },
+  "difficulty": {
+    "easy": "Easy Song",
+    "medium": "Medium Song",
+    "hard": "Hard Song",
+    "extreme": "Extreme Song",
+    "accuracy": "accuracy",
+    "notEnoughData": "Not enough data yet"
+  },
+  "superlatives": {
+    "speed_demon": "Speed Demon",
+    "lucky_streak": "Hot Streak",
+    "risk_taker": "Risk Taker",
+    "clutch_player": "Clutch Player",
+    "close_calls": "Close Calls",
+    "avgTime": "avg",
+    "streak": "in a row",
+    "bets": "bets",
+    "points": "pts in final 3",
+    "closeGuesses": "close guesses"
+  },
   "stats": {
     "firstGame": "First game! Setting the benchmark",
     "newRecord": "New Record! Highest scoring game ever!",

@@ -41,6 +41,7 @@ class StatsService:
                 "highest_avg_score": 0.0,
                 "highest_avg_game_id": None,
             },
+            "songs": {},  # Song difficulty tracking (Story 15.1)
         }
 
     async def load(self) -> None:
@@ -279,3 +280,119 @@ class StatsService:
         games = self._stats.get("games", [])
         # Return newest first
         return list(reversed(games[-limit:]))
+
+    # Song difficulty tracking methods (Story 15.1)
+
+    def _uri_to_key(self, uri: str) -> str:
+        """
+        Convert song URI to safe dictionary key.
+
+        Args:
+            uri: Song URI (e.g., "spotify:track:4iV5W9uYEdYUVa79Axb7Rh")
+
+        Returns:
+            Safe key string (e.g., "spotify_track_4iV5W9uYEdYUVa79Axb7Rh")
+
+        """
+        return uri.replace(":", "_").replace("/", "_")
+
+    async def record_song_result(
+        self, song_uri: str, player_results: list[dict]
+    ) -> None:
+        """
+        Record song results from a completed round (Story 15.1 AC3).
+
+        A guess is considered "correct" for difficulty purposes when years_off <= 3.
+
+        Args:
+            song_uri: URI of the song that was played
+            player_results: List of player result dicts with 'submitted', 'years_off'
+
+        """
+        from custom_components.beatify.const import (  # noqa: PLC0415
+            CORRECT_GUESS_THRESHOLD,
+        )
+
+        song_key = self._uri_to_key(song_uri)
+
+        # Ensure songs dict exists (for legacy stats files)
+        if "songs" not in self._stats:
+            self._stats["songs"] = {}
+
+        # Initialize song entry if not exists
+        if song_key not in self._stats["songs"]:
+            self._stats["songs"][song_key] = {
+                "times_played": 0,
+                "correct_guesses": 0,
+                "total_guesses": 0,
+                "total_years_off": 0,
+            }
+
+        song = self._stats["songs"][song_key]
+        song["times_played"] += 1
+
+        # Process player results
+        for result in player_results:
+            if result.get("submitted"):
+                song["total_guesses"] += 1
+                years_off = result.get("years_off", 0)
+                song["total_years_off"] += years_off
+                if years_off <= CORRECT_GUESS_THRESHOLD:
+                    song["correct_guesses"] += 1
+
+        # Save to file
+        await self.save()
+
+        _LOGGER.debug(
+            "Recorded song result for %s: %d guesses, %d correct",
+            song_key,
+            song["total_guesses"],
+            song["correct_guesses"],
+        )
+
+    def get_song_difficulty(self, song_uri: str) -> dict[str, Any] | None:
+        """
+        Calculate difficulty rating for a song (Story 15.1 AC1, AC2, AC4).
+
+        Args:
+            song_uri: URI of the song
+
+        Returns:
+            Dict with stars, label, accuracy, times_played, or None if insufficient data
+
+        """
+        from custom_components.beatify.const import (  # noqa: PLC0415
+            DIFFICULTY_LABELS,
+            DIFFICULTY_THRESHOLDS,
+            MIN_PLAYS_FOR_DIFFICULTY,
+        )
+
+        song_key = self._uri_to_key(song_uri)
+        songs = self._stats.get("songs", {})
+        song_stats = songs.get(song_key)
+
+        # Not enough data (AC4)
+        if not song_stats or song_stats.get("times_played", 0) < MIN_PLAYS_FOR_DIFFICULTY:
+            return None
+
+        # Guard against division by zero
+        if song_stats.get("total_guesses", 0) == 0:
+            return None
+
+        # Calculate accuracy percentage
+        accuracy = (song_stats["correct_guesses"] / song_stats["total_guesses"]) * 100
+
+        # Map accuracy to stars (AC2)
+        # Higher accuracy = easier song = fewer stars
+        stars = 4  # Default to extreme
+        for star_level, threshold in sorted(DIFFICULTY_THRESHOLDS.items()):
+            if accuracy >= threshold:
+                stars = star_level
+                break
+
+        return {
+            "stars": stars,
+            "label": DIFFICULTY_LABELS[stars],
+            "accuracy": round(accuracy, 1),
+            "times_played": song_stats["times_played"],
+        }

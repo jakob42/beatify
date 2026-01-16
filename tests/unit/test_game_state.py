@@ -336,8 +336,8 @@ class TestRoundDurationValidation:
         assert state.round_duration == 30
         assert "game_id" in result
 
-    def test_create_game_with_min_duration_10(self):
-        """create_game accepts minimum duration of 10 seconds."""
+    def test_create_game_with_min_duration_15(self):
+        """create_game accepts minimum duration of 15 seconds."""
         from custom_components.beatify.game.state import GameState
 
         state = GameState()
@@ -346,10 +346,10 @@ class TestRoundDurationValidation:
             songs=[{"year": 1985, "uri": "spotify:track:test"}],
             media_player="media_player.test",
             base_url="http://test.local:8123",
-            round_duration=10,
+            round_duration=15,
         )
 
-        assert state.round_duration == 10
+        assert state.round_duration == 15
 
     def test_create_game_with_max_duration_60(self):
         """create_game accepts maximum duration of 60 seconds."""
@@ -367,7 +367,7 @@ class TestRoundDurationValidation:
         assert state.round_duration == 60
 
     def test_create_game_rejects_below_min_duration(self):
-        """create_game rejects duration below 10 seconds."""
+        """create_game rejects duration below 15 seconds."""
         from custom_components.beatify.game.state import GameState
 
         state = GameState()
@@ -394,8 +394,8 @@ class TestRoundDurationValidation:
                 round_duration=90,
             )
 
-    def test_create_game_defaults_to_30_when_no_duration(self):
-        """create_game defaults to 30 seconds when no duration specified."""
+    def test_create_game_defaults_to_45_when_no_duration(self):
+        """create_game defaults to 45 seconds when no duration specified."""
         from custom_components.beatify.game.state import GameState
 
         state = GameState()
@@ -406,7 +406,7 @@ class TestRoundDurationValidation:
             base_url="http://test.local:8123",
         )
 
-        assert state.round_duration == 30
+        assert state.round_duration == 45
 
 
 @pytest.mark.unit
@@ -1200,3 +1200,295 @@ class TestUseSteal:
 
         assert result["success"] is False
         assert result["error"] == ERR_INVALID_ACTION
+
+
+# =============================================================================
+# SUPERLATIVES TESTS (Story 15.2)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestCalculateSuperlatives:
+    """Tests for calculate_superlatives method (Story 15.2)."""
+
+    def test_superlatives_empty_players(self):
+        """calculate_superlatives() returns empty list when no players."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        result = state.calculate_superlatives()
+
+        assert result == []
+
+    def test_superlatives_speed_demon(self):
+        """calculate_superlatives() identifies fastest average submitter."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        mock_ws = MagicMock()
+        state.add_player("FastPlayer", mock_ws)
+        state.add_player("SlowPlayer", mock_ws)
+
+        # FastPlayer: avg 2.0s (needs 3+ submissions)
+        state.players["FastPlayer"].submission_times = [1.5, 2.0, 2.5]
+        # SlowPlayer: avg 5.0s
+        state.players["SlowPlayer"].submission_times = [4.0, 5.0, 6.0]
+
+        result = state.calculate_superlatives()
+
+        speed_award = next((a for a in result if a["id"] == "speed_demon"), None)
+        assert speed_award is not None
+        assert speed_award["player_name"] == "FastPlayer"
+        assert speed_award["value"] == 2.0  # Average time
+        assert speed_award["emoji"] == "⚡"
+
+    def test_superlatives_lucky_streak(self):
+        """calculate_superlatives() identifies best streak (min 3)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        mock_ws = MagicMock()
+        state.add_player("StreakKing", mock_ws)
+        state.add_player("NoStreak", mock_ws)
+
+        state.players["StreakKing"].best_streak = 5
+        state.players["NoStreak"].best_streak = 2  # Below threshold
+
+        result = state.calculate_superlatives()
+
+        streak_award = next((a for a in result if a["id"] == "lucky_streak"), None)
+        assert streak_award is not None
+        assert streak_award["player_name"] == "StreakKing"
+        assert streak_award["value"] == 5
+        assert streak_award["emoji"] == "🔥"
+
+    def test_superlatives_risk_taker(self):
+        """calculate_superlatives() identifies most bets placed (min 3)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        mock_ws = MagicMock()
+        state.add_player("Gambler", mock_ws)
+        state.add_player("SafePlayer", mock_ws)
+
+        state.players["Gambler"].bets_placed = 5
+        state.players["SafePlayer"].bets_placed = 1  # Below threshold
+
+        result = state.calculate_superlatives()
+
+        risk_award = next((a for a in result if a["id"] == "risk_taker"), None)
+        assert risk_award is not None
+        assert risk_award["player_name"] == "Gambler"
+        assert risk_award["value"] == 5
+        assert risk_award["emoji"] == "🎲"
+
+    def test_superlatives_clutch_player(self):
+        """calculate_superlatives() identifies best final 3 rounds performer."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.round = 5  # Need 3+ rounds for clutch
+
+        mock_ws = MagicMock()
+        state.add_player("ClutchPro", mock_ws)
+        state.add_player("Faded", mock_ws)
+
+        # ClutchPro: 30 pts in final 3 (10, 10, 10)
+        state.players["ClutchPro"].round_scores = [5, 5, 10, 10, 10]
+        # Faded: 6 pts in final 3 (0, 3, 3)
+        state.players["Faded"].round_scores = [10, 10, 0, 3, 3]
+
+        result = state.calculate_superlatives()
+
+        clutch_award = next((a for a in result if a["id"] == "clutch_player"), None)
+        assert clutch_award is not None
+        assert clutch_award["player_name"] == "ClutchPro"
+        assert clutch_award["value"] == 30
+        assert clutch_award["emoji"] == "🌟"
+
+    def test_superlatives_close_calls(self):
+        """calculate_superlatives() identifies most close guesses (min 2)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        mock_ws = MagicMock()
+        state.add_player("AlmostPro", mock_ws)
+        state.add_player("WayOff", mock_ws)
+
+        state.players["AlmostPro"].close_calls = 4  # 4 times 1-year-off
+        state.players["WayOff"].close_calls = 1  # Below threshold
+
+        result = state.calculate_superlatives()
+
+        close_award = next((a for a in result if a["id"] == "close_calls"), None)
+        assert close_award is not None
+        assert close_award["player_name"] == "AlmostPro"
+        assert close_award["value"] == 4
+        assert close_award["emoji"] == "🎯"
+
+    def test_superlatives_max_five_awards(self):
+        """calculate_superlatives() returns max 5 awards (AC1)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.round = 5
+
+        mock_ws = MagicMock()
+        state.add_player("SuperPlayer", mock_ws)
+
+        # Set up player to qualify for all awards
+        state.players["SuperPlayer"].submission_times = [1.0, 1.0, 1.0]
+        state.players["SuperPlayer"].best_streak = 5
+        state.players["SuperPlayer"].bets_placed = 5
+        state.players["SuperPlayer"].round_scores = [10, 10, 10, 10, 10]
+        state.players["SuperPlayer"].close_calls = 5
+
+        result = state.calculate_superlatives()
+
+        assert len(result) <= 5
+
+    def test_superlatives_no_awards_below_thresholds(self):
+        """calculate_superlatives() returns empty when no thresholds met."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.round = 2  # Too few rounds for clutch
+
+        mock_ws = MagicMock()
+        state.add_player("NewPlayer", mock_ws)
+
+        # All values below thresholds
+        state.players["NewPlayer"].submission_times = [2.0]  # Only 1 submission
+        state.players["NewPlayer"].best_streak = 2  # Below 3
+        state.players["NewPlayer"].bets_placed = 2  # Below 3
+        state.players["NewPlayer"].close_calls = 1  # Below 2
+
+        result = state.calculate_superlatives()
+
+        assert len(result) == 0
+
+    def test_superlatives_clutch_requires_three_rounds(self):
+        """calculate_superlatives() only awards clutch if game has 3+ rounds."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.round = 2  # Only 2 rounds
+
+        mock_ws = MagicMock()
+        state.add_player("Player", mock_ws)
+        state.players["Player"].round_scores = [10, 10]
+
+        result = state.calculate_superlatives()
+
+        clutch_award = next((a for a in result if a["id"] == "clutch_player"), None)
+        assert clutch_award is None
+
+    def test_superlatives_included_in_end_state(self):
+        """calculate_superlatives() is included in END phase state."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GamePhase, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        # Add player BEFORE setting phase to END (END phase rejects new players)
+        mock_ws = MagicMock()
+        state.add_player("Winner", mock_ws)
+        # Access player by name from the players dict
+        winner_player = state.players["Winner"]
+        winner_player.score = 100
+        winner_player.best_streak = 5
+
+        # Now set to END phase
+        state.phase = GamePhase.END
+        state.round = 5
+
+        result = state.get_state()
+
+        assert "superlatives" in result
+        # Should have the lucky_streak award
+        streak_award = next(
+            (a for a in result["superlatives"] if a["id"] == "lucky_streak"), None
+        )
+        assert streak_award is not None

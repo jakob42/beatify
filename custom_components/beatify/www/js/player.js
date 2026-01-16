@@ -1639,6 +1639,9 @@
         // Render rich song info (Story 14.3)
         renderRichSongInfo(song);
 
+        // Render song difficulty rating (Story 15.1)
+        renderSongDifficulty(data.song_difficulty);
+
         // Show container if there's fun fact OR rich info
         if (funFactContainer) {
             var richInfo = document.getElementById('song-rich-info');
@@ -1880,6 +1883,84 @@
     // ============================================
     // Rich Song Info (Story 14.3)
     // ============================================
+
+    /**
+     * Render superlatives / fun awards (Story 15.2)
+     * @param {Array|null} superlatives - Array of award objects from state
+     */
+    function renderSuperlatives(superlatives) {
+        var container = document.getElementById('superlatives-container');
+        if (!container) return;
+
+        // Hide if no superlatives
+        if (!superlatives || superlatives.length === 0) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        var html = '';
+        superlatives.forEach(function(award, index) {
+            var valueText = '';
+            switch (award.value_label) {
+                case 'avg_time':
+                    valueText = award.value + 's ' + t('superlatives.avgTime');
+                    break;
+                case 'streak':
+                    valueText = award.value + ' ' + t('superlatives.streak');
+                    break;
+                case 'bets':
+                    valueText = award.value + ' ' + t('superlatives.bets');
+                    break;
+                case 'points':
+                    valueText = award.value + ' ' + t('superlatives.points');
+                    break;
+                case 'close_guesses':
+                    valueText = award.value + ' ' + t('superlatives.closeGuesses');
+                    break;
+                default:
+                    valueText = award.value;
+            }
+
+            html += '<div class="superlative-card superlative-card--' + award.id + '" style="animation-delay: ' + (index * 0.2) + 's">' +
+                '<div class="superlative-emoji">' + award.emoji + '</div>' +
+                '<div class="superlative-title">' + t('superlatives.' + award.title) + '</div>' +
+                '<div class="superlative-player">' + escapeHtml(award.player_name) + '</div>' +
+                '<div class="superlative-value">' + valueText + '</div>' +
+            '</div>';
+        });
+
+        container.innerHTML = html;
+        container.classList.remove('hidden');
+    }
+
+    /**
+     * Render song difficulty rating (Story 15.1)
+     * @param {Object|null} difficulty - Difficulty data with stars, label, accuracy, times_played
+     */
+    function renderSongDifficulty(difficulty) {
+        var el = document.getElementById('song-difficulty');
+        if (!el) return;
+
+        // Hide if no difficulty data (AC4: insufficient plays)
+        if (!difficulty) {
+            el.classList.add('hidden');
+            return;
+        }
+
+        // Build stars string
+        var stars = '';
+        for (var i = 0; i < difficulty.stars; i++) {
+            stars += '<span class="star">&#9733;</span>';
+        }
+
+        // Render difficulty display
+        el.innerHTML =
+            '<div class="difficulty-stars difficulty-' + difficulty.stars + '">' + stars + '</div>' +
+            '<span class="difficulty-label">' + t('difficulty.' + difficulty.label) + '</span>' +
+            '<span class="difficulty-accuracy">' + difficulty.accuracy + '% ' + t('difficulty.accuracy') + '</span>';
+
+        el.classList.remove('hidden');
+    }
 
     /**
      * Render rich song info (chart position, certifications, awards)
@@ -2414,6 +2495,9 @@
                 '</div>';
             }).join('');
         }
+
+        // Render superlatives / fun awards (Story 15.2)
+        renderSuperlatives(data.superlatives);
 
         // Show admin or player controls
         var adminControls = document.getElementById('end-admin-controls');

@@ -227,6 +227,26 @@
     "noGuesses": "Keine Tipps",
     "histogram": "Antwort-Verteilung"
   },
+  "difficulty": {
+    "easy": "Leichter Song",
+    "medium": "Mittlerer Song",
+    "hard": "Schwerer Song",
+    "extreme": "Extremer Song",
+    "accuracy": "Trefferquote",
+    "notEnoughData": "Noch nicht genug Daten"
+  },
+  "superlatives": {
+    "speed_demon": "Blitzschnell",
+    "lucky_streak": "Heisse Serie",
+    "risk_taker": "Zocker",
+    "clutch_player": "Endspurt-König",
+    "close_calls": "Knapp Daneben",
+    "avgTime": "durchschn.",
+    "streak": "in Folge",
+    "bets": "Wetten",
+    "points": "Pkt in letzten 3",
+    "closeGuesses": "knappe Tipps"
+  },
   "stats": {
     "firstGame": "Erstes Spiel! Maßstab gesetzt",
     "newRecord": "Neuer Rekord! Höchste Punktzahl aller Zeiten!",

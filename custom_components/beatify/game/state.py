@@ -27,7 +27,13 @@ from custom_components.beatify.const import (
     ERR_TARGET_NOT_SUBMITTED,
     MAX_NAME_LENGTH,
     MAX_PLAYERS,
+    MAX_SUPERLATIVES,
+    MIN_BETS_FOR_AWARD,
+    MIN_CLOSE_CALLS,
     MIN_NAME_LENGTH,
+    MIN_ROUNDS_FOR_CLUTCH,
+    MIN_STREAK_FOR_AWARD,
+    MIN_SUBMISSIONS_FOR_SPEED,
     ROUND_DURATION_MAX,
     ROUND_DURATION_MIN,
     STEAL_UNLOCK_STREAK,
@@ -328,6 +334,13 @@ class GameState:
             game_performance = self.get_game_performance()
             if game_performance:
                 state["game_performance"] = game_performance
+            # Song difficulty rating (Story 15.1 AC1, AC4)
+            if self._stats_service and self.current_song:
+                song_uri = self.current_song.get("uri")
+                if song_uri:
+                    difficulty = self._stats_service.get_song_difficulty(song_uri)
+                    if difficulty:
+                        state["song_difficulty"] = difficulty
 
         elif self.phase == GamePhase.PAUSED:
             state["pause_reason"] = self.pause_reason
@@ -347,6 +360,8 @@ class GameState:
             game_performance = self.get_game_performance()
             if game_performance:
                 state["game_performance"] = game_performance
+            # Superlatives - fun awards (Story 15.2)
+            state["superlatives"] = self.calculate_superlatives()
 
         return state
 
@@ -1104,6 +1119,26 @@ class GameState:
                 player.best_streak = max(player.best_streak, player.streak)
                 if player.bet_outcome == "won":
                     player.bets_won += 1
+
+                # Track superlative data (Story 15.2)
+                # Record submission time (elapsed from round start)
+                if (
+                    player.submission_time is not None
+                    and self.round_start_time is not None
+                ):
+                    time_taken = player.submission_time - self.round_start_time
+                    player.submission_times.append(time_taken)
+
+                # Track bets placed (AC3: Risk Taker)
+                if player.bet:
+                    player.bets_placed += 1
+
+                # Track close calls - +/-1 year but not exact (AC3: Close Calls)
+                if player.years_off == 1:
+                    player.close_calls += 1
+
+                # Track round scores for Clutch Player calculation
+                player.round_scores.append(player.round_score)
             else:
                 # Non-submitter - store streak for "lost X-streak" display (5.4)
                 player.previous_streak = player.streak
@@ -1118,6 +1153,20 @@ class GameState:
 
         # Calculate round analytics after scoring (Story 13.3)
         self.round_analytics = self.calculate_round_analytics()
+
+        # Record song results for difficulty tracking (Story 15.1 AC3)
+        if self._stats_service and self.current_song:
+            song_uri = self.current_song.get("uri")
+            if song_uri:
+                # Build player results list for song difficulty calculation
+                player_results = [
+                    {
+                        "submitted": p.submitted,
+                        "years_off": p.years_off if p.years_off is not None else 0,
+                    }
+                    for p in self.players.values()
+                ]
+                await self._stats_service.record_song_result(song_uri, player_results)
 
         # Transition to REVEAL
         self.phase = GamePhase.REVEAL
@@ -1426,3 +1475,113 @@ class GameState:
         """
         decade = (year // 10) * 10
         return f"{decade}s"
+
+    def calculate_superlatives(self) -> list[dict[str, Any]]:
+        """
+        Calculate fun awards based on game performance (Story 15.2).
+
+        Returns list of awards (max 5) for display during END phase.
+        Each award: {id, emoji, title, player_name, value, value_label}
+
+        """
+        awards: list[dict[str, Any]] = []
+        players = list(self.players.values())
+
+        if not players:
+            return awards
+
+        # Speed Demon - fastest average submission (AC3)
+        # Requires at least MIN_SUBMISSIONS_FOR_SPEED submissions
+        speed_candidates = [
+            (p, p.avg_submission_time)
+            for p in players
+            if p.avg_submission_time is not None
+        ]
+        if speed_candidates:
+            fastest = min(speed_candidates, key=lambda x: x[1])
+            awards.append({
+                "id": "speed_demon",
+                "emoji": "⚡",
+                "title": "speed_demon",  # i18n key
+                "player_name": fastest[0].name,
+                "value": round(fastest[1], 1),
+                "value_label": "avg_time",  # i18n key
+            })
+
+        # Lucky Streak - longest streak achieved (AC3)
+        # Minimum streak of MIN_STREAK_FOR_AWARD
+        streak_candidates = [
+            (p, p.best_streak)
+            for p in players
+            if p.best_streak >= MIN_STREAK_FOR_AWARD
+        ]
+        if streak_candidates:
+            best = max(streak_candidates, key=lambda x: x[1])
+            awards.append({
+                "id": "lucky_streak",
+                "emoji": "🔥",
+                "title": "lucky_streak",
+                "player_name": best[0].name,
+                "value": best[1],
+                "value_label": "streak",
+            })
+
+        # Risk Taker - most bets placed (AC3)
+        # Minimum MIN_BETS_FOR_AWARD bets
+        bet_candidates = [
+            (p, p.bets_placed)
+            for p in players
+            if p.bets_placed >= MIN_BETS_FOR_AWARD
+        ]
+        if bet_candidates:
+            most_bets = max(bet_candidates, key=lambda x: x[1])
+            awards.append({
+                "id": "risk_taker",
+                "emoji": "🎲",
+                "title": "risk_taker",
+                "player_name": most_bets[0].name,
+                "value": most_bets[1],
+                "value_label": "bets",
+            })
+
+        # Clutch Player - best final 3 rounds (AC3)
+        # Only if game has MIN_ROUNDS_FOR_CLUTCH+ rounds
+        if self.round >= MIN_ROUNDS_FOR_CLUTCH:
+            clutch_candidates = [
+                (p, p.final_three_score)
+                for p in players
+                if len(p.round_scores) >= MIN_ROUNDS_FOR_CLUTCH
+            ]
+            if clutch_candidates:
+                clutch = max(clutch_candidates, key=lambda x: x[1])
+                # Only show if they scored something in final 3
+                if clutch[1] > 0:
+                    awards.append({
+                        "id": "clutch_player",
+                        "emoji": "🌟",
+                        "title": "clutch_player",
+                        "player_name": clutch[0].name,
+                        "value": clutch[1],
+                        "value_label": "points",
+                    })
+
+        # Close Calls - most +/-1 year guesses (AC3)
+        # Minimum MIN_CLOSE_CALLS close guesses
+        close_candidates = [
+            (p, p.close_calls)
+            for p in players
+            if p.close_calls >= MIN_CLOSE_CALLS
+        ]
+        if close_candidates:
+            closest = max(close_candidates, key=lambda x: x[1])
+            awards.append({
+                "id": "close_calls",
+                "emoji": "🎯",
+                "title": "close_calls",
+                "player_name": closest[0].name,
+                "value": closest[1],
+                "value_label": "close_guesses",
+            })
+
+        # Limit to MAX_SUPERLATIVES awards (AC1)
+        return awards[:MAX_SUPERLATIVES]
