@@ -3473,7 +3473,7 @@
         setupRevealControls();
         setupAdminControlBar();  // Story 6.1
         setupRetryConnection();  // Story 7-4
-        initConfetti();  // Story 9.4
+        // Note: canvas-confetti library (Story 14.5) needs no initialization
 
         // Check if this is an admin redirect
         if (checkAdminStatus() && playerName) {
