@@ -478,6 +478,20 @@
 
         // Render motivational message (Story 14.4)
         renderMotivationalMessage(data.game_performance);
+
+        // Story 14.5 (AC1, AC2, AC7): Trigger celebration confetti on dashboard
+        // M1 fix: Prioritize record over exact to avoid duplicate confetti
+        if (data.game_performance && data.game_performance.is_new_record) {
+            triggerConfetti('record');
+        } else {
+            // Check for any exact guesses this round
+            var hasExactGuess = players.some(function(p) {
+                return p.years_off === 0 && !p.missed_round;
+            });
+            if (hasExactGuess) {
+                triggerConfetti('exact');
+            }
+        }
     }
 
     /**
@@ -630,6 +644,13 @@
         // Render stats comparison (Story 14.4)
         renderStatsComparison(data.game_performance);
 
+        // Story 14.5 (AC3, AC7): Trigger winner confetti on dashboard
+        // H2 fix: Only trigger if there's a valid winner with score > 0
+        var winner = leaderboard.find(function(p) { return p.rank === 1; });
+        if (winner && winner.score > 0) {
+            triggerConfetti('winner');
+        }
+
         // Render full leaderboard (Story 11.4: disconnected styling)
         var container = document.getElementById('end-leaderboard');
         if (container) {
@@ -693,6 +714,162 @@
         container.className = cssClass;
         if (iconEl) iconEl.textContent = icon;
         if (textEl) textEl.textContent = text;
+    }
+
+    // ============================================
+    // Confetti System (Story 14.5 - AC7)
+    // ============================================
+
+    // Track active animations for cleanup (M3 fix)
+    var confettiAnimationId = null;
+    var confettiIntervalId = null;
+
+    /**
+     * Trigger confetti celebration animation (Story 14.5)
+     * Uses canvas-confetti library for various celebration types
+     * @param {string} type - 'exact', 'record', 'winner', or 'perfect'
+     */
+    function triggerConfetti(type) {
+        // AC5: Respect accessibility preference
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return;
+        }
+
+        // Check if confetti library is loaded
+        if (typeof confetti === 'undefined') {
+            console.warn('[Dashboard Confetti] Library not loaded');
+            return;
+        }
+
+        // Stop any existing animation before starting new one (M3 fix)
+        stopConfetti();
+
+        type = type || 'exact';
+
+        switch (type) {
+            case 'exact':
+                // AC1: Gold burst for exact guess, 2 seconds (H1 fix - enforced duration)
+                var exactDuration = 2 * 1000;
+                var exactEnd = Date.now() + exactDuration;
+                (function exactFrame() {
+                    confetti({
+                        particleCount: 15,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FFA500', '#FFEC8B']
+                    });
+                    if (Date.now() < exactEnd) {
+                        confettiAnimationId = requestAnimationFrame(exactFrame);
+                    }
+                }());
+                break;
+
+            case 'record':
+                // AC2: Rainbow shower for new record, 3 seconds (H1 fix - enforced duration)
+                var recordDuration = 3 * 1000;
+                var recordEnd = Date.now() + recordDuration;
+                (function recordFrame() {
+                    confetti({
+                        particleCount: 10,
+                        spread: 180,
+                        origin: { y: 0.3, x: Math.random() },
+                        colors: ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#8b00ff']
+                    });
+                    if (Date.now() < recordEnd) {
+                        confettiAnimationId = requestAnimationFrame(recordFrame);
+                    }
+                }());
+                break;
+
+            case 'winner':
+                // AC3: Dual-side fireworks for winner, 4 seconds
+                var winnerDuration = 4 * 1000;
+                var winnerEnd = Date.now() + winnerDuration;
+                (function winnerFrame() {
+                    confetti({
+                        particleCount: 10,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#ff2d6a', '#00f5ff', '#00ff88', '#ffdd00']
+                    });
+                    confetti({
+                        particleCount: 10,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#ff2d6a', '#00f5ff', '#00ff88', '#ffdd00']
+                    });
+                    if (Date.now() < winnerEnd) {
+                        confettiAnimationId = requestAnimationFrame(winnerFrame);
+                    }
+                }());
+                break;
+
+            case 'perfect':
+                // AC4: Epic celebration for perfect game, 5 seconds
+                var perfectDuration = 5 * 1000;
+                var perfectEnd = Date.now() + perfectDuration;
+
+                // M4 fix: Use setInterval for reliable center bursts
+                confettiIntervalId = setInterval(function() {
+                    confetti({
+                        particleCount: 30,
+                        spread: 100,
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FFA500', '#FFEC8B']
+                    });
+                }, 500);
+
+                // Clear interval when duration ends
+                setTimeout(function() {
+                    if (confettiIntervalId) {
+                        clearInterval(confettiIntervalId);
+                        confettiIntervalId = null;
+                    }
+                }, perfectDuration);
+
+                (function perfectFrame() {
+                    confetti({
+                        particleCount: 7,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#FFD700', '#ff2d6a', '#00f5ff', '#00ff88']
+                    });
+                    confetti({
+                        particleCount: 7,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#FFD700', '#ff2d6a', '#00f5ff', '#00ff88']
+                    });
+                    if (Date.now() < perfectEnd) {
+                        confettiAnimationId = requestAnimationFrame(perfectFrame);
+                    }
+                }());
+                break;
+
+            default:
+                console.warn('[Dashboard Confetti] Unknown type:', type);
+        }
+    }
+
+    /**
+     * Stop any ongoing confetti animations (M3 fix - proper cleanup)
+     */
+    function stopConfetti() {
+        if (confettiAnimationId) {
+            cancelAnimationFrame(confettiAnimationId);
+            confettiAnimationId = null;
+        }
+        if (confettiIntervalId) {
+            clearInterval(confettiIntervalId);
+            confettiIntervalId = null;
+        }
+        if (typeof confetti !== 'undefined' && confetti.reset) {
+            confetti.reset();
+        }
     }
 
     // ============================================

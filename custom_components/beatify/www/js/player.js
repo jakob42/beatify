@@ -1442,6 +1442,11 @@
         showRevealEmotion(currentPlayer, song.year);
         renderPersonalResult(currentPlayer, song.year);
 
+        // Story 14.5: Check for new record and trigger rainbow confetti (AC2)
+        if (data.game_performance && data.game_performance.is_new_record) {
+            triggerConfetti('record');
+        }
+
         // Render player result cards (Story 9.10)
         renderPlayerResultCards(players);
 
@@ -2166,6 +2171,23 @@
         } else {
             if (adminControls) adminControls.classList.add('hidden');
             if (playerMessage) playerMessage.classList.remove('hidden');
+        }
+
+        // Story 14.5: Trigger end-game celebrations (AC3, AC4)
+        if (currentPlayer) {
+            var totalRounds = data.total_rounds || 10;
+            // H3 fix: Use best_streak === totalRounds as reliable perfect game indicator
+            // (correct_guesses field doesn't exist in backend)
+            var bestStreak = currentPlayer.best_streak || 0;
+            var isPerfectGame = bestStreak === totalRounds && totalRounds > 0;
+
+            if (isPerfectGame) {
+                // AC4: Perfect game - epic celebration
+                triggerConfetti('perfect');
+            } else if (currentPlayer.rank === 1) {
+                // AC3: Winner - fireworks celebration
+                triggerConfetti('winner');
+            }
         }
     }
 
@@ -3251,136 +3273,172 @@
     }
 
     // ============================================
-    // Confetti System (Story 9.4)
+    // Confetti System (Story 14.5 - canvas-confetti library)
     // ============================================
 
-    /**
-     * Lightweight canvas confetti for exact match celebration
-     */
-    var confettiCanvas = null;
-    var confettiCtx = null;
-    var confettiParticles = [];
+    // Track active animations for cleanup (M3 fix)
     var confettiAnimationId = null;
+    var confettiIntervalId = null;
 
     /**
-     * Initialize confetti canvas
+     * Trigger confetti celebration animation (Story 14.5)
+     * Uses canvas-confetti library for various celebration types
+     * @param {string} type - 'exact', 'record', 'winner', or 'perfect'
      */
-    function initConfetti() {
-        confettiCanvas = document.getElementById('confetti-canvas');
-        if (confettiCanvas) {
-            confettiCtx = confettiCanvas.getContext('2d');
-            resizeConfettiCanvas();
-            window.addEventListener('resize', resizeConfettiCanvas);
-        }
-    }
-
-    /**
-     * Resize confetti canvas to match window
-     */
-    function resizeConfettiCanvas() {
-        if (confettiCanvas) {
-            confettiCanvas.width = window.innerWidth;
-            confettiCanvas.height = window.innerHeight;
-        }
-    }
-
-    /**
-     * Create confetti particle
-     */
-    function createConfettiParticle() {
-        var colors = ['#ff2d6a', '#00f5ff', '#00ff88', '#ffdd00', '#ff6600'];
-        return {
-            x: Math.random() * confettiCanvas.width,
-            y: -20,
-            size: Math.random() * 10 + 5,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            speedY: Math.random() * 3 + 2,
-            speedX: Math.random() * 4 - 2,
-            rotation: Math.random() * 360,
-            rotationSpeed: Math.random() * 10 - 5
-        };
-    }
-
-    /**
-     * Trigger confetti animation
-     */
-    function triggerConfetti() {
-        // Check for reduced motion preference
+    function triggerConfetti(type) {
+        // AC5: Respect accessibility preference
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            // Show static celebration icon instead
             showStaticCelebration();
             return;
         }
 
-        if (!confettiCanvas || !confettiCtx) {
-            initConfetti();
+        // Check if confetti library is loaded
+        if (typeof confetti === 'undefined') {
+            console.warn('[Confetti] Library not loaded');
+            return;
         }
 
-        // Create particles
-        confettiParticles = [];
-        for (var i = 0; i < 100; i++) {
-            confettiParticles.push(createConfettiParticle());
+        // Stop any existing animation before starting new one (M3 fix)
+        stopConfetti();
+
+        // Default to 'exact' for backward compatibility
+        type = type || 'exact';
+
+        switch (type) {
+            case 'exact':
+                // AC1: Gold burst for exact guess, 2 seconds (H1 fix - enforced duration)
+                var exactDuration = 2 * 1000;
+                var exactEnd = Date.now() + exactDuration;
+                (function exactFrame() {
+                    confetti({
+                        particleCount: 15,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FFA500', '#FFEC8B']
+                    });
+                    if (Date.now() < exactEnd) {
+                        confettiAnimationId = requestAnimationFrame(exactFrame);
+                    }
+                }());
+                break;
+
+            case 'record':
+                // AC2: Rainbow shower for new record, 3 seconds (H1 fix - enforced duration)
+                var recordDuration = 3 * 1000;
+                var recordEnd = Date.now() + recordDuration;
+                (function recordFrame() {
+                    confetti({
+                        particleCount: 10,
+                        spread: 180,
+                        origin: { y: 0.3, x: Math.random() },
+                        colors: ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#8b00ff']
+                    });
+                    if (Date.now() < recordEnd) {
+                        confettiAnimationId = requestAnimationFrame(recordFrame);
+                    }
+                }());
+                break;
+
+            case 'winner':
+                // AC3: Dual-side fireworks for winner, 4 seconds
+                var winnerDuration = 4 * 1000;
+                var winnerEnd = Date.now() + winnerDuration;
+                (function winnerFrame() {
+                    confetti({
+                        particleCount: 10,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#ff2d6a', '#00f5ff', '#00ff88', '#ffdd00']
+                    });
+                    confetti({
+                        particleCount: 10,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#ff2d6a', '#00f5ff', '#00ff88', '#ffdd00']
+                    });
+                    if (Date.now() < winnerEnd) {
+                        confettiAnimationId = requestAnimationFrame(winnerFrame);
+                    }
+                }());
+                break;
+
+            case 'perfect':
+                // AC4: Epic celebration for perfect game, 5 seconds
+                var perfectDuration = 5 * 1000;
+                var perfectEnd = Date.now() + perfectDuration;
+
+                // M4 fix: Use setInterval for reliable center bursts
+                confettiIntervalId = setInterval(function() {
+                    confetti({
+                        particleCount: 30,
+                        spread: 100,
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FFA500', '#FFEC8B']
+                    });
+                }, 500);
+
+                // Clear interval when duration ends
+                setTimeout(function() {
+                    if (confettiIntervalId) {
+                        clearInterval(confettiIntervalId);
+                        confettiIntervalId = null;
+                    }
+                }, perfectDuration);
+
+                (function perfectFrame() {
+                    confetti({
+                        particleCount: 7,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#FFD700', '#ff2d6a', '#00f5ff', '#00ff88']
+                    });
+                    confetti({
+                        particleCount: 7,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#FFD700', '#ff2d6a', '#00f5ff', '#00ff88']
+                    });
+                    if (Date.now() < perfectEnd) {
+                        confettiAnimationId = requestAnimationFrame(perfectFrame);
+                    }
+                }());
+                break;
+
+            default:
+                console.warn('[Confetti] Unknown type:', type);
         }
-
-        // Start animation
-        animateConfetti();
-
-        // Auto-clear after 3 seconds
-        setTimeout(stopConfetti, 3000);
     }
 
     /**
-     * Animate confetti particles
-     */
-    function animateConfetti() {
-        if (!confettiCtx || confettiParticles.length === 0) return;
-
-        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-
-        confettiParticles.forEach(function(p) {
-            p.y += p.speedY;
-            p.x += p.speedX;
-            p.rotation += p.rotationSpeed;
-
-            confettiCtx.save();
-            confettiCtx.translate(p.x, p.y);
-            confettiCtx.rotate(p.rotation * Math.PI / 180);
-            confettiCtx.fillStyle = p.color;
-            confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-            confettiCtx.restore();
-        });
-
-        // Remove off-screen particles
-        confettiParticles = confettiParticles.filter(function(p) {
-            return p.y < confettiCanvas.height + 20;
-        });
-
-        if (confettiParticles.length > 0) {
-            confettiAnimationId = requestAnimationFrame(animateConfetti);
-        }
-    }
-
-    /**
-     * Stop confetti animation
+     * Stop any ongoing confetti animations (M3 fix - proper cleanup)
      */
     function stopConfetti() {
+        // Cancel animation frame
         if (confettiAnimationId) {
             cancelAnimationFrame(confettiAnimationId);
             confettiAnimationId = null;
         }
-        confettiParticles = [];
-        if (confettiCtx && confettiCanvas) {
-            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        // Clear interval
+        if (confettiIntervalId) {
+            clearInterval(confettiIntervalId);
+            confettiIntervalId = null;
+        }
+        // Reset library canvas
+        if (typeof confetti !== 'undefined' && confetti.reset) {
+            confetti.reset();
         }
     }
 
     /**
-     * Show static celebration for reduced motion users
+     * Show static celebration for reduced motion users (AC5)
      */
     function showStaticCelebration() {
         var emotionEl = document.getElementById('reveal-emotion');
         if (emotionEl) {
-            // Add a static celebration icon
             var existingIcon = emotionEl.querySelector('.celebration-icon');
             if (!existingIcon) {
                 var icon = document.createElement('span');

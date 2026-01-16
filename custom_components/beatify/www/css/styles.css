@@ -2948,7 +2948,7 @@ body.theme-dark .admin-controls {
     40%, 80% { transform: translateX(5px); }
 }
 
-/* Confetti Canvas (Story 9.4) */
+/* Confetti Canvas (Story 9.4, Story 14.5) */
 .confetti-canvas {
     position: fixed;
     top: 0;
@@ -2957,6 +2957,12 @@ body.theme-dark .admin-controls {
     height: 100%;
     pointer-events: none;
     z-index: var(--z-modal);
+}
+
+/* canvas-confetti library creates canvas dynamically at body level - ensure non-blocking (AC6) */
+/* M2 fix: Scoped to body > canvas to avoid affecting other fixed canvases */
+body > canvas[style*="position: fixed"] {
+    pointer-events: none !important;
 }
 
 /* Score breakdown fade-in delay (Story 9.4) */
