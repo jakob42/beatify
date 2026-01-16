@@ -2691,22 +2691,58 @@ body.theme-dark .admin-controls {
     border-color: #80deea;
 }
 
-/* Awards - styled for fun fact box (light background) */
+/* Awards - styled as centered badges */
 .awards {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
 }
 
 .award-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
     font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
     color: #78350f;
+    border: 1px solid #d97706;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Eurovision Winner - special purple/magenta style matching Eurovision branding */
+.award-item--eurovision {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #ffffff;
+    border-color: #6d28d9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Grammy - gold/prestige style */
+.award-item--grammy {
+    background: linear-gradient(135deg, #fcd34d, #f59e0b);
+    color: #78350f;
+    border-color: #d97706;
+}
+
+/* Hall of Fame - deep blue/prestigious */
+.award-item--halloffame {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #ffffff;
+    border-color: #1e40af;
 }
 
 .awards-more {
     font-size: var(--font-size-xs);
     color: #92400e;
     font-style: italic;
+    width: 100%;
+    text-align: center;
 }
 
 /* ============================================

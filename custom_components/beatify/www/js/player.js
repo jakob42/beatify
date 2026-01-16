@@ -1765,7 +1765,7 @@
     }
 
     /**
-     * Render awards
+     * Render awards as centered badges
      * @param {Array} awards - Array of award strings
      * @returns {string} HTML string for awards section
      */
@@ -1777,13 +1777,42 @@
         var html = '<div class="awards">';
         var displayAwards = awards.slice(0, 3);
         for (var i = 0; i < displayAwards.length; i++) {
-            html += '<div class="award-item">🏆 ' + escapeHtml(displayAwards[i]) + '</div>';
+            var award = displayAwards[i];
+            var awardClass = getAwardClass(award);
+            var icon = getAwardIcon(award);
+            html += '<div class="award-item ' + awardClass + '">' + icon + ' ' + escapeHtml(award) + '</div>';
         }
         if (awards.length > 3) {
             html += '<div class="awards-more">+' + (awards.length - 3) + ' ' + t('reveal.moreAwards') + '</div>';
         }
         html += '</div>';
         return html;
+    }
+
+    /**
+     * Get CSS class for award type
+     * @param {string} award - Award string
+     * @returns {string} CSS class name
+     */
+    function getAwardClass(award) {
+        var awardLower = award.toLowerCase();
+        if (awardLower.indexOf('eurovision') !== -1) return 'award-item--eurovision';
+        if (awardLower.indexOf('grammy') !== -1) return 'award-item--grammy';
+        if (awardLower.indexOf('hall of fame') !== -1) return 'award-item--halloffame';
+        return '';
+    }
+
+    /**
+     * Get icon for award type
+     * @param {string} award - Award string
+     * @returns {string} Emoji icon
+     */
+    function getAwardIcon(award) {
+        var awardLower = award.toLowerCase();
+        if (awardLower.indexOf('eurovision') !== -1) return '🎤';
+        if (awardLower.indexOf('grammy') !== -1) return '🏆';
+        if (awardLower.indexOf('hall of fame') !== -1) return '⭐';
+        return '🏆';
     }
 
     /**
