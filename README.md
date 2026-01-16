@@ -10,7 +10,7 @@ Turn any gathering into an unforgettable music trivia experience.
 Guests scan, songs play, everyone competes. It's that simple.
 
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.1+-41BDF5?style=for-the-badge&logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/Version-1.1.0-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
+[![Version](https://img.shields.io/badge/Version-1.2.0-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [**Get Started**](#-5-minute-setup) • [**See It In Action**](#-the-experience) • [**Install Now**](#-installation)
@@ -106,6 +106,8 @@ Answer fast for bonus points. Hit a streak for multipliers. Feeling confident? B
 **The Reveal**
 The year drops. The room erupts. Someone nailed it. Someone was *way* off. Everyone's laughing.
 
+Gold confetti bursts for exact guesses. Chart positions and fun facts appear. You just learned that song spent 22 weeks at #1.
+
 <br>
 
 <div align="center">
@@ -188,7 +190,10 @@ Score zero: **Lose it all.**
 
 </div>
 
-Full podium with medals. Personal stats. Best streaks. Bets won.
+Fireworks explode for the winner. Full podium with medals. Personal stats. Best streaks. Bets won.
+
+See how your game compared to all-time averages. Set a new record? Rainbow confetti and a "NEW RECORD!" badge.
+
 Everything you need to demand a rematch.
 
 ---
@@ -374,11 +379,17 @@ The neon dark theme is built-in and looks stunning. Custom theming is on the roa
 
 ## What's New
 
-### v1.1.0 Highlights
+### v1.2.0 — The Party Just Got Better 🎉
+- **Rich song information** — Chart history, certifications, awards, and fun facts on every reveal
+- **Game statistics** — Track performance across games with all-time averages and "NEW RECORD!" moments
+- **Confetti celebrations** — Gold bursts for exact guesses, fireworks for winners, epic shows for perfect games
+- **Mystery mode** — Album covers blur during guessing (no more peeking!)
+- **New playlist** — Eurovision Winners (1956-2025) with 72 winning songs
+
+### v1.1.0
 - **Difficulty presets** — Easy, Normal, or Hard scoring modes
 - **Customizable round timer** — Quick (15s), Normal (30s), or Relaxed (45s)
 - **Round analytics** — See guess distribution, accuracy stats, and speed champions
-- **New playlist** — Movie's Greatest Themes with 162 iconic film songs
 
 [View full changelog →](https://github.com/mholzi/beatify/releases)
 
