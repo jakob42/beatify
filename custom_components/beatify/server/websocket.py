@@ -40,6 +40,10 @@ _LOGGER = logging.getLogger(__name__)
 class BeatifyWebSocketHandler:
     """Handle WebSocket connections for Beatify."""
 
+    # Ping interval in seconds (must be less than proxy timeout, typically 60s)
+    # aiohttp's heartbeat sends ping frames automatically
+    HEARTBEAT_INTERVAL = 30
+
     def __init__(self, hass: HomeAssistant) -> None:
         """
         Initialize handler.
@@ -64,7 +68,8 @@ class BeatifyWebSocketHandler:
             WebSocket response
 
         """
-        ws = web.WebSocketResponse()
+        # heartbeat parameter enables automatic ping/pong to prevent proxy timeouts
+        ws = web.WebSocketResponse(heartbeat=self.HEARTBEAT_INTERVAL)
         await ws.prepare(request)
 
         self.connections.add(ws)

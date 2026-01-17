@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import random
@@ -121,14 +122,20 @@ async def _copy_bundled_playlists(dest_dir: Path) -> None:
     if not bundled_dir.exists():
         return
 
+    def _copy_file(src: Path, dst: Path) -> None:
+        """Copy file contents (runs in executor)."""
+        content = src.read_text(encoding="utf-8")
+        dst.write_text(content, encoding="utf-8")
+
     for playlist_file in bundled_dir.glob("*.json"):
         dest_file = dest_dir / playlist_file.name
         if dest_file.exists():
             # Don't overwrite existing playlists
             continue
         try:
-            content = playlist_file.read_text(encoding="utf-8")
-            dest_file.write_text(content, encoding="utf-8")
+            await asyncio.get_event_loop().run_in_executor(
+                None, _copy_file, playlist_file, dest_file
+            )
             _LOGGER.info("Copied bundled playlist to: %s", dest_file)
         except Exception as err:  # noqa: BLE001
             _LOGGER.warning("Failed to copy playlist %s: %s", playlist_file.name, err)
@@ -180,9 +187,16 @@ async def async_discover_playlists(hass: HomeAssistant) -> list[dict]:
         _LOGGER.debug("Playlist directory does not exist: %s", playlist_dir)
         return playlists
 
+    def _read_file(path: Path) -> str:
+        """Read file contents (runs in executor)."""
+        return path.read_text(encoding="utf-8")
+
+    loop = asyncio.get_event_loop()
+
     for json_file in playlist_dir.glob("*.json"):
         try:
-            data = json.loads(json_file.read_text(encoding="utf-8"))
+            content = await loop.run_in_executor(None, _read_file, json_file)
+            data = json.loads(content)
             is_valid, errors = validate_playlist(data)
 
             playlists.append({
@@ -216,8 +230,15 @@ async def async_load_and_validate_playlist(
     if not path.exists():
         return (None, [f"File not found: {path}"])
 
+    def _read_file(p: Path) -> str:
+        """Read file contents (runs in executor)."""
+        return p.read_text(encoding="utf-8")
+
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        content = await asyncio.get_event_loop().run_in_executor(
+            None, _read_file, path
+        )
+        data = json.loads(content)
     except json.JSONDecodeError as e:
         return (None, [f"Invalid JSON: {e}"])
 
