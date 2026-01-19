@@ -66,50 +66,22 @@ Finally know if that obscure 1967 B-side was actually guessable!
 
 ---
 
-## 🔧 Reliability Improvements — The Party Never Stops
+## 🔧 Under the Hood
 
-Major under-the-hood improvements to keep your game running smoothly:
+**Media Player:**
+- Pre-flight check wakes sleepy Sonos speakers before each round
+- Smart retry (up to 3 attempts) if a song fails to play
+- Game pauses gracefully instead of crashing on media errors
+- Metadata sync prevents mismatched song info during reveal
 
-### Media Player Resilience
-- **Pre-flight check** — Speakers are tested before each round to catch sleepy Sonos devices
-- **Smart retry logic** — If a song fails to play, the game tries up to 3 times with delays
-- **Graceful pause** — Instead of crashing, the game pauses and waits for the host when media fails
-- **Metadata sync** — Waits for Spotify/Sonos to update before showing song info (no more mismatched reveals!)
+**Stability:**
+- WebSocket keepalive prevents timeouts during long reveals
+- Playlists auto-update when a newer bundled version is available
 
-### WebSocket Stability
-- **Keepalive pings** — Prevents connection timeouts during long reveal phases
-- **Non-blocking I/O** — Fixed potential freezes during network operations
-
-### Playlist Management
-- **Auto-update** — Bundled playlists automatically refresh when a new version has better data
-- **Version tracking** — Each playlist now has a version number for smarter updates
-
----
-
-## 🎨 Visual Polish
-
-### Unified Badge Design
-All song information badges (charts, certifications, awards) now share a consistent design:
-- Centered layout in a single row
-- Pill-shaped badges with subtle borders
-- Distinct colors: blue for charts, amber for certifications, purple for awards
-- Icons for quick recognition (📈 🏆 🎵)
-
-### Dark Mode Fixes
-- Fixed button text color in card sections (no more dark text on blue buttons!)
-- Safari desktop click handling for bet toggle now works properly
-
-### Button Spacing
-- Removed redundant margins causing double-spacing on icon buttons
-
----
-
-## 🐛 Bug Fixes
-
-- **Runaway song loop** — Fixed infinite retry loop that could exhaust entire playlist in seconds
-- **Timer self-cancel** — Fixed race condition where timer task could cancel itself
-- **Safari desktop** — Fixed bet toggle not responding to clicks when playing as admin
-- **Metadata mismatch** — Fixed wrong song info showing during reveal (e.g., "We Are The World" metadata for "Twist and Shout")
+**Bug Fixes:**
+- Fixed runaway retry loop that could exhaust playlist in seconds
+- Fixed Safari desktop bet toggle not responding to clicks
+- Fixed dark mode button text color on "Join as Player" button
 
 ---
 
@@ -118,18 +90,11 @@ All song information badges (charts, certifications, awards) now share a consist
 ### Breaking Changes
 None — full backward compatibility with v1.2.x game saves and statistics.
 
-### New Dependencies
-None added.
-
 ### Minimum Requirements
 - Home Assistant 2024.1.0 or later
 - A Spotify-connected media player (Sonos, Chromecast, etc.)
 
 ---
-
-## 🙏 Thank You
-
-Special thanks to everyone who reported bugs, suggested features, and helped test the beta releases. Your feedback made this release possible!
 
 **Full Changelog:** https://github.com/mholzi/beatify/compare/v1.2.0...v1.3.0
 
