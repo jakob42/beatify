@@ -29,6 +29,7 @@ eggs/
 .eggs/
 
 # Testing
+tests/
 .pytest_cache/
 .pytest/
 .coverage
