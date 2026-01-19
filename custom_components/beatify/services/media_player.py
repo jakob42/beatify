@@ -14,6 +14,10 @@ _LOGGER = logging.getLogger(__name__)
 # Timeout for pre-flight connectivity check (seconds)
 PREFLIGHT_TIMEOUT = 5.0
 
+# Timeout for waiting for metadata to update after playing (seconds)
+METADATA_WAIT_TIMEOUT = 5.0
+METADATA_POLL_INTERVAL = 0.3
+
 
 class MediaPlayerService:
     """Service for controlling HA media player."""
@@ -73,6 +77,73 @@ class MediaPlayerService:
                 "album_art": "/beatify/static/img/no-artwork.svg",
             }
 
+        return {
+            "artist": state.attributes.get("media_artist", "Unknown Artist"),
+            "title": state.attributes.get("media_title", "Unknown Title"),
+            "album_art": state.attributes.get(
+                "entity_picture", "/beatify/static/img/no-artwork.svg"
+            ),
+        }
+
+    async def wait_for_metadata_update(self, uri: str) -> dict[str, Any]:
+        """
+        Wait for media player to update metadata after playing a song.
+
+        Polls until media_content_id contains the track ID from the URI,
+        or timeout is reached.
+
+        Args:
+            uri: The Spotify URI that was just played (e.g., spotify:track:xxx)
+
+        Returns:
+            Dict with artist, title, album_art keys
+
+        """
+        # Extract track ID from URI (spotify:track:xxx -> xxx)
+        track_id = uri.split(":")[-1] if ":" in uri else uri
+
+        # Get initial state for comparison
+        initial_state = self._hass.states.get(self._entity_id)
+        initial_title = (
+            initial_state.attributes.get("media_title")
+            if initial_state
+            else None
+        )
+
+        elapsed = 0.0
+        while elapsed < METADATA_WAIT_TIMEOUT:
+            state = self._hass.states.get(self._entity_id)
+            if state:
+                # Check if media_content_id contains our track ID
+                content_id = state.attributes.get("media_content_id", "")
+                if track_id in content_id:
+                    _LOGGER.debug(
+                        "Metadata updated after %.1fs (matched track ID)",
+                        elapsed,
+                    )
+                    return self._extract_metadata(state)
+
+                # Also check if title changed (fallback)
+                current_title = state.attributes.get("media_title")
+                if current_title and current_title != initial_title:
+                    _LOGGER.debug(
+                        "Metadata updated after %.1fs (title changed)",
+                        elapsed,
+                    )
+                    return self._extract_metadata(state)
+
+            await asyncio.sleep(METADATA_POLL_INTERVAL)
+            elapsed += METADATA_POLL_INTERVAL
+
+        # Timeout - return whatever we have
+        _LOGGER.warning(
+            "Metadata not updated within %.1fs, using current state",
+            METADATA_WAIT_TIMEOUT,
+        )
+        return await self.get_metadata()
+
+    def _extract_metadata(self, state: Any) -> dict[str, Any]:
+        """Extract metadata dict from state object."""
         return {
             "artist": state.attributes.get("media_artist", "Unknown Artist"),
             "title": state.attributes.get("media_title", "Unknown Title"),

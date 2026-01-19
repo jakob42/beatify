@@ -974,11 +974,10 @@ class GameState:
                 # Try next song with incremented retry count
                 return await self.start_round(hass, _retry_count + 1)
 
-            # Wait for playback to start
-            await asyncio.sleep(0.5)
-
-            # Get metadata from media player
-            metadata = await self._media_player_service.get_metadata()
+            # Wait for metadata to update (polls until track ID matches or timeout)
+            metadata = await self._media_player_service.wait_for_metadata_update(
+                song["uri"]
+            )
         else:
             # No media player (testing mode)
             metadata = {
