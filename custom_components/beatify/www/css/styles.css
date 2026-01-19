@@ -3283,6 +3283,9 @@ body > canvas[style*="position: fixed"] {
 /* Bet toggle (Story 5.3) */
 .bet-container {
     margin-bottom: var(--space-md);
+    /* Fix Safari desktop click issue - establish stacking context */
+    position: relative;
+    z-index: 1;
 }
 
 .bet-toggle {
@@ -3294,12 +3297,18 @@ body > canvas[style*="position: fixed"] {
     border: 2px solid var(--color-border-medium);
     border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    /* Fix Safari: use specific properties instead of 'all' */
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-muted);
     width: 100%;
     justify-content: center;
+    /* Fix Safari desktop click handling */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 .bet-toggle:hover {
