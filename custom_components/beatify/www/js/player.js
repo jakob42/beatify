@@ -4035,6 +4035,12 @@
         await BeatifyI18n.init(storedLang);
         BeatifyI18n.initPageTranslations();
 
+        // Set dashboard hint URL with full address (Story 16.4)
+        var dashboardHintEl = document.getElementById('dashboard-hint-url');
+        if (dashboardHintEl) {
+            dashboardHintEl.textContent = window.location.origin + '/beatify/dashboard';
+        }
+
         setupJoinForm();
         setupQRModal();
         setupInviteModal();  // Story 16.5
