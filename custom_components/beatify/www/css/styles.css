@@ -404,6 +404,10 @@ button,
     cursor: not-allowed;
 }
 
+body.theme-dark .btn-primary {
+    color: var(--color-text-white);
+}
+
 .btn-secondary {
     background: var(--color-border-light);
     color: var(--color-text-secondary);

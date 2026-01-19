@@ -964,6 +964,14 @@ class GameState:
         # Mark song as played
         self._playlist_manager.mark_played(song["uri"])
 
+        # Debug: Log song data from playlist
+        _LOGGER.info(
+            "Song from playlist - chart_info: %s, certifications: %s, awards: %s",
+            song.get("chart_info"),
+            song.get("certifications"),
+            song.get("awards"),
+        )
+
         # Set current song (year and fun_fact from playlist, rest from metadata)
         # Story 14.3: Include rich song info fields from enriched playlists
         self.current_song = {
