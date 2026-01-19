@@ -37,8 +37,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Wire event listeners
     document.getElementById('start-game')?.addEventListener('click', startGame);
     document.getElementById('print-qr')?.addEventListener('click', printQRCode);
-    document.getElementById('open-dashboard')?.addEventListener('click', openDashboard);
     document.getElementById('rejoin-game')?.addEventListener('click', rejoinGame);
+
+    // Set dashboard URL with full address (Story 16.4)
+    var dashboardUrl = window.location.origin + '/beatify/dashboard';
+    var dashboardLink = document.getElementById('admin-dashboard-url');
+    if (dashboardLink) {
+        dashboardLink.textContent = dashboardUrl;
+        dashboardLink.href = dashboardUrl;
+    }
     document.getElementById('end-game')?.addEventListener('click', endGame);
     document.getElementById('end-game-lobby')?.addEventListener('click', endGame);
 
@@ -621,14 +628,6 @@ function rejoinGame() {
  */
 function printQRCode() {
     window.print();
-}
-
-/**
- * Open TV Dashboard in a new window (Story 16.4)
- */
-function openDashboard() {
-    var dashboardUrl = window.location.origin + '/beatify/dashboard';
-    window.open(dashboardUrl, '_blank');
 }
 
 /**
