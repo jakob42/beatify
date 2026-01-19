@@ -1915,9 +1915,7 @@ body.theme-dark .admin-controls {
     width: 100%;
 }
 
-.btn-icon {
-    margin-right: var(--space-sm);
-}
+/* .btn-icon margin removed - .btn already uses flexbox gap for spacing */
 
 .admin-hint {
     margin-top: var(--space-sm);
