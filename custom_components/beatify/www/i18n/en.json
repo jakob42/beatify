@@ -33,7 +33,9 @@
     "leaveGame": "Leave Game",
     "pressWhenReady": "Press when everyone is ready",
     "joinGameQr": "Join Game QR Code",
-    "scanToJoin": "Scan to join the game"
+    "scanToJoin": "Scan to join the game",
+    "invitePlayers": "Invite Players",
+    "invitePlayersHint": "Share this QR code or link with friends"
   },
   "game": {
     "roundLabel": "Round",
@@ -183,6 +185,7 @@
     "timerQuick": "Quick",
     "timerNormal": "Normal",
     "timerRelaxed": "Relaxed",
+    "openDashboard": "Open TV Dashboard",
     "selectDifficulty": "Difficulty",
     "difficultyEasy": "Easy",
     "difficultyNormal": "Normal",
@@ -202,7 +205,10 @@
     "spectatorHint": "Spectator View",
     "round": "Round {current}/{total}",
     "players": "Players",
-    "topGuesses": "Top Guesses This Round"
+    "topGuesses": "Top Guesses This Round",
+    "submissions": "Submissions",
+    "timeRemaining": "Time",
+    "castToTv": "Cast to TV:"
   },
   "launcher": {
     "title": "Beatify",

@@ -123,13 +123,18 @@ var BeatifyI18n = (function() {
     }
 
     /**
+     * Supported languages (Story 16.3 - added Spanish)
+     */
+    var SUPPORTED_LANGUAGES = ['en', 'de', 'es'];
+
+    /**
      * Set the current language
-     * @param {string} langCode - Language code ('en' or 'de')
+     * @param {string} langCode - Language code ('en', 'de', or 'es')
      * @returns {Promise<void>}
      */
     async function setLanguage(langCode) {
-        // Validate language code
-        if (langCode !== 'en' && langCode !== 'de') {
+        // Validate language code (Story 16.3 - added Spanish support)
+        if (SUPPORTED_LANGUAGES.indexOf(langCode) === -1) {
             console.warn('[i18n] Invalid language code: ' + langCode + ', defaulting to en');
             langCode = 'en';
         }
@@ -193,12 +198,23 @@ var BeatifyI18n = (function() {
     }
 
     /**
-     * Detect browser language and return 'de' or 'en'
+     * Detect browser language and return 'de', 'es', or 'en' (Story 16.3)
+     * Supports Spanish variants: es, es-ES, es-MX, es-AR, etc.
      * @returns {string} - Detected language code
      */
     function detectBrowserLanguage() {
         var browserLang = navigator.language || navigator.userLanguage || 'en';
-        return browserLang.toLowerCase().startsWith('de') ? 'de' : 'en';
+        var langLower = browserLang.toLowerCase();
+        // Check for German (de, de-DE, de-AT, etc.)
+        if (langLower.startsWith('de')) {
+            return 'de';
+        }
+        // Check for Spanish (es, es-ES, es-MX, es-AR, es-CO, etc.)
+        if (langLower.startsWith('es')) {
+            return 'es';
+        }
+        // Default to English
+        return 'en';
     }
 
     /**

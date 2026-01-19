@@ -1042,3 +1042,100 @@
         font-size: 48px;
     }
 }
+
+/* ==========================================
+   Round Statistics (Story 16.4)
+   ========================================== */
+
+.dashboard-round-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xl);
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-dark-surface);
+    border-radius: var(--radius-lg);
+}
+
+.round-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.round-stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-neon-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.round-stat-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent-secondary);
+}
+
+/* TV Breakpoint for round stats */
+@media (min-width: 1400px) {
+    .dashboard-round-stats {
+        padding: var(--space-lg) var(--space-xl);
+        gap: var(--space-2xl);
+    }
+
+    .round-stat-label {
+        font-size: var(--font-size-base);
+    }
+
+    .round-stat-value {
+        font-size: var(--font-size-3xl);
+    }
+}
+
+/* ==========================================
+   Fun Fact Display (Story 16.4)
+   ========================================== */
+
+.dashboard-fun-fact {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 165, 0, 0.08) 100%);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid var(--color-warning);
+    max-width: 400px;
+}
+
+.dashboard-fun-fact.hidden {
+    display: none;
+}
+
+.dashboard-fun-fact .fun-fact-icon {
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
+}
+
+.dashboard-fun-fact .fun-fact-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-white);
+    line-height: 1.5;
+}
+
+/* TV Breakpoint for fun fact */
+@media (min-width: 1400px) {
+    .dashboard-fun-fact {
+        padding: var(--space-lg) var(--space-xl);
+        max-width: 500px;
+    }
+
+    .dashboard-fun-fact .fun-fact-icon {
+        font-size: var(--font-size-2xl);
+    }
+
+    .dashboard-fun-fact .fun-fact-text {
+        font-size: var(--font-size-lg);
+    }
+}

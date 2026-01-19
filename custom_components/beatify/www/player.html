@@ -92,6 +92,15 @@
                     <p class="qr-hint" data-i18n="lobby.tapToEnlarge">Tap to enlarge</p>
                 </div>
 
+                <!-- Dashboard hint (Story 16.4) -->
+                <div class="dashboard-hint-container">
+                    <p class="dashboard-hint-text">
+                        <span class="dashboard-hint-icon">📺</span>
+                        <span data-i18n="dashboard.castToTv">Cast to TV:</span>
+                        <span class="dashboard-hint-url">/beatify/dashboard</span>
+                    </p>
+                </div>
+
                 <div id="lobby-status" class="lobby-status">
                     <p data-i18n="lobby.waitingForHost">Waiting for host to start the game...</p>
                 </div>
@@ -302,9 +311,16 @@
 
                 <!-- Admin Controls -->
                 <div id="reveal-admin-controls" class="reveal-admin-controls hidden">
-                    <button id="next-round-btn" class="next-round-btn" data-i18n="admin.nextRound">
-                        Next Round
-                    </button>
+                    <div class="reveal-admin-buttons">
+                        <button id="invite-players-btn" class="invite-btn" type="button"
+                                aria-label="Invite players to join the game">
+                            <span class="invite-btn-icon">📲</span>
+                            <span class="invite-btn-label" data-i18n="lobby.invitePlayers">Invite Players</span>
+                        </button>
+                        <button id="next-round-btn" class="next-round-btn" data-i18n="admin.nextRound">
+                            Next Round
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -448,7 +464,7 @@
         </div>
     </div>
 
-    <!-- QR Modal -->
+    <!-- QR Modal (Lobby - full screen) -->
     <div id="qr-modal" class="qr-modal hidden" role="dialog" aria-modal="true"
          aria-labelledby="qr-modal-title">
         <div class="qr-modal-backdrop"></div>
@@ -460,6 +476,30 @@
             <p class="qr-modal-label" data-i18n="lobby.scanToJoin">Scan to join the game</p>
             <button id="qr-modal-close" class="btn btn-secondary qr-modal-close"
                     aria-label="Close QR code" data-i18n="common.close">Close</button>
+        </div>
+    </div>
+
+    <!-- Invite Modal (Story 16.5 - QR code during active game for admin) -->
+    <div id="invite-modal" class="invite-modal hidden" role="dialog" aria-modal="true"
+         aria-labelledby="invite-modal-title">
+        <div class="invite-modal-backdrop"></div>
+        <div class="invite-modal-content">
+            <h2 id="invite-modal-title" class="invite-modal-title" data-i18n="lobby.invitePlayers">Invite Players</h2>
+            <p class="invite-modal-hint" data-i18n="lobby.invitePlayersHint">Share this QR code or link with friends</p>
+            <div id="invite-modal-code" class="invite-modal-code">
+                <!-- QR code rendered here -->
+            </div>
+            <div class="invite-modal-url-container">
+                <input type="text" id="invite-modal-url" class="invite-modal-url" readonly
+                       aria-label="Join URL">
+                <button id="invite-copy-btn" class="invite-copy-btn" type="button"
+                        aria-label="Copy join link">
+                    <span class="invite-copy-icon">📋</span>
+                </button>
+            </div>
+            <p id="invite-copy-feedback" class="invite-copy-feedback hidden">Copied!</p>
+            <button id="invite-modal-close" class="btn btn-secondary invite-modal-close"
+                    aria-label="Close invite popup" data-i18n="common.close">Close</button>
         </div>
     </div>
 

@@ -22,8 +22,17 @@ sys.modules["homeassistant"] = MagicMock()
 sys.modules["homeassistant.core"] = MagicMock()
 sys.modules["homeassistant.components"] = MagicMock()
 sys.modules["homeassistant.components.http"] = MagicMock()
+sys.modules["homeassistant.components.frontend"] = MagicMock()
+sys.modules["homeassistant.config_entries"] = MagicMock()
+sys.modules["homeassistant.const"] = MagicMock()
+sys.modules["homeassistant.helpers"] = MagicMock()
+sys.modules["homeassistant.helpers.typing"] = MagicMock()
 
-from custom_components.beatify.game.playlist import PlaylistManager
+from custom_components.beatify.game.playlist import (
+    PlaylistManager,
+    get_localized_field,
+    SUPPORTED_LANGUAGES,
+)
 
 
 @pytest.mark.unit
@@ -185,3 +194,98 @@ class TestPlaylistManagerImmutability:
 
         # Original list should be unchanged
         assert len(original_songs) == 1
+
+
+@pytest.mark.unit
+class TestLocalizedContent:
+    """Tests for localized content retrieval (Story 16.1, 16.3)."""
+
+    def test_supported_languages_includes_de_es(self):
+        """SUPPORTED_LANGUAGES includes German and Spanish."""
+        assert "en" in SUPPORTED_LANGUAGES
+        assert "de" in SUPPORTED_LANGUAGES
+        assert "es" in SUPPORTED_LANGUAGES
+
+    def test_get_localized_field_english_returns_base_field(self):
+        """get_localized_field returns base field for English."""
+        song = {
+            "fun_fact": "English fun fact",
+            "fun_fact_de": "German fun fact",
+            "fun_fact_es": "Spanish fun fact",
+        }
+        result = get_localized_field(song, "fun_fact", "en")
+        assert result == "English fun fact"
+
+    def test_get_localized_field_german_returns_german_field(self):
+        """get_localized_field returns German field when available."""
+        song = {
+            "fun_fact": "English fun fact",
+            "fun_fact_de": "German fun fact",
+        }
+        result = get_localized_field(song, "fun_fact", "de")
+        assert result == "German fun fact"
+
+    def test_get_localized_field_spanish_returns_spanish_field(self):
+        """get_localized_field returns Spanish field when available."""
+        song = {
+            "fun_fact": "English fun fact",
+            "fun_fact_es": "Spanish fun fact",
+        }
+        result = get_localized_field(song, "fun_fact", "es")
+        assert result == "Spanish fun fact"
+
+    def test_get_localized_field_falls_back_to_english(self):
+        """get_localized_field falls back to English when localized not available."""
+        song = {
+            "fun_fact": "English fun fact",
+        }
+        # German not available, should fall back to English
+        result = get_localized_field(song, "fun_fact", "de")
+        assert result == "English fun fact"
+
+        # Spanish not available, should fall back to English
+        result = get_localized_field(song, "fun_fact", "es")
+        assert result == "English fun fact"
+
+    def test_get_localized_field_returns_none_when_missing(self):
+        """get_localized_field returns None when field is missing entirely."""
+        song = {"year": 1985, "uri": "spotify:track:1"}
+        result = get_localized_field(song, "fun_fact", "en")
+        assert result is None
+
+    def test_get_localized_field_with_awards_array(self):
+        """get_localized_field works with array fields like awards."""
+        song = {
+            "awards": ["Grammy Award", "MTV Award"],
+            "awards_de": ["Grammy Auszeichnung", "MTV Preis"],
+            "awards_es": ["Premio Grammy", "Premio MTV"],
+        }
+        # English
+        result = get_localized_field(song, "awards", "en")
+        assert result == ["Grammy Award", "MTV Award"]
+
+        # German
+        result = get_localized_field(song, "awards", "de")
+        assert result == ["Grammy Auszeichnung", "MTV Preis"]
+
+        # Spanish
+        result = get_localized_field(song, "awards", "es")
+        assert result == ["Premio Grammy", "Premio MTV"]
+
+    def test_get_localized_field_empty_localized_falls_back(self):
+        """get_localized_field falls back when localized field is empty."""
+        song = {
+            "fun_fact": "English fun fact",
+            "fun_fact_de": "",  # Empty string should fall back
+        }
+        result = get_localized_field(song, "fun_fact", "de")
+        assert result == "English fun fact"
+
+    def test_get_localized_field_none_localized_falls_back(self):
+        """get_localized_field falls back when localized field is None."""
+        song = {
+            "fun_fact": "English fun fact",
+            "fun_fact_es": None,  # None should fall back
+        }
+        result = get_localized_field(song, "fun_fact", "es")
+        assert result == "English fun fact"

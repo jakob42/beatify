@@ -6,10 +6,50 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
+from ..const import MEDIA_CONTENT_TYPES, MEDIA_CONTENT_TYPE_DEFAULT
+
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def get_media_content_type(uri: str) -> str:
+    """
+    Determine the appropriate media_content_type for a given URI.
+
+    Different media players (especially Alexa) require provider-specific
+    content types. For example, Alexa devices return "Sorry, direct music
+    streaming isn't supported" when using generic "music" type for Spotify URIs.
+
+    Args:
+        uri: Media content URI (e.g., "spotify:track:xxx", "apple_music:track:xxx")
+
+    Returns:
+        Provider-specific content type (e.g., "spotify") or default "music"
+
+    Examples:
+        >>> get_media_content_type("spotify:track:abc123")
+        'spotify'
+        >>> get_media_content_type("apple_music:track:xyz")
+        'apple_music'
+        >>> get_media_content_type("http://example.com/song.mp3")
+        'music'
+
+    """
+    # Extract provider prefix from URI (e.g., "spotify" from "spotify:track:xxx")
+    if ":" in uri:
+        provider = uri.split(":")[0].lower()
+        content_type = MEDIA_CONTENT_TYPES.get(provider, MEDIA_CONTENT_TYPE_DEFAULT)
+        _LOGGER.debug(
+            "URI '%s' detected as provider '%s', using content_type '%s'",
+            uri,
+            provider,
+            content_type,
+        )
+        return content_type
+
+    return MEDIA_CONTENT_TYPE_DEFAULT
 
 # Timeout for pre-flight connectivity check (seconds)
 PREFLIGHT_TIMEOUT = 5.0
@@ -46,13 +86,17 @@ class MediaPlayerService:
 
         """
         try:
+            # Determine content type from URI prefix (Story 16.2)
+            # Alexa devices require "spotify" content type, not generic "music"
+            content_type = get_media_content_type(uri)
+
             await self._hass.services.async_call(
                 "media_player",
                 "play_media",
                 {
                     "entity_id": self._entity_id,
                     "media_content_id": uri,
-                    "media_content_type": "music",
+                    "media_content_type": content_type,
                 },
                 blocking=True,
             )

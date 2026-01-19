@@ -53,6 +53,26 @@
     }
 
     /**
+     * Get localized content field from song with English fallback (Story 16.1, 16.3)
+     * @param {Object} song - Song object
+     * @param {string} field - Base field name ('fun_fact' or 'awards')
+     * @returns {string|Array|null} Localized content or English fallback
+     */
+    function getLocalizedSongField(song, field) {
+        if (!song) return null;
+        var lang = BeatifyI18n.getLanguage();
+        // Try localized field first (for non-English)
+        if (lang && lang !== 'en') {
+            var localizedKey = field + '_' + lang;
+            if (song[localizedKey]) {
+                return song[localizedKey];
+            }
+        }
+        // Fallback to base field (English)
+        return song[field] || null;
+    }
+
+    /**
      * Check game status with the server
      */
     async function checkGameStatus() {
@@ -767,6 +787,144 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
                 closeQRModal();
+            }
+        });
+    }
+
+    // ============================================
+    // Invite Modal (Story 16.5)
+    // ============================================
+
+    /**
+     * Open invite modal with QR code and URL for late joiners
+     */
+    function openInviteModal() {
+        if (!currentJoinUrl) return;
+
+        var modal = document.getElementById('invite-modal');
+        var modalCode = document.getElementById('invite-modal-code');
+        var urlInput = document.getElementById('invite-modal-url');
+        if (!modal || !modalCode) return;
+
+        // Clear and render QR code
+        modalCode.innerHTML = '';
+
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(modalCode, {
+                text: currentJoinUrl,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        } else {
+            modalCode.innerHTML = '<p class="status-error">QR code library not loaded</p>';
+        }
+
+        // Set URL in input field
+        if (urlInput) {
+            urlInput.value = currentJoinUrl;
+        }
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Focus close button for accessibility
+        var closeBtn = document.getElementById('invite-modal-close');
+        if (closeBtn) closeBtn.focus();
+    }
+
+    /**
+     * Close invite modal
+     */
+    function closeInviteModal() {
+        var modal = document.getElementById('invite-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        // Hide copy feedback
+        var feedback = document.getElementById('invite-copy-feedback');
+        if (feedback) feedback.classList.add('hidden');
+    }
+
+    /**
+     * Copy join URL to clipboard
+     */
+    function copyJoinUrl() {
+        var urlInput = document.getElementById('invite-modal-url');
+        var feedback = document.getElementById('invite-copy-feedback');
+        if (!urlInput || !currentJoinUrl) return;
+
+        // Use Clipboard API if available, otherwise fallback to select/copy
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(currentJoinUrl).then(function() {
+                showCopyFeedback(feedback);
+            }).catch(function() {
+                fallbackCopy(urlInput, feedback);
+            });
+        } else {
+            fallbackCopy(urlInput, feedback);
+        }
+    }
+
+    /**
+     * Fallback copy method for older browsers
+     * @param {HTMLInputElement} urlInput - The input element
+     * @param {HTMLElement} feedback - The feedback element
+     */
+    function fallbackCopy(urlInput, feedback) {
+        urlInput.select();
+        urlInput.setSelectionRange(0, 99999); // For mobile
+        try {
+            document.execCommand('copy');
+            showCopyFeedback(feedback);
+        } catch (e) {
+            console.warn('[Beatify] Copy failed:', e);
+        }
+    }
+
+    /**
+     * Show copy success feedback
+     * @param {HTMLElement} feedback - The feedback element
+     */
+    function showCopyFeedback(feedback) {
+        if (!feedback) return;
+        feedback.classList.remove('hidden');
+        // Auto-hide after animation
+        setTimeout(function() {
+            feedback.classList.add('hidden');
+        }, 2000);
+    }
+
+    /**
+     * Setup invite modal event handlers
+     */
+    function setupInviteModal() {
+        var modal = document.getElementById('invite-modal');
+        var backdrop = modal ? modal.querySelector('.invite-modal-backdrop') : null;
+        var closeBtn = document.getElementById('invite-modal-close');
+        var inviteBtn = document.getElementById('invite-players-btn');
+        var copyBtn = document.getElementById('invite-copy-btn');
+
+        if (backdrop) {
+            backdrop.addEventListener('click', closeInviteModal);
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeInviteModal);
+        }
+        if (inviteBtn) {
+            inviteBtn.addEventListener('click', openInviteModal);
+        }
+        if (copyBtn) {
+            copyBtn.addEventListener('click', copyJoinUrl);
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+                closeInviteModal();
             }
         });
     }
@@ -1621,19 +1779,22 @@
         if (titleEl) titleEl.textContent = song.title || 'Unknown Song';
         if (artistEl) artistEl.textContent = song.artist || 'Unknown Artist';
 
-        // Update fun fact and rich song info (Story 14.3)
+        // Update fun fact and rich song info (Story 14.3, 16.1, 16.3)
         var funFactContainer = document.getElementById('fun-fact-container');
         var funFactText = document.getElementById('fun-fact');
         var funFactHeader = funFactContainer ? funFactContainer.querySelector('.fun-fact-header') : null;
 
+        // Get localized fun fact (Story 16.1, 16.3)
+        var localizedFunFact = getLocalizedSongField(song, 'fun_fact');
+
         // Set fun fact text
         if (funFactText) {
-            funFactText.textContent = song.fun_fact || '';
+            funFactText.textContent = localizedFunFact || '';
         }
 
         // Show/hide fun fact header based on whether there's a fun fact
         if (funFactHeader) {
-            funFactHeader.style.display = song.fun_fact ? 'flex' : 'none';
+            funFactHeader.style.display = localizedFunFact ? 'flex' : 'none';
         }
 
         // Render rich song info (Story 14.3)
@@ -1646,7 +1807,7 @@
         if (funFactContainer) {
             var richInfo = document.getElementById('song-rich-info');
             var hasRichInfo = richInfo && richInfo.innerHTML.trim() !== '';
-            var hasFunFact = song.fun_fact && song.fun_fact.trim() !== '';
+            var hasFunFact = localizedFunFact && localizedFunFact.trim() !== '';
             funFactContainer.classList.toggle('hidden', !hasFunFact && !hasRichInfo);
         }
 
@@ -1981,8 +2142,9 @@
         var certBadges = renderCertificationBadges(song.certifications || []);
         if (certBadges.length > 0) badges = badges.concat(certBadges);
 
-        // Collect award badges
-        var awardBadges = renderAwardBadges(song.awards || []);
+        // Collect award badges (Story 16.1, 16.3 - use localized awards)
+        var localizedAwards = getLocalizedSongField(song, 'awards') || [];
+        var awardBadges = renderAwardBadges(localizedAwards);
         if (awardBadges.length > 0) badges = badges.concat(awardBadges);
 
         // Render all badges in a single centered row
@@ -2752,11 +2914,27 @@
     }
 
     /**
-     * Handle Stop Song button
+     * Handle Stop Song button (Story 16.6)
      */
     function handleStopSong() {
+        // Check if already stopped (prevent redundant clicks)
+        if (songStopped) return;
+
         if (!debounceAdminAction()) return;
-        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+            console.warn('[Beatify] Cannot stop song: WebSocket not connected');
+            return;
+        }
+
+        // Immediate visual feedback (AC1, AC3)
+        var stopBtn = document.getElementById('stop-song-btn');
+        if (stopBtn) {
+            stopBtn.classList.add('is-disabled');
+            stopBtn.disabled = true;
+            var labelEl = stopBtn.querySelector('.control-label');
+            if (labelEl) labelEl.textContent = 'Stopping...';
+        }
 
         ws.send(JSON.stringify({
             type: 'admin',
@@ -3309,6 +3487,7 @@
                 }
                 setEnergyLevel('party');  // Story 9.9
                 showView('game-view');
+                closeInviteModal();  // Story 16.5 - auto-close invite modal when round starts
                 updateGameView(data);
                 // Render difficulty badge (Story 14.1)
                 if (data.difficulty) {
@@ -3423,6 +3602,13 @@
                 intentionalLeave = false;
                 // Show user-friendly error message
                 alert(data.message || 'Host cannot leave. End the game instead.');
+                return;
+            }
+            // Handle INVALID_ACTION for stop_song - restore button state (Story 16.6)
+            if (data.code === 'INVALID_ACTION' && data.message === 'No song playing') {
+                // Restore stop button state if action failed
+                resetSongStoppedState();
+                console.warn('[Beatify] Stop song failed: No song playing');
                 return;
             }
             // Show join view first (user may be on loading-view from auto-reconnect)
@@ -3851,6 +4037,7 @@
 
         setupJoinForm();
         setupQRModal();
+        setupInviteModal();  // Story 16.5
         setupAdminControls();
         setupRevealControls();
         setupAdminControlBar();  // Story 6.1

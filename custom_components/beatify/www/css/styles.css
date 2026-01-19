@@ -1386,8 +1386,18 @@ body.theme-dark .qr-modal-label {
 }
 
 .lobby-controls {
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-sm);
     margin: var(--space-md) 0;
+}
+
+/* Dashboard button styling (Story 16.4) */
+.btn-dashboard {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
 }
 
 .player-list {
@@ -1779,6 +1789,34 @@ body.theme-dark .qr-modal-label {
     margin-top: var(--space-sm);
     font-size: 13px;
     color: var(--color-text-muted);
+}
+
+/* Dashboard Hint (Story 16.4) */
+.dashboard-hint-container {
+    margin-top: var(--space-md);
+    text-align: center;
+}
+
+.dashboard-hint-text {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-neon-muted);
+    background: var(--color-dark-surface);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    margin: 0;
+}
+
+.dashboard-hint-icon {
+    font-size: var(--font-size-base);
+}
+
+.dashboard-hint-url {
+    font-family: monospace;
+    color: var(--color-accent-secondary);
+    font-size: var(--font-size-xs);
 }
 
 /* QR Modal (Story 3.4) */
@@ -3945,6 +3983,207 @@ body.theme-dark .result-value.is-bet-lost {
 
 .next-round-btn.is-final:hover {
     background: var(--color-success-hover);
+}
+
+/* Reveal Admin Buttons Layout (Story 16.5) */
+.reveal-admin-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: center;
+}
+
+@media (min-width: 480px) {
+    .reveal-admin-buttons {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+/* Invite Button (Story 16.5) */
+.invite-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-white);
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.invite-btn:hover {
+    background: var(--color-bg-secondary);
+    border-color: var(--color-border-neon);
+}
+
+.invite-btn:active {
+    transform: scale(0.98);
+}
+
+.invite-btn-icon {
+    font-size: var(--font-size-lg);
+}
+
+.invite-btn-label {
+    white-space: nowrap;
+}
+
+/* Invite Modal (Story 16.5) */
+.invite-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invite-modal.hidden {
+    display: none;
+}
+
+.invite-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.invite-modal-content {
+    position: relative;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-neon);
+    padding: var(--space-lg);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalFadeIn var(--transition-normal) ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.invite-modal-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-white);
+    margin: 0 0 var(--space-xs);
+}
+
+.invite-modal-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-md);
+}
+
+.invite-modal-code {
+    display: inline-block;
+    padding: var(--space-md);
+    background: var(--color-bg-white);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+}
+
+.invite-modal-code img {
+    display: block;
+    width: 200px;
+    height: 200px;
+}
+
+@media (min-width: 480px) {
+    .invite-modal-code img {
+        width: 256px;
+        height: 256px;
+    }
+}
+
+.invite-modal-url-container {
+    display: flex;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    max-width: 100%;
+}
+
+.invite-modal-url {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family-mono);
+    color: var(--color-text-primary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    min-width: 0;
+    text-overflow: ellipsis;
+}
+
+.invite-copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm);
+    min-width: 44px;
+    min-height: 44px;
+    background: var(--color-accent-brand);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.invite-copy-btn:hover {
+    background: var(--color-accent-brand-hover);
+}
+
+.invite-copy-btn:active {
+    transform: scale(0.95);
+}
+
+.invite-copy-icon {
+    font-size: var(--font-size-lg);
+}
+
+.invite-copy-feedback {
+    font-size: var(--font-size-sm);
+    color: var(--color-success);
+    margin: 0 0 var(--space-md);
+    animation: fadeInOut 2s ease-in-out;
+}
+
+.invite-copy-feedback.hidden {
+    display: none;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    10%, 80% { opacity: 1; }
+}
+
+.invite-modal-close {
+    min-width: 120px;
+    min-height: 48px;
 }
 
 /* ============================================

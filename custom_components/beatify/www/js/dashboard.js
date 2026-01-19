@@ -309,6 +309,35 @@
 
         // Render leaderboard with submission indicators and bet badges
         renderLeaderboard(data.leaderboard || [], players, 'dashboard-leaderboard', true, true);
+
+        // Update round statistics (Story 16.4)
+        renderRoundStats(data, players);
+    }
+
+    /**
+     * Render round statistics below leaderboard (Story 16.4)
+     * @param {Object} data - State data
+     * @param {Array} players - Players array
+     */
+    function renderRoundStats(data, players) {
+        // Calculate submission count
+        var submitted = 0;
+        var total = players.length;
+        players.forEach(function(p) {
+            if (p.submitted) submitted++;
+        });
+
+        var submissionsEl = document.getElementById('dashboard-submissions');
+        if (submissionsEl) {
+            submissionsEl.textContent = submitted + '/' + total;
+        }
+
+        // Time remaining is already shown in the main timer, but we update the stat too
+        var timeEl = document.getElementById('dashboard-time-remaining');
+        if (timeEl && data.deadline) {
+            var remaining = Math.max(0, Math.ceil((data.deadline - Date.now()) / 1000));
+            timeEl.textContent = remaining + 's';
+        }
     }
 
     /**
@@ -319,6 +348,7 @@
         stopCountdown();
 
         var timerElement = document.getElementById('dashboard-timer');
+        var timeStatEl = document.getElementById('dashboard-time-remaining');
         if (!timerElement) return;
 
         timerElement.classList.remove('timer--warning', 'timer--critical');
@@ -328,6 +358,11 @@
             var remaining = Math.max(0, Math.ceil((deadline - now) / 1000));
 
             timerElement.textContent = remaining;
+
+            // Also update round stats time (Story 16.4)
+            if (timeStatEl) {
+                timeStatEl.textContent = remaining + 's';
+            }
 
             // Update timer style based on remaining time (AC 10.4.3)
             if (remaining <= 5) {
@@ -470,6 +505,9 @@
         if (titleEl) titleEl.textContent = song.title || 'Unknown Song';
         if (yearEl) yearEl.textContent = song.year || '????';
 
+        // Render fun fact (Story 16.4)
+        renderFunFact(song);
+
         // Render top 3 guesses this round (AC 10.4.4)
         renderTopGuesses(players);
 
@@ -495,6 +533,27 @@
                 triggerConfetti('exact');
             }
         }
+    }
+
+    /**
+     * Render fun fact below year in reveal view (Story 16.4)
+     * @param {Object} song - Song data with optional fun_fact
+     */
+    function renderFunFact(song) {
+        var container = document.getElementById('dashboard-fun-fact');
+        var textEl = document.getElementById('dashboard-fun-fact-text');
+
+        if (!container || !textEl) return;
+
+        // Hide if no fun fact
+        if (!song || !song.fun_fact || song.fun_fact.trim() === '') {
+            container.classList.add('hidden');
+            return;
+        }
+
+        // Show fun fact
+        textEl.textContent = song.fun_fact;
+        container.classList.remove('hidden');
     }
 
     /**

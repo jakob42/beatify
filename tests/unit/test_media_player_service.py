@@ -6,8 +6,10 @@ Tests media player integration for Epic 4 gameplay:
 - Metadata retrieval from entity attributes
 - Stop and volume control
 - Error handling for unavailable player
+- Provider-specific content type detection (Story 16.2)
 
 Story 4.1 - AC: #2, #6, #7
+Story 16.2 - AC: #1, #5 (Spotify playback fix for Alexa)
 """
 
 from __future__ import annotations
@@ -20,10 +22,18 @@ import pytest
 # Mock homeassistant before importing beatify modules
 sys.modules["homeassistant"] = MagicMock()
 sys.modules["homeassistant.core"] = MagicMock()
+sys.modules["homeassistant.config_entries"] = MagicMock()
+sys.modules["homeassistant.helpers"] = MagicMock()
+sys.modules["homeassistant.helpers.config_validation"] = MagicMock()
 sys.modules["homeassistant.components"] = MagicMock()
 sys.modules["homeassistant.components.http"] = MagicMock()
+sys.modules["homeassistant.components.frontend"] = MagicMock()
+sys.modules["voluptuous"] = MagicMock()
 
-from custom_components.beatify.services.media_player import MediaPlayerService
+from custom_components.beatify.services.media_player import (
+    MediaPlayerService,
+    get_media_content_type,
+)
 
 
 @pytest.fixture
@@ -41,8 +51,8 @@ class TestMediaPlayerServicePlayback:
     """Tests for song playback."""
 
     @pytest.mark.asyncio
-    async def test_play_song_calls_ha_service(self, mock_hass):
-        """play_song calls the correct HA service."""
+    async def test_play_song_calls_ha_service_with_spotify_content_type(self, mock_hass):
+        """play_song calls HA service with 'spotify' content type for Spotify URIs (Story 16.2)."""
         service = MediaPlayerService(mock_hass, "media_player.living_room")
 
         result = await service.play_song("spotify:track:abc123")
@@ -54,7 +64,7 @@ class TestMediaPlayerServicePlayback:
             {
                 "entity_id": "media_player.living_room",
                 "media_content_id": "spotify:track:abc123",
-                "media_content_type": "music",
+                "media_content_type": "spotify",  # Story 16.2: Must be "spotify" for Alexa
             },
             blocking=True,
         )
@@ -220,3 +230,92 @@ class TestMediaPlayerServiceAvailability:
         service = MediaPlayerService(mock_hass, "media_player.living_room")
 
         assert service.is_available() is False
+
+
+@pytest.mark.unit
+class TestMediaContentTypeDetection:
+    """Tests for provider-specific content type detection (Story 16.2).
+
+    AC #1: media_content_type shall be "spotify" for Spotify URIs
+    AC #5: Content type shall be parameterizable per provider
+    """
+
+    def test_spotify_track_uri_returns_spotify_type(self):
+        """Spotify track URI returns 'spotify' content type."""
+        assert get_media_content_type("spotify:track:abc123") == "spotify"
+
+    def test_spotify_album_uri_returns_spotify_type(self):
+        """Spotify album URI returns 'spotify' content type."""
+        assert get_media_content_type("spotify:album:xyz789") == "spotify"
+
+    def test_spotify_playlist_uri_returns_spotify_type(self):
+        """Spotify playlist URI returns 'spotify' content type."""
+        assert get_media_content_type("spotify:playlist:def456") == "spotify"
+
+    def test_apple_music_uri_returns_apple_music_type(self):
+        """Apple Music URI returns 'apple_music' content type (future support)."""
+        assert get_media_content_type("apple_music:track:abc123") == "apple_music"
+
+    def test_tidal_uri_returns_tidal_type(self):
+        """Tidal URI returns 'tidal' content type (future support)."""
+        assert get_media_content_type("tidal:track:abc123") == "tidal"
+
+    def test_http_url_returns_default_music_type(self):
+        """HTTP URLs fall back to generic 'music' content type."""
+        assert get_media_content_type("http://example.com/song.mp3") == "music"
+
+    def test_https_url_returns_default_music_type(self):
+        """HTTPS URLs fall back to generic 'music' content type."""
+        assert get_media_content_type("https://example.com/song.mp3") == "music"
+
+    def test_unknown_provider_returns_default_music_type(self):
+        """Unknown provider prefix falls back to generic 'music' content type."""
+        assert get_media_content_type("unknown:track:abc123") == "music"
+
+    def test_uri_without_colon_returns_default_music_type(self):
+        """URI without colon separator returns default 'music' type."""
+        assert get_media_content_type("simplestring") == "music"
+
+    def test_case_insensitive_provider_detection(self):
+        """Provider detection is case-insensitive."""
+        assert get_media_content_type("SPOTIFY:track:abc123") == "spotify"
+        assert get_media_content_type("Spotify:track:abc123") == "spotify"
+
+
+@pytest.mark.unit
+class TestMediaPlayerServiceProviderPlayback:
+    """Tests for playback with different providers (Story 16.2).
+
+    AC #3: Sonos speaker playback works as before (no regression)
+    AC #4: Chromecast device playback works as before (no regression)
+    """
+
+    @pytest.mark.asyncio
+    async def test_play_song_with_http_url_uses_music_type(self, mock_hass):
+        """play_song with HTTP URL uses 'music' content type (Sonos/Chromecast)."""
+        service = MediaPlayerService(mock_hass, "media_player.sonos_speaker")
+
+        result = await service.play_song("http://example.com/song.mp3")
+
+        assert result is True
+        mock_hass.services.async_call.assert_called_once_with(
+            "media_player",
+            "play_media",
+            {
+                "entity_id": "media_player.sonos_speaker",
+                "media_content_id": "http://example.com/song.mp3",
+                "media_content_type": "music",  # Generic type for HTTP URLs
+            },
+            blocking=True,
+        )
+
+    @pytest.mark.asyncio
+    async def test_play_song_with_spotify_playlist_uri(self, mock_hass):
+        """play_song with Spotify playlist URI uses 'spotify' content type."""
+        service = MediaPlayerService(mock_hass, "media_player.alexa_echo")
+
+        result = await service.play_song("spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
+
+        assert result is True
+        call_args = mock_hass.services.async_call.call_args
+        assert call_args[0][2]["media_content_type"] == "spotify"

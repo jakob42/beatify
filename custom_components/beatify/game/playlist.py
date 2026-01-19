@@ -24,7 +24,8 @@ class PlaylistManager:
         """
         Initialize with list of songs from loaded playlists.
 
-        Each song dict must have: year, uri, fun_fact
+        Each song dict must have: year, uri
+        Optional fields: fun_fact, fun_fact_de, fun_fact_es, awards, awards_de, awards_es
 
         Args:
             songs: List of song dictionaries
@@ -93,6 +94,34 @@ class PlaylistManager:
 # Validation constants
 MIN_YEAR = 1900
 MAX_YEAR = 2030
+
+# Supported languages for localized content
+SUPPORTED_LANGUAGES = ("en", "de", "es")
+
+
+def get_localized_field(
+    song: dict[str, Any], field: str, language: str
+) -> str | list[str] | None:
+    """
+    Get localized field value with English fallback.
+
+    Args:
+        song: Song dictionary
+        field: Base field name (e.g., 'fun_fact', 'awards')
+        language: Language code ('en', 'de', 'es')
+
+    Returns:
+        Localized value or English fallback, or None if neither exists
+
+    """
+    # Try localized field first (for non-English)
+    if language != "en":
+        localized_key = f"{field}_{language}"
+        if localized_key in song and song[localized_key]:
+            return song[localized_key]
+
+    # Fallback to base field (English)
+    return song.get(field)
 
 
 def get_playlist_directory(hass: HomeAssistant) -> Path:

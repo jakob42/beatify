@@ -94,11 +94,22 @@
                     <div id="dashboard-timer" class="dashboard-timer" role="timer" aria-live="polite">30</div>
                 </div>
 
-                <!-- Right side: Leaderboard -->
+                <!-- Right side: Leaderboard + Round Stats -->
                 <div class="playing-right-section">
                     <h2 class="leaderboard-title" data-i18n="leaderboard.title">Leaderboard</h2>
                     <div id="dashboard-leaderboard" class="dashboard-leaderboard">
                         <!-- Leaderboard entries rendered by JS -->
+                    </div>
+                    <!-- Round Statistics (Story 16.4) -->
+                    <div id="dashboard-round-stats" class="dashboard-round-stats">
+                        <div class="round-stat">
+                            <span class="round-stat-label" data-i18n="dashboard.submissions">Submissions</span>
+                            <span id="dashboard-submissions" class="round-stat-value">0/0</span>
+                        </div>
+                        <div class="round-stat">
+                            <span class="round-stat-label" data-i18n="dashboard.timeRemaining">Time</span>
+                            <span id="dashboard-time-remaining" class="round-stat-value">--</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -121,6 +132,11 @@
                         <div id="reveal-year" class="reveal-year text-glow">1984</div>
                         <!-- Song difficulty rating (Story 15.1) -->
                         <div id="song-difficulty" class="song-difficulty hidden"></div>
+                        <!-- Fun Fact (Story 16.4) -->
+                        <div id="dashboard-fun-fact" class="dashboard-fun-fact hidden">
+                            <span class="fun-fact-icon">&#128161;</span>
+                            <span id="dashboard-fun-fact-text" class="fun-fact-text"></span>
+                        </div>
                     </div>
                 </div>
 
