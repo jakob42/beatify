@@ -770,7 +770,7 @@ function setupLanguageSelector() {
 
 /**
  * Update language button states (Story 12.4)
- * @param {string} lang - Language code ('en' or 'de')
+ * @param {string} lang - Language code ('en', 'de', or 'es')
  */
 function updateLanguageButtons(lang) {
     var langButtons = document.querySelectorAll('.lang-btn');
@@ -785,11 +785,11 @@ function updateLanguageButtons(lang) {
 }
 
 /**
- * Set language and update UI (Story 12.4)
- * @param {string} lang - Language code ('en' or 'de')
+ * Set language and update UI (Story 12.4, 16.3)
+ * @param {string} lang - Language code ('en', 'de', or 'es')
  */
 async function setLanguage(lang) {
-    if (lang !== 'en' && lang !== 'de') {
+    if (lang !== 'en' && lang !== 'de' && lang !== 'es') {
         lang = 'en';
     }
 
