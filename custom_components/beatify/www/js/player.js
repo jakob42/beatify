@@ -1964,90 +1964,102 @@
 
     /**
      * Render rich song info (chart position, certifications, awards)
+     * Uses unified badge design - all centered with consistent styling
      * @param {Object} song - Song data with optional chart_info, certifications, awards
      */
     function renderRichSongInfo(song) {
         var container = document.getElementById('song-rich-info');
         if (!container) return;
 
-        var html = '';
+        var badges = [];
 
-        // Chart info section
-        html += renderChartInfo(song.chart_info || {});
+        // Collect chart badges
+        var chartBadges = renderChartBadges(song.chart_info || {});
+        if (chartBadges.length > 0) badges = badges.concat(chartBadges);
 
-        // Certifications section
-        html += renderCertifications(song.certifications || []);
+        // Collect certification badges
+        var certBadges = renderCertificationBadges(song.certifications || []);
+        if (certBadges.length > 0) badges = badges.concat(certBadges);
 
-        // Awards section
-        html += renderAwards(song.awards || []);
+        // Collect award badges
+        var awardBadges = renderAwardBadges(song.awards || []);
+        if (awardBadges.length > 0) badges = badges.concat(awardBadges);
 
-        container.innerHTML = html;
+        // Render all badges in a single centered row
+        if (badges.length > 0) {
+            container.innerHTML = '<div class="song-badges-row">' + badges.join('') + '</div>';
+        } else {
+            container.innerHTML = '';
+        }
     }
 
     /**
-     * Render chart info (Billboard peak, weeks on chart, UK peak)
+     * Render chart info as badges
      * @param {Object} chartInfo - Chart info data
-     * @returns {string} HTML string for chart info section
+     * @returns {Array} Array of badge HTML strings
      */
-    function renderChartInfo(chartInfo) {
-        if (!chartInfo) return '';
+    function renderChartBadges(chartInfo) {
+        if (!chartInfo) return [];
 
-        // Determine primary chart to display (prioritize by region relevance)
-        var primaryPeak = null;
-        var primaryLabel = '';
+        var badges = [];
 
+        // Billboard chart
         if (chartInfo.billboard_peak && chartInfo.billboard_peak > 0) {
-            primaryPeak = chartInfo.billboard_peak;
-            primaryLabel = t('reveal.chartBillboard');
-        } else if (chartInfo.german_peak && chartInfo.german_peak > 0) {
-            primaryPeak = chartInfo.german_peak;
-            primaryLabel = t('reveal.chartGerman');
-        } else if (chartInfo.uk_peak && chartInfo.uk_peak > 0) {
-            primaryPeak = chartInfo.uk_peak;
-            primaryLabel = t('reveal.chartUK');
+            var weeksText = chartInfo.weeks_on_chart
+                ? ' <span class="chart-weeks">· ' + chartInfo.weeks_on_chart + ' ' + t('reveal.weeksShort') + '</span>'
+                : '';
+            badges.push(
+                '<span class="song-badge song-badge--chart">' +
+                '<span class="song-badge-icon">📊</span>' +
+                '#' + chartInfo.billboard_peak + ' ' + t('reveal.chartBillboard') + weeksText +
+                '</span>'
+            );
         }
 
-        // No chart data to show
-        if (!primaryPeak) return '';
-
-        var html = '<div class="chart-info">' +
-            '<span class="chart-icon">📊</span>' +
-            '<span class="chart-peak">#' + escapeHtml(String(primaryPeak)) + ' ' + primaryLabel + '</span>';
-
-        // Show weeks on chart if available
-        if (chartInfo.weeks_on_chart) {
-            html += '<span class="chart-weeks">' + escapeHtml(String(chartInfo.weeks_on_chart)) + ' ' + t('reveal.weeksOnChart') + '</span>';
+        // German chart (if no Billboard)
+        if (chartInfo.german_peak && chartInfo.german_peak > 0 && !chartInfo.billboard_peak) {
+            badges.push(
+                '<span class="song-badge song-badge--chart">' +
+                '<span class="song-badge-icon">📊</span>' +
+                '#' + chartInfo.german_peak + ' ' + t('reveal.chartGerman') +
+                '</span>'
+            );
         }
 
-        // Show secondary chart if different from primary
-        if (chartInfo.billboard_peak && primaryLabel !== t('reveal.chartBillboard') && chartInfo.billboard_peak > 0) {
-            html += '<span class="chart-secondary">#' + escapeHtml(String(chartInfo.billboard_peak)) + ' ' + t('reveal.chartBillboard') + '</span>';
-        } else if (chartInfo.uk_peak && primaryLabel !== t('reveal.chartUK') && chartInfo.uk_peak > 0) {
-            html += '<span class="chart-secondary">#' + escapeHtml(String(chartInfo.uk_peak)) + ' ' + t('reveal.chartUK') + '</span>';
+        // UK chart (if no Billboard)
+        if (chartInfo.uk_peak && chartInfo.uk_peak > 0 && !chartInfo.billboard_peak) {
+            badges.push(
+                '<span class="song-badge song-badge--chart">' +
+                '<span class="song-badge-icon">📊</span>' +
+                '#' + chartInfo.uk_peak + ' ' + t('reveal.chartUK') +
+                '</span>'
+            );
         }
 
-        html += '</div>';
-        return html;
+        return badges;
     }
 
     /**
-     * Render certification badges
+     * Render certifications as badges
      * @param {Array} certifications - Array of certification strings
-     * @returns {string} HTML string for certifications section
+     * @returns {Array} Array of badge HTML strings
      */
-    function renderCertifications(certifications) {
-        if (!certifications || certifications.length === 0) {
-            return '';
-        }
+    function renderCertificationBadges(certifications) {
+        if (!certifications || certifications.length === 0) return [];
 
-        var html = '<div class="certifications">';
+        var badges = [];
         for (var i = 0; i < certifications.length; i++) {
             var cert = certifications[i];
-            var badgeClass = getCertificationClass(cert);
-            html += '<span class="certification-badge ' + badgeClass + '">' + escapeHtml(cert) + '</span>';
+            var badgeClass = getCertificationBadgeClass(cert);
+            var icon = getCertificationIcon(cert);
+            badges.push(
+                '<span class="song-badge ' + badgeClass + '">' +
+                '<span class="song-badge-icon">' + icon + '</span>' +
+                escapeHtml(cert) +
+                '</span>'
+            );
         }
-        html += '</div>';
-        return html;
+        return badges;
     }
 
     /**
@@ -2055,37 +2067,55 @@
      * @param {string} cert - Certification string
      * @returns {string} CSS class name
      */
-    function getCertificationClass(cert) {
+    function getCertificationBadgeClass(cert) {
         var certLower = cert.toLowerCase();
-        if (certLower.indexOf('diamond') !== -1) return 'certification-badge--diamond';
-        if (certLower.indexOf('platinum') !== -1) return 'certification-badge--platinum';
-        if (certLower.indexOf('gold') !== -1) return 'certification-badge--gold';
-        return '';
+        if (certLower.indexOf('diamond') !== -1) return 'song-badge--diamond';
+        if (certLower.indexOf('platinum') !== -1) return 'song-badge--platinum';
+        if (certLower.indexOf('gold') !== -1) return 'song-badge--gold';
+        return 'song-badge--platinum';
     }
 
     /**
-     * Render awards as centered badges
-     * @param {Array} awards - Array of award strings
-     * @returns {string} HTML string for awards section
+     * Get icon for certification type
+     * @param {string} cert - Certification string
+     * @returns {string} Emoji icon
      */
-    function renderAwards(awards) {
-        if (!awards || awards.length === 0) {
-            return '';
-        }
+    function getCertificationIcon(cert) {
+        var certLower = cert.toLowerCase();
+        if (certLower.indexOf('diamond') !== -1) return '💎';
+        if (certLower.indexOf('platinum') !== -1) return '💿';
+        if (certLower.indexOf('gold') !== -1) return '🥇';
+        return '💿';
+    }
 
-        var html = '<div class="awards">';
+    /**
+     * Render awards as badges (max 3)
+     * @param {Array} awards - Array of award strings
+     * @returns {Array} Array of badge HTML strings
+     */
+    function renderAwardBadges(awards) {
+        if (!awards || awards.length === 0) return [];
+
+        var badges = [];
         var displayAwards = awards.slice(0, 3);
+
         for (var i = 0; i < displayAwards.length; i++) {
             var award = displayAwards[i];
-            var awardClass = getAwardClass(award);
+            var badgeClass = getAwardBadgeClass(award);
             var icon = getAwardIcon(award);
-            html += '<div class="award-item ' + awardClass + '">' + icon + ' ' + escapeHtml(award) + '</div>';
+            badges.push(
+                '<span class="song-badge ' + badgeClass + '">' +
+                '<span class="song-badge-icon">' + icon + '</span>' +
+                escapeHtml(award) +
+                '</span>'
+            );
         }
+
         if (awards.length > 3) {
-            html += '<div class="awards-more">+' + (awards.length - 3) + ' ' + t('reveal.moreAwards') + '</div>';
+            badges.push('<span class="song-badges-more">+' + (awards.length - 3) + ' more</span>');
         }
-        html += '</div>';
-        return html;
+
+        return badges;
     }
 
     /**
@@ -2093,12 +2123,13 @@
      * @param {string} award - Award string
      * @returns {string} CSS class name
      */
-    function getAwardClass(award) {
+    function getAwardBadgeClass(award) {
         var awardLower = award.toLowerCase();
-        if (awardLower.indexOf('eurovision') !== -1) return 'award-item--eurovision';
-        if (awardLower.indexOf('grammy') !== -1) return 'award-item--grammy';
-        if (awardLower.indexOf('hall of fame') !== -1) return 'award-item--halloffame';
-        return '';
+        if (awardLower.indexOf('grammy') !== -1) return 'song-badge--grammy';
+        if (awardLower.indexOf('eurovision') !== -1) return 'song-badge--eurovision';
+        if (awardLower.indexOf('oscar') !== -1 || awardLower.indexOf('academy award') !== -1) return 'song-badge--oscar';
+        if (awardLower.indexOf('hall of fame') !== -1) return 'song-badge--halloffame';
+        return 'song-badge--award';
     }
 
     /**

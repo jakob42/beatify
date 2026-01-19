@@ -2634,123 +2634,117 @@ body.theme-dark .admin-controls {
     display: none;
 }
 
-/* Chart info - styled for fun fact box (light background) */
-.chart-info {
+/* ============================================
+   Song Info Badges - Unified Design
+   All badges centered with consistent styling
+   ============================================ */
+
+/* Shared badge container - centers all badge rows */
+.song-badges-row {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
-    font-size: var(--font-size-sm);
-    color: #78350f;
-    padding-top: var(--space-sm);
-    border-top: 1px solid rgba(120, 53, 15, 0.2);
-}
-
-.chart-icon {
-    font-size: var(--font-size-md);
-}
-
-.chart-peak {
-    font-weight: var(--font-weight-semibold);
-    color: #92400e;
-}
-
-.chart-weeks,
-.chart-uk,
-.chart-secondary {
-    color: #78350f;
-}
-
-/* Certifications */
-.certifications {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-bottom: var(--space-sm);
-}
-
-.certification-badge {
-    display: inline-block;
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(120, 53, 15, 0.3);
-    color: #78350f;
-}
-
-.certification-badge--gold {
-    background: linear-gradient(135deg, #ffd700, #ffec8b);
-    color: #8b6914;
-    border-color: #daa520;
-}
-
-.certification-badge--platinum {
-    background: linear-gradient(135deg, #e5e4e2, #c0c0c0);
-    color: #4a4a4a;
-    border-color: #a8a8a8;
-}
-
-.certification-badge--diamond {
-    background: linear-gradient(135deg, #b9f2ff, #e0f7fa);
-    color: #006064;
-    border-color: #80deea;
-}
-
-/* Awards - styled as centered badges */
-.awards {
-    display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--space-sm);
     margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid rgba(120, 53, 15, 0.15);
 }
 
-.award-item {
+.song-badges-row:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+/* Base badge style - shared by all badge types */
+.song-badge {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-md);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    border-radius: var(--radius-full);
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #78350f;
-    border: 1px solid #d97706;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Eurovision Winner - special purple/magenta style matching Eurovision branding */
-.award-item--eurovision {
-    background: linear-gradient(135deg, #a855f7, #7c3aed);
-    color: #ffffff;
-    border-color: #6d28d9;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* Grammy - gold/prestige style */
-.award-item--grammy {
-    background: linear-gradient(135deg, #fcd34d, #f59e0b);
-    color: #78350f;
-    border-color: #d97706;
-}
-
-/* Hall of Fame - deep blue/prestigious */
-.award-item--halloffame {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: #ffffff;
-    border-color: #1e40af;
-}
-
-.awards-more {
+    gap: 6px;
+    padding: 6px 12px;
     font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    border-radius: 20px;
+    border: 1px solid;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+.song-badge-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Chart position badge - blue theme */
+.song-badge--chart {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+.song-badge--chart .chart-weeks {
+    font-weight: normal;
+    opacity: 0.8;
+    font-size: 11px;
+}
+
+/* Certification badges */
+.song-badge--platinum {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+.song-badge--gold {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
     color: #92400e;
+    border-color: #fcd34d;
+}
+
+.song-badge--diamond {
+    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+    color: #0369a1;
+    border-color: #7dd3fc;
+}
+
+/* Award badges - warm orange/amber theme */
+.song-badge--award {
+    background: linear-gradient(135deg, #ffedd5, #fed7aa);
+    color: #9a3412;
+    border-color: #fdba74;
+}
+
+/* Special award variants */
+.song-badge--grammy {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #78350f;
+    border-color: #f59e0b;
+}
+
+.song-badge--eurovision {
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    color: #5b21b6;
+    border-color: #a78bfa;
+}
+
+.song-badge--oscar,
+.song-badge--academy {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #78350f;
+    border-color: #f59e0b;
+}
+
+.song-badge--halloffame {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+    border-color: #60a5fa;
+}
+
+/* More awards indicator */
+.song-badges-more {
+    font-size: var(--font-size-xs);
+    color: #78350f;
     font-style: italic;
-    width: 100%;
-    text-align: center;
+    opacity: 0.8;
 }
 
 /* ============================================
