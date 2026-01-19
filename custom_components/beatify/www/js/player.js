@@ -1968,16 +1968,7 @@
      */
     function renderRichSongInfo(song) {
         var container = document.getElementById('song-rich-info');
-        if (!container) {
-            console.warn('[Beatify] song-rich-info container not found');
-            return;
-        }
-
-        console.log('[Beatify] renderRichSongInfo - song data:', JSON.stringify({
-            chart_info: song.chart_info,
-            certifications: song.certifications,
-            awards: song.awards
-        }, null, 2));
+        if (!container) return;
 
         var html = '';
 
@@ -1990,7 +1981,6 @@
         // Awards section
         html += renderAwards(song.awards || []);
 
-        console.log('[Beatify] Rich info HTML generated:', html || '(empty)');
         container.innerHTML = html;
     }
 

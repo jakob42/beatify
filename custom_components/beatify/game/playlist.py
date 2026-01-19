@@ -114,8 +114,32 @@ async def async_ensure_playlist_directory(hass: HomeAssistant) -> Path:
     return playlist_dir
 
 
+def _get_playlist_version(path: Path) -> str:
+    """Get version from playlist file. Returns '0.0' if no version field."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data.get("version", "0.0")
+    except Exception:  # noqa: BLE001
+        return "0.0"
+
+
+def _compare_versions(v1: str, v2: str) -> int:
+    """Compare version strings. Returns: -1 if v1<v2, 0 if equal, 1 if v1>v2."""
+    def parse(v: str) -> tuple[int, ...]:
+        return tuple(int(x) for x in v.split("."))
+    try:
+        p1, p2 = parse(v1), parse(v2)
+        if p1 < p2:
+            return -1
+        if p1 > p2:
+            return 1
+        return 0
+    except ValueError:
+        return 0
+
+
 async def _copy_bundled_playlists(dest_dir: Path) -> None:
-    """Copy all bundled playlists to destination directory (if not exists)."""
+    """Copy bundled playlists to destination, updating if bundled version is newer."""
     # Bundled playlists are in custom_components/beatify/playlists/
     bundled_dir = Path(__file__).parent.parent / "playlists"
 
@@ -127,18 +151,45 @@ async def _copy_bundled_playlists(dest_dir: Path) -> None:
         content = src.read_text(encoding="utf-8")
         dst.write_text(content, encoding="utf-8")
 
+    def _get_versions(src: Path, dst: Path) -> tuple[str, str]:
+        """Get versions from both files (runs in executor)."""
+        bundled_ver = _get_playlist_version(src)
+        existing_ver = _get_playlist_version(dst) if dst.exists() else "0.0"
+        return bundled_ver, existing_ver
+
+    loop = asyncio.get_event_loop()
+
     for playlist_file in bundled_dir.glob("*.json"):
         dest_file = dest_dir / playlist_file.name
-        if dest_file.exists():
-            # Don't overwrite existing playlists
-            continue
         try:
-            await asyncio.get_event_loop().run_in_executor(
-                None, _copy_file, playlist_file, dest_file
+            # Get versions
+            bundled_ver, existing_ver = await loop.run_in_executor(
+                None, _get_versions, playlist_file, dest_file
             )
-            _LOGGER.info("Copied bundled playlist to: %s", dest_file)
+
+            if not dest_file.exists():
+                # New playlist - copy it
+                await loop.run_in_executor(
+                    None, _copy_file, playlist_file, dest_file
+                )
+                _LOGGER.info(
+                    "Copied bundled playlist %s (v%s)", playlist_file.name, bundled_ver
+                )
+            elif _compare_versions(bundled_ver, existing_ver) > 0:
+                # Bundled version is newer - update
+                await loop.run_in_executor(
+                    None, _copy_file, playlist_file, dest_file
+                )
+                _LOGGER.info(
+                    "Updated playlist %s: v%s -> v%s",
+                    playlist_file.name, existing_ver, bundled_ver
+                )
+            else:
+                _LOGGER.debug(
+                    "Playlist %s is up to date (v%s)", playlist_file.name, existing_ver
+                )
         except Exception as err:  # noqa: BLE001
-            _LOGGER.warning("Failed to copy playlist %s: %s", playlist_file.name, err)
+            _LOGGER.warning("Failed to process playlist %s: %s", playlist_file.name, err)
 
 
 def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:

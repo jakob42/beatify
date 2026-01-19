@@ -1,5 +1,6 @@
 {
   "name": "Movie's Greatest Themes",
+  "version": "1.1",
   "songs": [
     {"year": 2001, "uri": "spotify:track:51THoWfQJgdyj248y8tJPa", "fun_fact": "Howard Shore composed all three Lord of the Rings scores in New Zealand over four years. The music required over 100 musicians and won three Academy Awards.", "chart_info": {}, "certifications": [], "awards": ["Academy Award for Best Original Score (2001)", "Grammy Award for Best Score Soundtrack (2002)"]},
     {"year": 1962, "uri": "spotify:track:7ogsG1i9iqaJoflN3oC9pU", "fun_fact": "The James Bond Theme was composed by Monty Norman but arranged by John Barry, leading to decades of legal disputes over who deserved primary credit.", "chart_info": {"uk_peak": 13}, "certifications": [], "awards": []},
