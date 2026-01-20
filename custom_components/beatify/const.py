@@ -102,3 +102,12 @@ MEDIA_CONTENT_TYPES: dict[str, str] = {
     "tidal": "tidal",           # Future: Tidal URIs
 }
 MEDIA_CONTENT_TYPE_DEFAULT = "music"  # Fallback for unknown providers
+
+# Multi-provider URI patterns (Story 17.1)
+URI_PATTERN_SPOTIFY = r"^spotify:track:[a-zA-Z0-9]{22}$"
+URI_PATTERN_APPLE_MUSIC = r"^applemusic://track/\d+$"
+
+# Provider identifiers (Story 17.1)
+PROVIDER_SPOTIFY = "spotify"
+PROVIDER_APPLE_MUSIC = "apple_music"
+PROVIDER_DEFAULT = PROVIDER_SPOTIFY

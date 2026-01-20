@@ -6,10 +6,18 @@ import asyncio
 import json
 import logging
 import random
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from custom_components.beatify.const import PLAYLIST_DIR
+from custom_components.beatify.const import (
+    PLAYLIST_DIR,
+    PROVIDER_APPLE_MUSIC,
+    PROVIDER_DEFAULT,
+    PROVIDER_SPOTIFY,
+    URI_PATTERN_APPLE_MUSIC,
+    URI_PATTERN_SPOTIFY,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -20,32 +28,52 @@ _LOGGER = logging.getLogger(__name__)
 class PlaylistManager:
     """Manages song selection and played tracking."""
 
-    def __init__(self, songs: list[dict[str, Any]]) -> None:
+    def __init__(
+        self, songs: list[dict[str, Any]], provider: str = PROVIDER_DEFAULT
+    ) -> None:
         """
         Initialize with list of songs from loaded playlists.
 
-        Each song dict must have: year, uri
+        Each song dict must have: year, and at least one valid URI field
         Optional fields: fun_fact, fun_fact_de, fun_fact_es, awards, awards_de, awards_es
 
         Args:
             songs: List of song dictionaries
+            provider: Music provider to use (PROVIDER_SPOTIFY or PROVIDER_APPLE_MUSIC)
 
         """
-        self._songs = songs.copy()
+        self._provider = provider
+        total_count = len(songs)
+        filtered_songs, _ = filter_songs_for_provider(songs, provider)
+        self._songs = filtered_songs
         self._played_uris: set[str] = set()
+        _LOGGER.info(
+            "PlaylistManager: %d/%d songs available for %s",
+            len(self._songs),
+            total_count,
+            provider,
+        )
 
     def get_next_song(self) -> dict[str, Any] | None:
         """
         Get random unplayed song.
 
         Returns:
-            Song dict or None if all songs played
+            Song dict with _resolved_uri added, or None if all songs played
 
         """
-        available = [s for s in self._songs if s["uri"] not in self._played_uris]
+        available = [
+            s
+            for s in self._songs
+            if get_song_uri(s, self._provider) not in self._played_uris
+        ]
         if not available:
             return None
-        return random.choice(available)  # noqa: S311
+        song = random.choice(available)  # noqa: S311
+        # Add resolved URI to returned song dict
+        song_copy = song.copy()
+        song_copy["_resolved_uri"] = get_song_uri(song, self._provider)
+        return song_copy
 
     def mark_played(self, uri: str) -> None:
         """
@@ -250,12 +278,96 @@ def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
         elif not (MIN_YEAR <= year <= MAX_YEAR):
             errors.append(f"Song {i+1}: year {year} out of range")
 
-        # Check URI
+        # Check URIs - validate patterns and ensure at least one valid URI exists
+        has_valid_uri = False
+
+        # Check legacy 'uri' field (Spotify pattern)
         uri = song.get("uri")
-        if not isinstance(uri, str) or not uri.strip():
-            errors.append(f"Song {i+1}: missing or invalid 'uri'")
+        if isinstance(uri, str) and uri.strip():
+            if re.match(URI_PATTERN_SPOTIFY, uri):
+                has_valid_uri = True
+            else:
+                errors.append(
+                    f"Song {i+1}: 'uri' invalid (expected spotify:track:{{22-char-id}})"
+                )
+
+        # Check 'uri_spotify' field
+        uri_spotify = song.get("uri_spotify")
+        if isinstance(uri_spotify, str) and uri_spotify.strip():
+            if re.match(URI_PATTERN_SPOTIFY, uri_spotify):
+                has_valid_uri = True
+            else:
+                errors.append(
+                    f"Song {i+1}: 'uri_spotify' invalid (expected spotify:track:{{22-char-id}})"
+                )
+
+        # Check 'uri_apple_music' field
+        uri_apple_music = song.get("uri_apple_music")
+        if isinstance(uri_apple_music, str) and uri_apple_music.strip():
+            if re.match(URI_PATTERN_APPLE_MUSIC, uri_apple_music):
+                has_valid_uri = True
+            else:
+                errors.append(
+                    f"Song {i+1}: 'uri_apple_music' invalid (expected applemusic://track/id)"
+                )
+
+        # Error if no valid URI found
+        if not has_valid_uri:
+            errors.append(f"Song {i+1}: no valid URI")
 
     return (len(errors) == 0, errors)
+
+
+def get_song_uri(song: dict[str, Any], provider: str) -> str | None:
+    """
+    Get the URI for a song based on the provider.
+
+    Args:
+        song: Song dictionary with uri fields
+        provider: Provider identifier (PROVIDER_SPOTIFY or PROVIDER_APPLE_MUSIC)
+
+    Returns:
+        URI string for the provider, or None if not available
+
+    """
+    if provider == PROVIDER_SPOTIFY:
+        # For Spotify, prefer uri_spotify, fall back to legacy uri field
+        return song.get("uri_spotify") or song.get("uri") or None
+    if provider == PROVIDER_APPLE_MUSIC:
+        # For Apple Music, only use uri_apple_music
+        return song.get("uri_apple_music") or None
+    return None
+
+
+def filter_songs_for_provider(
+    songs: list[dict[str, Any]], provider: str
+) -> tuple[list[dict[str, Any]], int]:
+    """
+    Filter songs to only those available for the specified provider.
+
+    Args:
+        songs: List of song dictionaries
+        provider: Provider identifier (PROVIDER_SPOTIFY or PROVIDER_APPLE_MUSIC)
+
+    Returns:
+        Tuple of (filtered_songs, skipped_count)
+
+    """
+    filtered: list[dict[str, Any]] = []
+    skipped = 0
+
+    for song in songs:
+        uri = get_song_uri(song, provider)
+        if uri:
+            filtered.append(song)
+        else:
+            year = song.get("year", "unknown")
+            _LOGGER.warning(
+                "Skipping song (year %s) - no URI for provider '%s'", year, provider
+            )
+            skipped += 1
+
+    return (filtered, skipped)
 
 
 async def async_discover_playlists(hass: HomeAssistant) -> list[dict]:
@@ -279,11 +391,24 @@ async def async_discover_playlists(hass: HomeAssistant) -> list[dict]:
             data = json.loads(content)
             is_valid, errors = validate_playlist(data)
 
+            # Count songs per provider (Story 17.1)
+            songs = data.get("songs", [])
+            spotify_count = sum(
+                1
+                for s in songs
+                if s.get("uri") or s.get("uri_spotify")
+            )
+            apple_music_count = sum(
+                1 for s in songs if s.get("uri_apple_music")
+            )
+
             playlists.append({
                 "path": str(json_file),
                 "filename": json_file.name,
                 "name": data.get("name", json_file.stem),
-                "song_count": len(data.get("songs", [])),
+                "song_count": len(songs),
+                "spotify_count": spotify_count,
+                "apple_music_count": apple_music_count,
                 "is_valid": is_valid,
                 "errors": errors,
             })
@@ -293,6 +418,8 @@ async def async_discover_playlists(hass: HomeAssistant) -> list[dict]:
                 "filename": json_file.name,
                 "name": json_file.stem,
                 "song_count": 0,
+                "spotify_count": 0,
+                "apple_music_count": 0,
                 "is_valid": False,
                 "errors": [f"Invalid JSON: {e}"],
             })

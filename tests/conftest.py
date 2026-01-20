@@ -14,6 +14,42 @@ Fixture Architecture:
 
 from __future__ import annotations
 
+# =============================================================================
+# HOME ASSISTANT MOCK (must be before any custom_components imports)
+# =============================================================================
+import sys
+from unittest.mock import MagicMock
+
+# Create mock homeassistant module before any imports that need it
+mock_ha = MagicMock()
+mock_ha.core = MagicMock()
+mock_ha.core.HomeAssistant = MagicMock
+
+# Mock components
+mock_ha.components = MagicMock()
+mock_ha.components.frontend = MagicMock()
+mock_ha.components.frontend.async_register_built_in_panel = MagicMock()
+mock_ha.components.frontend.async_remove_panel = MagicMock()
+mock_ha.components.http = MagicMock()
+mock_ha.components.http.StaticPathConfig = MagicMock
+
+# Mock helpers
+mock_ha.helpers = MagicMock()
+mock_ha.helpers.aiohttp_client = MagicMock()
+mock_ha.config_entries = MagicMock()
+
+# Register all mocked modules
+sys.modules["homeassistant"] = mock_ha
+sys.modules["homeassistant.core"] = mock_ha.core
+sys.modules["homeassistant.components"] = mock_ha.components
+sys.modules["homeassistant.components.frontend"] = mock_ha.components.frontend
+sys.modules["homeassistant.components.http"] = mock_ha.components.http
+sys.modules["homeassistant.helpers"] = mock_ha.helpers
+sys.modules["homeassistant.helpers.aiohttp_client"] = mock_ha.helpers.aiohttp_client
+sys.modules["homeassistant.config_entries"] = mock_ha.config_entries
+
+# =============================================================================
+
 import asyncio
 from collections.abc import AsyncGenerator, Generator
 from dataclasses import dataclass, field
