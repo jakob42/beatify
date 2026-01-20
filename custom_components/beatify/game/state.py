@@ -966,10 +966,12 @@ class GameState:
                 await self.pause_game("media_player_error")
                 return False
 
-            success = await self._media_player_service.play_song(song["uri"])
+            # Use _resolved_uri if available (Story 17.3: multi-provider support)
+            resolved_uri = song.get("_resolved_uri") or song.get("uri")
+            success = await self._media_player_service.play_song(resolved_uri)
             if not success:
-                _LOGGER.warning("Failed to play song: %s", song["uri"])
-                self._playlist_manager.mark_played(song["uri"])
+                _LOGGER.warning("Failed to play song: %s", song["uri"])  # Log original for debug
+                self._playlist_manager.mark_played(resolved_uri)
 
                 # Check retry limit to prevent runaway loop
                 if _retry_count >= MAX_SONG_RETRIES:
@@ -988,7 +990,7 @@ class GameState:
 
             # Wait for metadata to update (polls until track ID matches or timeout)
             metadata = await self._media_player_service.wait_for_metadata_update(
-                song["uri"]
+                resolved_uri
             )
         else:
             # No media player (testing mode)
@@ -998,8 +1000,8 @@ class GameState:
                 "album_art": "/beatify/static/img/no-artwork.svg",
             }
 
-        # Mark song as played
-        self._playlist_manager.mark_played(song["uri"])
+        # Mark song as played (Story 17.3: use resolved URI)
+        self._playlist_manager.mark_played(song.get("_resolved_uri") or song.get("uri"))
 
         # Set current song (year and fun_fact from playlist, rest from metadata)
         # Story 14.3: Include rich song info fields from enriched playlists

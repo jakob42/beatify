@@ -65,6 +65,7 @@ ERR_ADMIN_CANNOT_LEAVE = "ADMIN_CANNOT_LEAVE"  # Story 11.5
 ERR_NO_STEAL_AVAILABLE = "NO_STEAL_AVAILABLE"  # Story 15.3 - player has no steal
 ERR_TARGET_NOT_SUBMITTED = "TARGET_NOT_SUBMITTED"  # Story 15.3 - target hasn't submitted
 ERR_CANNOT_STEAL_SELF = "CANNOT_STEAL_SELF"  # Story 15.3 - cannot target self
+ERR_APPLE_MUSIC_PLAYBACK = "APPLE_MUSIC_PLAYBACK"  # Story 17.3 - Apple Music playback failure
 
 # Song difficulty rating constants (Story 15.1)
 MIN_PLAYS_FOR_DIFFICULTY = 3  # Minimum plays before showing difficulty rating
@@ -98,7 +99,8 @@ PLAYLIST_DIR = "beatify/playlists"
 # Alexa devices require "spotify" content type, not generic "music"
 MEDIA_CONTENT_TYPES: dict[str, str] = {
     "spotify": "spotify",       # Spotify URIs (spotify:track:xxx)
-    "apple_music": "apple_music",  # Future: Apple Music URIs
+    "applemusic": "music",      # Apple Music URIs (applemusic://track/123) via Music Assistant
+    "apple_music": "apple_music",  # Legacy: Apple Music URIs with underscore prefix
     "tidal": "tidal",           # Future: Tidal URIs
 }
 MEDIA_CONTENT_TYPE_DEFAULT = "music"  # Fallback for unknown providers
