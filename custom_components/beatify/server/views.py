@@ -276,8 +276,8 @@ class StartGameView(HomeAssistantView):
         result = game_state.create_game(**create_kwargs)
         result["warnings"] = warnings
 
-        # Set game language (Story 12.4)
-        if language in ("en", "de"):
+        # Set game language (Story 12.4, 16.3)
+        if language in ("en", "de", "es"):
             game_state.language = language
 
         # Broadcast to WebSocket clients
