@@ -1021,6 +1021,7 @@ function setProvider(provider) {
 
     selectedProvider = provider;
     updateProviderButtons(provider);
+    updateProviderHelpLink();
 
     // Re-render playlists to show coverage for selected provider
     if (playlistData.length > 0) {
@@ -1034,7 +1035,6 @@ function setProvider(provider) {
  */
 function updateProviderAvailability() {
     var appleMusicBtn = document.querySelector('.provider-btn[data-provider="apple_music"]');
-    var helpLink = document.getElementById('provider-help-link');
 
     if (!appleMusicBtn) return;
 
@@ -1043,18 +1043,48 @@ function updateProviderAvailability() {
         appleMusicBtn.classList.remove('provider-btn--disabled');
         appleMusicBtn.removeAttribute('disabled');
         appleMusicBtn.removeAttribute('aria-disabled');
-        if (helpLink) helpLink.classList.add('hidden');
     } else {
         // Disable Apple Music - no Music Assistant detected
         appleMusicBtn.classList.add('provider-btn--disabled');
         appleMusicBtn.setAttribute('disabled', 'disabled');
         appleMusicBtn.setAttribute('aria-disabled', 'true');
-        if (helpLink) helpLink.classList.remove('hidden');
 
         // If Apple Music was selected, switch back to Spotify
         if (selectedProvider === 'apple_music') {
             setProvider('spotify');
         }
+    }
+
+    updateProviderHelpLink();
+}
+
+/**
+ * Update provider help link based on selected provider and Music Assistant availability
+ * Shows setup documentation link when Apple Music is selected (Story 17.4)
+ */
+function updateProviderHelpLink() {
+    var helpLink = document.getElementById('provider-help-link');
+    if (!helpLink) return;
+
+    // Apple Music setup documentation URL
+    var appleSetupUrl = 'https://github.com/markusholzhaeuser/beatify/blob/main/docs/apple-music-setup.md';
+
+    if (selectedProvider === 'apple_music') {
+        if (hasMusicAssistant) {
+            // Show setup guide link for Apple Music users
+            var linkText = t('admin.appleSetupLink', 'How to set up Apple Music \u2192');
+            helpLink.innerHTML = '<a href="' + escapeHtml(appleSetupUrl) + '" target="_blank" rel="noopener">' + escapeHtml(linkText) + '</a>';
+            helpLink.classList.remove('hidden');
+        } else {
+            // Show "Requires Music Assistant" message with setup guide
+            var requiresText = t('admin.providerRequiresMA', 'Requires Music Assistant');
+            helpLink.innerHTML = '<span>' + escapeHtml(requiresText) + '</span> - ' +
+                '<a href="https://music-assistant.io/integration/installation/" target="_blank" rel="noopener">Setup Guide</a>';
+            helpLink.classList.remove('hidden');
+        }
+    } else {
+        // Hide for Spotify
+        helpLink.classList.add('hidden');
     }
 }
 

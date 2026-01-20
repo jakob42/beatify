@@ -10,7 +10,6 @@ _bmad-output/
 .claude/
 
 # Development files
-docs/
 scripts/
 pyproject.toml
 requirements*.txt
