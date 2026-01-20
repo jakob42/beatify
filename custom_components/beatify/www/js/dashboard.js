@@ -26,6 +26,26 @@
     var lastQRCodeUrl = null;
 
     /**
+     * Get localized content field from song with English fallback (Story 16.3)
+     * @param {Object} song - Song object
+     * @param {string} field - Base field name ('fun_fact' or 'awards')
+     * @returns {string|Array|null} Localized content or English fallback
+     */
+    function getLocalizedSongField(song, field) {
+        if (!song) return null;
+        var lang = BeatifyI18n.getLanguage();
+        // Try localized field first (for non-English)
+        if (lang && lang !== 'en') {
+            var localizedKey = field + '_' + lang;
+            if (song[localizedKey]) {
+                return song[localizedKey];
+            }
+        }
+        // Fallback to base field (English)
+        return song[field] || null;
+    }
+
+    /**
      * Show a specific view and hide all others
      * @param {string} viewId - ID of view to show
      */
@@ -544,15 +564,18 @@
     }
 
     /**
-     * Render fun fact below year in reveal view (Story 16.4)
+     * Render fun fact below year in reveal view (Story 16.4, 16.3)
      * @param {Object} song - Song data with optional fun_fact
      */
     function renderFunFact(song) {
         var container = document.getElementById('dashboard-fun-fact');
         var textEl = document.getElementById('dashboard-fun-fact-text');
 
+        // Get localized fun fact (Story 16.3)
+        var funFact = getLocalizedSongField(song, 'fun_fact');
+
         console.log('[Dashboard] renderFunFact called with song:', song);
-        console.log('[Dashboard] fun_fact value:', song ? song.fun_fact : 'no song');
+        console.log('[Dashboard] fun_fact value:', funFact || 'no fun fact');
 
         if (!container || !textEl) {
             console.warn('[Dashboard] Fun fact elements not found');
@@ -560,16 +583,16 @@
         }
 
         // Hide if no fun fact
-        if (!song || !song.fun_fact || song.fun_fact.trim() === '') {
+        if (!funFact || funFact.trim() === '') {
             container.classList.add('hidden');
             console.log('[Dashboard] No fun_fact, hiding container');
             return;
         }
 
         // Show fun fact
-        textEl.textContent = song.fun_fact;
+        textEl.textContent = funFact;
         container.classList.remove('hidden');
-        console.log('[Dashboard] Fun fact shown:', song.fun_fact);
+        console.log('[Dashboard] Fun fact shown:', funFact);
     }
 
     /**
