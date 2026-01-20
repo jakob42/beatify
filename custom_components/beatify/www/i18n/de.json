@@ -151,6 +151,7 @@
     "createGame": "Spiel erstellen",
     "endGame": "Spiel beenden",
     "endGameConfirm": "Spiel beenden?",
+    "endGameConfirmFull": "Spiel beenden und Endergebnisse anzeigen?",
     "endGameWarning": "Alle Spieler werden getrennt.",
     "endCurrentGame": "Aktuelles Spiel beenden",
     "newGame": "Neues Spiel",

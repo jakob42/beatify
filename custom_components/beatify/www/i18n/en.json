@@ -151,6 +151,7 @@
     "createGame": "Create Game",
     "endGame": "End Game",
     "endGameConfirm": "End Game?",
+    "endGameConfirmFull": "End game and show final results?",
     "endGameWarning": "All players will be disconnected.",
     "endCurrentGame": "End Current Game",
     "newGame": "New Game",

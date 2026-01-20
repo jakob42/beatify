@@ -151,6 +151,7 @@
     "createGame": "Crear juego",
     "endGame": "Terminar juego",
     "endGameConfirm": "Terminar juego?",
+    "endGameConfirmFull": "Terminar juego y mostrar resultados finales?",
     "endGameWarning": "Todos los jugadores seran desconectados.",
     "endCurrentGame": "Terminar juego actual",
     "newGame": "Nuevo juego",

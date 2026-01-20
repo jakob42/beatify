@@ -2670,7 +2670,7 @@
 
         if (currentPlayer) {
             if (rankEl) rankEl.textContent = '#' + currentPlayer.rank;
-            if (scoreEl) scoreEl.textContent = currentPlayer.score + ' points';
+            if (scoreEl) scoreEl.textContent = currentPlayer.score + ' ' + t('leaderboard.points');
             if (bestStreakEl) bestStreakEl.textContent = currentPlayer.best_streak || 0;
             if (roundsEl) roundsEl.textContent = currentPlayer.rounds_played || 0;
             if (betsEl) betsEl.textContent = currentPlayer.bets_won || 0;
@@ -3007,10 +3007,10 @@
      * Handle End Game button
      */
     function handleEndGame() {
-        if (!confirm('End game and show final results?')) return;
+        if (!confirm(t('admin.endGameConfirmFull'))) return;
         if (!debounceAdminAction()) return;
         if (!ws || ws.readyState !== WebSocket.OPEN) {
-            alert('Connection lost. Please refresh.');
+            alert(t('errors.CONNECTION_LOST'));
             return;
         }
 
