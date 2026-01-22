@@ -286,9 +286,13 @@ class BeatifyWebSocketHandler:
                     if game_state.phase == GamePhase.PAUSED:
                         # Game paused due to specific error
                         pause_reason = game_state.pause_reason
+                        error_detail = game_state.last_error_detail
                         if pause_reason == "media_player_error":
                             error_code = ERR_MEDIA_PLAYER_UNAVAILABLE
-                            error_message = "Media player not responding - check speaker connection"
+                            if error_detail:
+                                error_message = f"Media player error: {error_detail}"
+                            else:
+                                error_message = "Media player not responding - check speaker connection"
                         elif pause_reason == "no_songs_available":
                             error_message = "No playable songs for selected provider"
                         elif pause_reason == ERR_APPLE_MUSIC_PLAYBACK:

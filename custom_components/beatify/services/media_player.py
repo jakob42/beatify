@@ -68,17 +68,21 @@ METADATA_POLL_INTERVAL = 0.3
 class MediaPlayerService:
     """Service for controlling HA media player."""
 
-    def __init__(self, hass: HomeAssistant, entity_id: str) -> None:
+    def __init__(
+        self, hass: HomeAssistant, entity_id: str, is_mass: bool = False
+    ) -> None:
         """
         Initialize with HomeAssistant and entity_id.
 
         Args:
             hass: Home Assistant instance
             entity_id: Media player entity ID
+            is_mass: Whether this is a Music Assistant player
 
         """
         self._hass = hass
         self._entity_id = entity_id
+        self._is_mass = is_mass
         self._analytics: AnalyticsStorage | None = None
 
     def set_analytics(self, analytics: AnalyticsStorage) -> None:
@@ -107,28 +111,51 @@ class MediaPlayerService:
         """
         Play a song by URI.
 
+        For Music Assistant players, uses the music_assistant.play_media service
+        which provides more reliable playback. For regular players, uses
+        media_player.play_media with provider-specific content types.
+
         Args:
-            uri: Media content URI (e.g., spotify:track:xxx)
+            uri: Media content URI (e.g., spotify:track:xxx, applemusic://track/123)
 
         Returns:
             True if playback started successfully, False otherwise
 
         """
         try:
-            # Determine content type from URI prefix (Story 16.2)
-            # Alexa devices require "spotify" content type, not generic "music"
-            content_type = get_media_content_type(uri)
+            if self._is_mass:
+                # Use Music Assistant's native play_media service for MA players
+                # This handles Spotify/Apple Music URIs more reliably
+                _LOGGER.debug(
+                    "Using music_assistant.play_media for MA player %s",
+                    self._entity_id,
+                )
+                await self._hass.services.async_call(
+                    "music_assistant",
+                    "play_media",
+                    {
+                        "entity_id": self._entity_id,
+                        "media_id": uri,
+                        "media_type": "track",
+                    },
+                    blocking=True,
+                )
+            else:
+                # Use standard media_player service for non-MA players
+                # Determine content type from URI prefix (Story 16.2)
+                # Alexa devices require "spotify" content type, not generic "music"
+                content_type = get_media_content_type(uri)
 
-            await self._hass.services.async_call(
-                "media_player",
-                "play_media",
-                {
-                    "entity_id": self._entity_id,
-                    "media_content_id": uri,
-                    "media_content_type": content_type,
-                },
-                blocking=True,
-            )
+                await self._hass.services.async_call(
+                    "media_player",
+                    "play_media",
+                    {
+                        "entity_id": self._entity_id,
+                        "media_content_id": uri,
+                        "media_content_type": content_type,
+                    },
+                    blocking=True,
+                )
             return True  # noqa: TRY300
         except Exception as err:  # noqa: BLE001
             _LOGGER.error("Failed to play song %s: %s", uri, err)  # noqa: TRY400
@@ -299,7 +326,7 @@ class MediaPlayerService:
         state = self._hass.states.get(self._entity_id)
         return state is not None and state.state != "unavailable"
 
-    async def verify_responsive(self) -> bool:
+    async def verify_responsive(self) -> tuple[bool, str]:
         """
         Verify media player is actually responsive (pre-flight check).
 
@@ -307,9 +334,21 @@ class MediaPlayerService:
         it responds within PREFLIGHT_TIMEOUT seconds.
 
         Returns:
-            True if media player responded, False if timeout or error
+            Tuple of (success, error_detail) - error_detail is empty on success
 
         """
+        # First check basic availability
+        state = self._hass.states.get(self._entity_id)
+        if not state:
+            msg = f"Entity {self._entity_id} not found"
+            _LOGGER.warning(msg)
+            return False, msg
+
+        if state.state == "unavailable":
+            msg = f"Media player is unavailable (state: {state.state})"
+            _LOGGER.warning("Media player %s: %s", self._entity_id, msg)
+            return False, msg
+
         try:
             # Use volume_set with current volume as a lightweight ping
             # This wakes up sleeping speakers without changing anything
@@ -326,19 +365,21 @@ class MediaPlayerService:
                     blocking=True,
                 )
             _LOGGER.debug("Media player %s is responsive", self._entity_id)
-            return True
+            return True, ""
         except TimeoutError:
+            msg = f"Timeout after {PREFLIGHT_TIMEOUT}s - speaker may be sleeping or offline"
             _LOGGER.warning(
-                "Media player %s not responsive (timeout after %.1fs)",
+                "Media player %s not responsive: %s",
                 self._entity_id,
-                PREFLIGHT_TIMEOUT,
+                msg,
             )
-            return False
+            return False, msg
         except Exception as err:  # noqa: BLE001
+            msg = str(err)
             _LOGGER.warning(
-                "Media player %s not responsive: %s", self._entity_id, err
+                "Media player %s not responsive: %s", self._entity_id, msg
             )
-            return False
+            return False, msg
 
 
 async def async_get_media_players(hass: HomeAssistant) -> list[dict]:

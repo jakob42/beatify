@@ -279,6 +279,15 @@ class StartGameView(HomeAssistantView):
             if stats_service:
                 game_state.set_stats_service(stats_service)
 
+        # Check if selected media player is a Music Assistant player
+        from homeassistant.helpers import entity_registry as er  # noqa: PLC0415
+
+        ent_reg = er.async_get(self.hass)
+        entity_entry = ent_reg.async_get(media_player)
+        is_mass = (
+            entity_entry is not None and entity_entry.platform == "music_assistant"
+        )
+
         # Build create_game kwargs with optional round_duration (Story 13.1), difficulty (Story 14.1), and provider (Story 17.2)
         create_kwargs: dict[str, Any] = {
             "playlists": playlist_paths,
@@ -287,6 +296,7 @@ class StartGameView(HomeAssistantView):
             "base_url": base_url,
             "difficulty": difficulty,
             "provider": provider,
+            "is_mass": is_mass,
         }
         if round_duration is not None:
             create_kwargs["round_duration"] = round_duration

@@ -178,6 +178,12 @@ class GameState:
         # Provider setting (Story 17.2)
         self.provider: str = PROVIDER_DEFAULT
 
+        # Music Assistant player flag
+        self.is_mass: bool = False
+
+        # Last error detail for diagnostics
+        self.last_error_detail: str = ""
+
         # Round analytics (Story 13.3)
         self.round_analytics: RoundAnalytics | None = None
 
@@ -193,6 +199,7 @@ class GameState:
         round_duration: int = DEFAULT_ROUND_DURATION,
         difficulty: str = DIFFICULTY_DEFAULT,
         provider: str = PROVIDER_DEFAULT,
+        is_mass: bool = False,
     ) -> dict[str, Any]:
         """
         Create a new game session.
@@ -205,6 +212,7 @@ class GameState:
             round_duration: Round timer duration in seconds (10-60, default 30)
             difficulty: Difficulty level (easy/normal/hard, default normal)
             provider: Music provider (spotify/apple_music, default spotify)
+            is_mass: Whether the media player is a Music Assistant player
 
         Returns:
             dict with game_id, join_url, song_count, phase
@@ -233,6 +241,12 @@ class GameState:
 
         # Store provider setting (Story 17.2)
         self.provider = provider
+
+        # Store Music Assistant player flag for service routing
+        self.is_mass = is_mass
+
+        # Reset error detail
+        self.last_error_detail = ""
 
         # Initialize PlaylistManager for song selection (Epic 4, Story 17.2: with provider)
         self._playlist_manager = PlaylistManager(songs, provider)
@@ -977,7 +991,9 @@ class GameState:
 
         # Create media player service if needed
         if self.media_player and not self._media_player_service:
-            self._media_player_service = MediaPlayerService(hass, self.media_player)
+            self._media_player_service = MediaPlayerService(
+                hass, self.media_player, is_mass=self.is_mass
+            )
             # Connect analytics for error recording (Story 19.1 AC: #2)
             if self._stats_service and hasattr(self._stats_service, "_analytics"):
                 self._media_player_service.set_analytics(self._stats_service._analytics)
@@ -985,11 +1001,18 @@ class GameState:
         # Play song via media player
         if self._media_player_service:
             # Pre-flight check: verify speaker is responsive before playing
-            # This wakes up sleeping speakers and detects unresponsive ones early
-            if not await self._media_player_service.verify_responsive():
-                _LOGGER.error("Media player not responsive, pausing game")
-                await self.pause_game("media_player_error")
-                return False
+            # Skip for MA players since they use music_assistant.play_media service
+            # which handles speaker state differently
+            if not self.is_mass:
+                responsive, error_detail = await self._media_player_service.verify_responsive()
+                if not responsive:
+                    self.last_error_detail = error_detail
+                    _LOGGER.error(
+                        "Media player not responsive: %s, pausing game",
+                        error_detail,
+                    )
+                    await self.pause_game("media_player_error")
+                    return False
 
             # Use _resolved_uri if available (Story 17.3: multi-provider support)
             resolved_uri = song.get("_resolved_uri") or song.get("uri")
