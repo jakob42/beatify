@@ -1373,6 +1373,10 @@
         const listEl = document.getElementById('player-list');
         const countEl = document.getElementById('player-count');
         if (!listEl) return;
+        // Guard: ensure players is an array
+        if (!players || !Array.isArray(players)) {
+            players = [];
+        }
 
         // Update player count (Story 16.3 - i18n)
         if (countEl) {
@@ -3952,6 +3956,10 @@
         const lobbyStatus = document.getElementById('lobby-status');
         const leaveGameContainer = document.getElementById('leave-game-container');
         if (!adminControls) return;
+        // Guard: ensure players is an array
+        if (!players || !Array.isArray(players)) {
+            players = [];
+        }
 
         // Find if current player is admin from state
         const currentPlayer = players.find(function(p) { return p.name === playerName; });
