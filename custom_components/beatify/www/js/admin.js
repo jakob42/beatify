@@ -116,6 +116,8 @@ async function loadStatus() {
 
         playlistDocsUrl = status.playlist_docs_url || '';
         mediaPlayerDocsUrl = status.media_player_docs_url || '';
+        // Set Music Assistant availability from backend (not based on entity names)
+        hasMusicAssistant = status.has_music_assistant === true;
         renderMediaPlayers(status.media_players);
         updateProviderAvailability();  // Story 17.2: Update Apple Music availability
         renderPlaylists(status.playlists, status.playlist_dir);
@@ -150,10 +152,7 @@ function renderMediaPlayers(players) {
     // Reset selection state
     selectedMediaPlayer = null;
 
-    // Detect Music Assistant players (Story 17.2)
-    hasMusicAssistant = (players || []).some(p =>
-        p.entity_id && p.entity_id.toLowerCase().includes('music_assistant')
-    );
+    // Note: hasMusicAssistant is now set from backend status API (not based on entity names)
 
     // Filter out unavailable players
     const availablePlayers = (players || []).filter(p => p.state !== 'unavailable');

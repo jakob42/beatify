@@ -108,6 +108,13 @@ class StatusView(HomeAssistantView):
         # Fetch media players fresh (not cached) - Story 8-2
         media_players = await async_get_media_players(self.hass)
 
+        # Detect Music Assistant integration (not based on entity names)
+        # Check if music_assistant integration is loaded via config entries
+        has_music_assistant = any(
+            entry.domain == "music_assistant"
+            for entry in self.hass.config_entries.async_entries()
+        )
+
         status = {
             "media_players": media_players,
             "playlists": data.get("playlists", []),
@@ -115,6 +122,7 @@ class StatusView(HomeAssistantView):
             "playlist_docs_url": PLAYLIST_DOCS_URL,
             "media_player_docs_url": MEDIA_PLAYER_DOCS_URL,
             "active_game": active_game,
+            "has_music_assistant": has_music_assistant,
         }
 
         return web.json_response(status)
