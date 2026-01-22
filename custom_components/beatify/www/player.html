@@ -527,6 +527,19 @@
         <span id="steal-confirmation-text" class="steal-confirmation-text"></span>
     </div>
 
+    <!-- Generic Confirmation Modal -->
+    <div id="confirm-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <h2 id="confirm-modal-title">Confirm</h2>
+            <p id="confirm-modal-message"></p>
+            <div class="modal-actions">
+                <button id="confirm-modal-yes" class="btn btn-primary" data-i18n="common.confirm">Confirm</button>
+                <button id="confirm-modal-no" class="btn btn-secondary" data-i18n="common.cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/beatify/static/js/vendor/qrcode.min.js"></script>
     <!-- Story 18.4: Use minified JS in production with fallback to source -->
     <!-- Version query strings prevent browser caching issues -->

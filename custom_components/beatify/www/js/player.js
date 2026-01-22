@@ -99,6 +99,63 @@
     }
 
     /**
+     * Show a styled confirmation modal instead of browser confirm()
+     * @param {string} title - Modal title
+     * @param {string} message - Modal message
+     * @param {string} [confirmText] - Text for confirm button
+     * @param {string} [cancelText] - Text for cancel button
+     * @returns {Promise<boolean>} - Resolves to true if confirmed, false if cancelled
+     */
+    function showConfirmModal(title, message, confirmText, cancelText) {
+        return new Promise(function(resolve) {
+            var modal = document.getElementById('confirm-modal');
+            var titleEl = document.getElementById('confirm-modal-title');
+            var messageEl = document.getElementById('confirm-modal-message');
+            var yesBtn = document.getElementById('confirm-modal-yes');
+            var noBtn = document.getElementById('confirm-modal-no');
+
+            if (!modal || !titleEl || !messageEl || !yesBtn || !noBtn) {
+                // Fallback to browser confirm if modal not found
+                resolve(confirm(message || title));
+                return;
+            }
+
+            // Set content
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            yesBtn.textContent = confirmText || t('common.confirm') || 'Confirm';
+            noBtn.textContent = cancelText || t('common.cancel') || 'Cancel';
+
+            // Show modal
+            modal.classList.remove('hidden');
+
+            // Cleanup function
+            function cleanup() {
+                modal.classList.add('hidden');
+                yesBtn.removeEventListener('click', onConfirm);
+                noBtn.removeEventListener('click', onCancel);
+                backdrop.removeEventListener('click', onCancel);
+            }
+
+            function onConfirm() {
+                cleanup();
+                resolve(true);
+            }
+
+            function onCancel() {
+                cleanup();
+                resolve(false);
+            }
+
+            var backdrop = modal.querySelector('.modal-backdrop');
+
+            yesBtn.addEventListener('click', onConfirm);
+            noBtn.addEventListener('click', onCancel);
+            if (backdrop) backdrop.addEventListener('click', onCancel);
+        });
+    }
+
+    /**
      * Get localized content field from song with English fallback (Story 16.1, 16.3)
      * @param {Object} song - Song object
      * @param {string} field - Base field name ('fun_fact' or 'awards')
@@ -2449,10 +2506,16 @@
      * Select a steal target and confirm
      * @param {string} targetName - Name of player to steal from
      */
-    function selectStealTarget(targetName) {
+    async function selectStealTarget(targetName) {
         // Show confirmation dialog
         var confirmMsg = t('steal.confirm').replace('{name}', targetName);
-        if (!confirm(confirmMsg)) {
+        var confirmed = await showConfirmModal(
+            t('steal.confirmTitle') || 'Steal Answer?',
+            confirmMsg,
+            t('steal.confirmButton') || 'Steal',
+            t('common.cancel')
+        );
+        if (!confirmed) {
             return;
         }
 
@@ -3543,8 +3606,14 @@
     /**
      * Handle new game button click (Story 6.6)
      */
-    function handleNewGame() {
-        if (!confirm('Start a new game?')) {
+    async function handleNewGame() {
+        var confirmed = await showConfirmModal(
+            t('admin.newGameTitle') || 'New Game?',
+            t('admin.newGameConfirm') || 'Start a new game?',
+            t('admin.newGame') || 'New Game',
+            t('common.cancel')
+        );
+        if (!confirmed) {
             return;
         }
 
@@ -3796,8 +3865,14 @@
     /**
      * Handle End Game button
      */
-    function handleEndGame() {
-        if (!confirm(t('admin.endGameConfirmFull'))) return;
+    async function handleEndGame() {
+        var confirmed = await showConfirmModal(
+            t('admin.endGameConfirm') || 'End Game?',
+            t('admin.endGameWarning') || 'All players will be disconnected.',
+            t('admin.endGame') || 'End Game',
+            t('common.cancel')
+        );
+        if (!confirmed) return;
         if (!debounceAdminAction()) return;
         if (!ws || ws.readyState !== WebSocket.OPEN) {
             alert(t('errors.CONNECTION_LOST'));
@@ -4472,7 +4547,7 @@
     /**
      * Handle leave game button click (Story 11.5)
      */
-    function handleLeaveGame() {
+    async function handleLeaveGame() {
         if (!ws || ws.readyState !== WebSocket.OPEN) {
             return;
         }
@@ -4484,7 +4559,13 @@
         }
 
         // Confirmation dialog per AC #1
-        if (!confirm('Leave the game? Your score will be lost.')) {
+        var confirmed = await showConfirmModal(
+            t('player.leaveGameTitle') || 'Leave Game?',
+            t('player.leaveGameWarning') || 'Your score will be lost.',
+            t('player.leaveGame') || 'Leave',
+            t('common.cancel')
+        );
+        if (!confirmed) {
             return;
         }
 
