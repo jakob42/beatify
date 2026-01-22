@@ -79,7 +79,8 @@
      */
     function getLocalizedSongField(song, field) {
         if (!song) return null;
-        var lang = BeatifyI18n.getLanguage();
+        // Guard: fall back to English if i18n unavailable
+        var lang = (typeof BeatifyI18n !== 'undefined') ? BeatifyI18n.getLanguage() : 'en';
         // Try localized field first (for non-English)
         if (lang && lang !== 'en') {
             var localizedKey = field + '_' + lang;
@@ -4214,8 +4215,8 @@
             if (data.language) {
                 // Store language for future page loads
                 storeGameLanguage(data.language);
-                // Apply if different from current
-                if (data.language !== BeatifyI18n.getLanguage()) {
+                // Apply if different from current (guard: skip if i18n unavailable)
+                if (typeof BeatifyI18n !== 'undefined' && data.language !== BeatifyI18n.getLanguage()) {
                     BeatifyI18n.setLanguage(data.language).then(function() {
                         BeatifyI18n.initPageTranslations();
                         // Re-render dynamic content with new language

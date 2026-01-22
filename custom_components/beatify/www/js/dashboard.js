@@ -52,7 +52,8 @@
      */
     function getLocalizedSongField(song, field) {
         if (!song) return null;
-        var lang = BeatifyI18n.getLanguage();
+        // Guard: fall back to English if i18n unavailable
+        var lang = (typeof BeatifyI18n !== 'undefined') ? BeatifyI18n.getLanguage() : 'en';
         // Try localized field first (for non-English)
         if (lang && lang !== 'en') {
             var localizedKey = field + '_' + lang;
@@ -169,7 +170,8 @@
 
         // Apply language from game state (Story 12.5, 16.3)
         // Must re-render after language loads to update dynamic content
-        if (data.language && data.language !== BeatifyI18n.getLanguage()) {
+        // Guard: skip if i18n unavailable
+        if (typeof BeatifyI18n !== 'undefined' && data.language && data.language !== BeatifyI18n.getLanguage()) {
             BeatifyI18n.setLanguage(data.language).then(function() {
                 BeatifyI18n.initPageTranslations();
                 // Re-render current view with correct language
