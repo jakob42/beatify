@@ -4580,6 +4580,9 @@
      * Handle game ended notification (Story 7-5)
      */
     function handleGameEnded() {
+        // Save admin state before clearing (for redirect decision)
+        var wasAdmin = isAdmin;
+
         // Clear all stored session data
         clearStoredPlayerName();
         clearSessionCookie();  // Story 11.1 - clear session cookie on game end
@@ -4609,6 +4612,12 @@
             ws.close();
         }
         ws = null;
+
+        // If admin ended the game, redirect to admin setup page
+        if (wasAdmin) {
+            window.location.href = '/beatify/admin';
+            return;
+        }
 
         // If already showing end view, just update the message
         if (!endView || !endView.classList.contains('hidden')) {
