@@ -97,6 +97,117 @@
             </div>
         </section>
 
+        <!-- Song Statistics Section (Story 19.7 AC1) -->
+        <section class="song-analytics" aria-labelledby="song-stats-heading">
+            <h2 class="section-header" id="song-stats-heading">
+                <span class="section-icon" aria-hidden="true">🎵</span>
+                <span data-i18n="analyticsDashboard.songStatistics">Song Statistics</span>
+            </h2>
+
+            <!-- Summary Cards (AC1) -->
+            <div class="song-summary-cards" id="song-summary-cards">
+                <button type="button" class="song-summary-card" id="song-most-played"
+                        aria-label="Most played song - click to view in playlist">
+                    <div class="song-card-icon" aria-hidden="true">🔥</div>
+                    <div class="song-card-label" data-i18n="analyticsDashboard.mostPlayed">Most Played</div>
+                    <div class="song-card-title">--</div>
+                    <div class="song-card-artist">--</div>
+                    <div class="song-card-stat">
+                        <span class="stat-number">--</span>
+                        <span data-i18n="analyticsDashboard.timesPlayed">times played</span>
+                    </div>
+                </button>
+
+                <button type="button" class="song-summary-card" id="song-hardest"
+                        aria-label="Hardest song - click to view in playlist">
+                    <div class="song-card-icon" aria-hidden="true">💀</div>
+                    <div class="song-card-label" data-i18n="analyticsDashboard.hardestSong">Hardest Song</div>
+                    <div class="song-card-title">--</div>
+                    <div class="song-card-artist">--</div>
+                    <div class="song-card-stat">
+                        <span class="stat-number accuracy-low">--</span>
+                        <span data-i18n="analyticsDashboard.accuracy">accuracy</span>
+                    </div>
+                </button>
+
+                <button type="button" class="song-summary-card" id="song-easiest"
+                        aria-label="Easiest song - click to view in playlist">
+                    <div class="song-card-icon" aria-hidden="true">🎯</div>
+                    <div class="song-card-label" data-i18n="analyticsDashboard.easiestSong">Easiest Song</div>
+                    <div class="song-card-title">--</div>
+                    <div class="song-card-artist">--</div>
+                    <div class="song-card-stat">
+                        <span class="stat-number accuracy-high">--</span>
+                        <span data-i18n="analyticsDashboard.accuracy">accuracy</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Playlist Song Statistics Grid (AC2) -->
+            <div class="playlist-song-stats" id="playlist-song-stats">
+                <!-- Dynamic content: playlist cards with song tables -->
+            </div>
+
+            <!-- Empty State (AC7) -->
+            <div class="empty-state hidden" id="song-stats-empty">
+                <div class="empty-icon" aria-hidden="true">📭</div>
+                <p data-i18n="analyticsDashboard.noSongsPlayed">No songs played yet</p>
+                <p class="empty-hint" data-i18n="analyticsDashboard.playToTrack">Play some games to start tracking song statistics</p>
+            </div>
+        </section>
+
+        <!-- Full-Screen Playlist Modal (Story 19.7 AC4) -->
+        <dialog id="playlist-modal" class="playlist-modal" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">--</h2>
+                <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-toolbar">
+                <input type="search" id="modal-search" class="modal-search"
+                       placeholder="Search songs..."
+                       data-i18n-placeholder="analyticsDashboard.searchSongs"
+                       aria-label="Search songs">
+                <div class="modal-sort">
+                    <label for="modal-sort-select" class="sr-only" data-i18n="analyticsDashboard.sortBy">Sort by</label>
+                    <select id="modal-sort-select" class="modal-sort-select">
+                        <option value="play_count" data-i18n="analyticsDashboard.sortPlayCount">Play Count</option>
+                        <option value="accuracy" data-i18n="analyticsDashboard.sortAccuracy">Accuracy</option>
+                        <option value="title" data-i18n="analyticsDashboard.sortTitle">Title</option>
+                        <option value="artist" data-i18n="analyticsDashboard.sortArtist">Artist</option>
+                        <option value="year" data-i18n="analyticsDashboard.sortYear">Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-content">
+                <table class="song-table" id="modal-song-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" data-i18n="analyticsDashboard.colTitle">Title</th>
+                            <th scope="col" data-i18n="analyticsDashboard.colArtist">Artist</th>
+                            <th scope="col" data-i18n="analyticsDashboard.colYear">Year</th>
+                            <th scope="col" data-i18n="analyticsDashboard.colPlays">Plays</th>
+                            <th scope="col" data-i18n="analyticsDashboard.colAccuracy">Accuracy</th>
+                            <th scope="col" data-i18n="analyticsDashboard.colAvgOff">Avg Off</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-song-tbody">
+                        <!-- Dynamic song rows -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-pagination" id="modal-pagination">
+                <button type="button" class="pagination-btn" id="pagination-prev" disabled>
+                    <span aria-hidden="true">&larr;</span>
+                    <span data-i18n="common.previous">Previous</span>
+                </button>
+                <span class="pagination-info" id="pagination-info">Page 1 of 1</span>
+                <button type="button" class="pagination-btn" id="pagination-next" disabled>
+                    <span data-i18n="common.next">Next</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+        </dialog>
+
         <!-- Games Over Time Chart (Story 19.5) -->
         <section class="chart-analytics">
             <h2 class="section-header">

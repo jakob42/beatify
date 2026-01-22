@@ -1232,6 +1232,7 @@ class GameState:
         self.round_analytics = self.calculate_round_analytics()
 
         # Record song results for difficulty tracking (Story 15.1 AC3)
+        # Extended for song statistics (Story 19.7)
         if self._stats_service and self.current_song:
             song_uri = self.current_song.get("uri")
             if song_uri:
@@ -1243,7 +1244,28 @@ class GameState:
                     }
                     for p in self.players.values()
                 ]
-                await self._stats_service.record_song_result(song_uri, player_results)
+                # Story 19.7: Pass song metadata and playlist info
+                song_metadata = {
+                    "title": self.current_song.get("title", "Unknown"),
+                    "artist": self.current_song.get("artist", "Unknown"),
+                    "year": self.current_song.get("year", 0),
+                }
+                # Extract playlist name from path (e.g., "greatest-hits.json" -> "Greatest Hits")
+                playlist_name = None
+                if self.playlists:
+                    playlist_path = self.playlists[0]
+                    playlist_name = (
+                        playlist_path.replace(".json", "")
+                        .replace("-", " ")
+                        .title()
+                    )
+                await self._stats_service.record_song_result(
+                    song_uri,
+                    player_results,
+                    song_metadata=song_metadata,
+                    playlist_name=playlist_name,
+                    difficulty=self.difficulty,
+                )
 
         # Transition to REVEAL
         self.phase = GamePhase.REVEAL

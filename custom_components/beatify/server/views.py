@@ -648,3 +648,55 @@ class AnalyticsPageView(HomeAssistantView):
             content = await self.hass.async_add_executor_job(_read_file, www_path)
             return web.Response(text=content, content_type="text/html")
         return web.Response(text="Analytics page not found", status=404)
+
+
+class SongStatsView(HomeAssistantView):
+    """API endpoint for song statistics (Story 19.7)."""
+
+    url = "/beatify/api/analytics/songs"
+    name = "beatify:api:analytics:songs"
+    requires_auth = False
+
+    # Cache settings
+    CACHE_TTL = 60.0  # 60 second cache
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize view."""
+        self.hass = hass
+        self._cache: dict | None = None
+        self._cache_time: float = 0
+        self._cache_playlist: str | None = None
+
+    async def get(self, request: web.Request) -> web.Response:
+        """Get song statistics with optional playlist filter (Story 19.7 AC3)."""
+        import time  # noqa: PLC0415
+
+        # Get optional playlist filter
+        playlist_filter = request.query.get("playlist")
+
+        stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
+
+        if not stats_service:
+            return web.json_response({
+                "most_played": None,
+                "hardest": None,
+                "easiest": None,
+                "by_playlist": [],
+            })
+
+        # Check cache (invalidate if playlist changed or TTL expired)
+        now = time.time()
+        if (
+            self._cache
+            and self._cache_playlist == playlist_filter
+            and (now - self._cache_time) < self.CACHE_TTL
+        ):
+            return web.json_response(self._cache)
+
+        # Compute fresh stats
+        data = stats_service.compute_song_stats(playlist_filter)
+        self._cache = data
+        self._cache_time = now
+        self._cache_playlist = playlist_filter
+
+        return web.json_response(data)

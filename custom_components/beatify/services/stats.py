@@ -330,6 +330,7 @@ class StatsService:
         return list(reversed(games[-limit:]))
 
     # Song difficulty tracking methods (Story 15.1)
+    # Extended for song statistics (Story 19.7)
 
     def _uri_to_key(self, uri: str) -> str:
         """
@@ -345,20 +346,30 @@ class StatsService:
         return uri.replace(":", "_").replace("/", "_")
 
     async def record_song_result(
-        self, song_uri: str, player_results: list[dict]
+        self,
+        song_uri: str,
+        player_results: list[dict],
+        song_metadata: dict | None = None,
+        playlist_name: str | None = None,
+        difficulty: str = "normal",
     ) -> None:
         """
-        Record song results from a completed round (Story 15.1 AC3).
+        Record song results from a completed round (Story 15.1 AC3, Story 19.7).
 
         A guess is considered "correct" for difficulty purposes when years_off <= 3.
+        Extended to track song metadata for analytics dashboard.
 
         Args:
             song_uri: URI of the song that was played
             player_results: List of player result dicts with 'submitted', 'years_off'
+            song_metadata: Optional dict with title, artist, year (Story 19.7)
+            playlist_name: Optional playlist name for per-playlist stats (Story 19.7)
+            difficulty: Game difficulty setting for accuracy calculation (Story 19.7)
 
         """
         from custom_components.beatify.const import (  # noqa: PLC0415
             CORRECT_GUESS_THRESHOLD,
+            DIFFICULTY_SCORING,
         )
 
         song_key = self._uri_to_key(song_uri)
@@ -374,10 +385,35 @@ class StatsService:
                 "correct_guesses": 0,
                 "total_guesses": 0,
                 "total_years_off": 0,
+                # Story 19.7: Extended tracking
+                "exact_matches": 0,
+                "close_matches": 0,
+                "title": "",
+                "artist": "",
+                "year": 0,
+                "playlists": {},  # playlist_name -> play_count
+                "last_played": 0,
             }
 
         song = self._stats["songs"][song_key]
         song["times_played"] += 1
+        song["last_played"] = int(time.time())
+
+        # Update metadata if provided (Story 19.7)
+        if song_metadata:
+            song["title"] = song_metadata.get("title", song.get("title", ""))
+            song["artist"] = song_metadata.get("artist", song.get("artist", ""))
+            song["year"] = song_metadata.get("year", song.get("year", 0))
+
+        # Track per-playlist plays (Story 19.7)
+        if playlist_name:
+            playlists = song.get("playlists", {})
+            playlists[playlist_name] = playlists.get(playlist_name, 0) + 1
+            song["playlists"] = playlists
+
+        # Get difficulty tolerance for close matches (Story 19.7 AC5)
+        scoring = DIFFICULTY_SCORING.get(difficulty, DIFFICULTY_SCORING["normal"])
+        close_range = scoring.get("close_range", 3)
 
         # Process player results
         for result in player_results:
@@ -385,7 +421,16 @@ class StatsService:
                 song["total_guesses"] += 1
                 years_off = result.get("years_off", 0)
                 song["total_years_off"] += years_off
-                if years_off <= CORRECT_GUESS_THRESHOLD:
+
+                # Exact match (Story 19.7 AC5)
+                if years_off == 0:
+                    song["exact_matches"] = song.get("exact_matches", 0) + 1
+                    song["correct_guesses"] += 1
+                # Close match - within difficulty tolerance (Story 19.7 AC5)
+                elif years_off <= close_range:
+                    song["close_matches"] = song.get("close_matches", 0) + 1
+                    song["correct_guesses"] += 1
+                elif years_off <= CORRECT_GUESS_THRESHOLD:
                     song["correct_guesses"] += 1
 
         # Save to file
@@ -443,4 +488,169 @@ class StatsService:
             "label": DIFFICULTY_LABELS[stars],
             "accuracy": round(accuracy, 1),
             "times_played": song_stats["times_played"],
+        }
+
+    def compute_song_stats(self, playlist_filter: str | None = None) -> dict[str, Any]:
+        """
+        Compute song statistics for analytics dashboard (Story 19.7 AC3).
+
+        Args:
+            playlist_filter: Optional playlist ID to filter by
+
+        Returns:
+            Dict with most_played, hardest, easiest, and by_playlist data
+
+        """
+        songs = self._stats.get("songs", {})
+
+        if not songs:
+            return {
+                "most_played": None,
+                "hardest": None,
+                "easiest": None,
+                "by_playlist": [],
+            }
+
+        # Build list of songs with computed stats
+        song_list: list[dict[str, Any]] = []
+        for uri_key, song_data in songs.items():
+            # Skip songs with no plays
+            if song_data.get("times_played", 0) == 0:
+                continue
+
+            # Skip songs without metadata (legacy entries)
+            if not song_data.get("title"):
+                continue
+
+            total_guesses = song_data.get("total_guesses", 0)
+            if total_guesses == 0:
+                continue
+
+            # Calculate accuracy (Story 19.7 AC5)
+            exact = song_data.get("exact_matches", 0)
+            close = song_data.get("close_matches", 0)
+            # Accuracy = (exact * 1.0 + close * 0.5) / total_guesses
+            accuracy = (exact * 1.0 + close * 0.5) / total_guesses
+
+            # Calculate average year difference
+            avg_year_diff = song_data.get("total_years_off", 0) / total_guesses
+
+            song_list.append({
+                "uri_key": uri_key,
+                "title": song_data.get("title", "Unknown"),
+                "artist": song_data.get("artist", "Unknown"),
+                "year": song_data.get("year", 0),
+                "play_count": song_data.get("times_played", 0),
+                "accuracy": round(accuracy, 2),
+                "avg_year_diff": round(avg_year_diff, 1),
+                "exact_matches": exact,
+                "total_guesses": total_guesses,
+                "last_played": song_data.get("last_played", 0),
+                "playlists": song_data.get("playlists", {}),
+            })
+
+        if not song_list:
+            return {
+                "most_played": None,
+                "hardest": None,
+                "easiest": None,
+                "by_playlist": [],
+            }
+
+        # Find most played (AC3)
+        most_played = max(song_list, key=lambda s: s["play_count"])
+
+        # Find hardest song - lowest accuracy with min 3 plays (AC3, AC7)
+        songs_with_enough_plays = [s for s in song_list if s["play_count"] >= 3]
+
+        hardest = None
+        easiest = None
+        if songs_with_enough_plays:
+            hardest = min(songs_with_enough_plays, key=lambda s: s["accuracy"])
+            easiest = max(songs_with_enough_plays, key=lambda s: s["accuracy"])
+
+        # Build by_playlist data (AC3)
+        playlist_stats: dict[str, dict[str, Any]] = {}
+
+        for song in song_list:
+            for playlist_name, play_count in song.get("playlists", {}).items():
+                if playlist_name not in playlist_stats:
+                    playlist_stats[playlist_name] = {
+                        "playlist_id": playlist_name.lower().replace(" ", "-"),
+                        "playlist_name": playlist_name,
+                        "total_plays": 0,
+                        "unique_songs_played": 0,
+                        "total_accuracy": 0.0,
+                        "accuracy_count": 0,
+                        "songs": [],
+                    }
+
+                ps = playlist_stats[playlist_name]
+                ps["total_plays"] += play_count
+                ps["unique_songs_played"] += 1
+                ps["total_accuracy"] += song["accuracy"] * play_count
+                ps["accuracy_count"] += play_count
+
+                ps["songs"].append({
+                    "title": song["title"],
+                    "artist": song["artist"],
+                    "year": song["year"],
+                    "play_count": play_count,
+                    "accuracy": song["accuracy"],
+                    "avg_year_diff": song["avg_year_diff"],
+                    "exact_matches": song["exact_matches"],
+                    "last_played": song["last_played"],
+                })
+
+        # Calculate average accuracy per playlist and sort songs
+        by_playlist = []
+        for ps in playlist_stats.values():
+            if ps["accuracy_count"] > 0:
+                ps["avg_accuracy"] = round(
+                    ps["total_accuracy"] / ps["accuracy_count"], 2
+                )
+            else:
+                ps["avg_accuracy"] = 0.0
+
+            # Sort songs by play_count descending
+            ps["songs"].sort(key=lambda s: s["play_count"], reverse=True)
+
+            # Remove internal tracking fields
+            del ps["total_accuracy"]
+            del ps["accuracy_count"]
+
+            by_playlist.append(ps)
+
+        # Sort playlists by total_plays descending
+        by_playlist.sort(key=lambda p: p["total_plays"], reverse=True)
+
+        # Apply playlist filter if specified
+        if playlist_filter:
+            by_playlist = [
+                p for p in by_playlist
+                if p["playlist_id"] == playlist_filter
+            ]
+
+        def _format_song(s: dict) -> dict | None:
+            """Format song for API response."""
+            if not s:
+                return None
+            # Find primary playlist for this song
+            playlists = s.get("playlists", {})
+            primary_playlist = max(playlists.keys(), key=lambda k: playlists[k]) if playlists else ""
+            return {
+                "title": s["title"],
+                "artist": s["artist"],
+                "year": s["year"],
+                "play_count": s["play_count"],
+                "accuracy": s["accuracy"],
+                "avg_year_diff": s["avg_year_diff"],
+                "playlist": primary_playlist,
+            }
+
+        return {
+            "most_played": _format_song(most_played),
+            "hardest": _format_song(hardest),
+            "easiest": _format_song(easiest),
+            "by_playlist": by_playlist,
         }

@@ -8,9 +8,19 @@
     'use strict';
 
     var API_URL = '/beatify/api/analytics';
+    var SONG_STATS_API_URL = '/beatify/api/analytics/songs';
     var currentPeriod = '30d';
     var retryCount = 0;
     var maxRetries = 3;
+
+    // Song statistics state (Story 19.7)
+    var songStatsData = null;
+    var modalPlaylistData = null;
+    var modalCurrentPage = 1;
+    var modalPageSize = 20;
+    var modalSortField = 'play_count';
+    var modalSortDir = 'desc';
+    var modalSearchQuery = '';
 
     /**
      * Load analytics data from API
@@ -275,6 +285,383 @@
         return icons[type] || '❌';
     }
 
+    // =====================================================
+    // Song Statistics Functions (Story 19.7)
+    // =====================================================
+
+    /**
+     * Load song statistics from API
+     */
+    async function loadSongStats() {
+        try {
+            var response = await fetch(SONG_STATS_API_URL);
+            if (!response.ok) {
+                throw new Error('Song stats API returned ' + response.status);
+            }
+            songStatsData = await response.json();
+            renderSongStats(songStatsData);
+        } catch (err) {
+            console.error('Song stats API error:', err);
+            showSongStatsEmpty();
+        }
+    }
+
+    /**
+     * Render song statistics (AC1, AC2)
+     * @param {Object} data - Song stats from API
+     */
+    function renderSongStats(data) {
+        var emptyEl = document.getElementById('song-stats-empty');
+        var summaryEl = document.getElementById('song-summary-cards');
+        var playlistEl = document.getElementById('playlist-song-stats');
+
+        // Check if we have any data
+        if (!data || (!data.most_played && !data.by_playlist.length)) {
+            showSongStatsEmpty();
+            return;
+        }
+
+        if (emptyEl) emptyEl.classList.add('hidden');
+        if (summaryEl) summaryEl.classList.remove('hidden');
+
+        // Render summary cards (AC1)
+        renderSongSummaryCard('song-most-played', data.most_played, 'play_count');
+        renderSongSummaryCard('song-hardest', data.hardest, 'accuracy');
+        renderSongSummaryCard('song-easiest', data.easiest, 'accuracy');
+
+        // Render playlist grid (AC2)
+        renderPlaylistSongGrid(data.by_playlist);
+    }
+
+    /**
+     * Render a single song summary card (AC1)
+     * @param {string} cardId - Card element ID
+     * @param {Object} song - Song data
+     * @param {string} statType - Type of stat to display
+     */
+    function renderSongSummaryCard(cardId, song, statType) {
+        var card = document.getElementById(cardId);
+        if (!card) return;
+
+        var titleEl = card.querySelector('.song-card-title');
+        var artistEl = card.querySelector('.song-card-artist');
+        var statEl = card.querySelector('.stat-number');
+
+        if (!song) {
+            if (titleEl) titleEl.textContent = '--';
+            if (artistEl) artistEl.textContent = '--';
+            if (statEl) statEl.textContent = '--';
+            card.disabled = true;
+            card.dataset.playlist = '';
+            return;
+        }
+
+        card.disabled = false;
+        card.dataset.playlist = song.playlist || '';
+        card.dataset.songTitle = song.title || '';
+
+        if (titleEl) titleEl.textContent = song.title || 'Unknown';
+        if (artistEl) artistEl.textContent = song.artist || 'Unknown';
+
+        if (statEl) {
+            if (statType === 'play_count') {
+                statEl.textContent = song.play_count || 0;
+            } else if (statType === 'accuracy') {
+                var accuracy = ((song.accuracy || 0) * 100).toFixed(0);
+                statEl.textContent = accuracy + '%';
+
+                // Apply color class (AC6)
+                statEl.classList.remove('accuracy-high', 'accuracy-mid', 'accuracy-low');
+                if (accuracy >= 70) statEl.classList.add('accuracy-high');
+                else if (accuracy >= 40) statEl.classList.add('accuracy-mid');
+                else statEl.classList.add('accuracy-low');
+            }
+        }
+    }
+
+    /**
+     * Render playlist song statistics grid (AC2)
+     * @param {Array} playlists - Playlist data array
+     */
+    function renderPlaylistSongGrid(playlists) {
+        var container = document.getElementById('playlist-song-stats');
+        if (!container) return;
+
+        if (!playlists || playlists.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = playlists.map(function(p) {
+            var avgAccuracy = ((p.avg_accuracy || 0) * 100).toFixed(0);
+            var accuracyClass = getAccuracyClass(avgAccuracy);
+
+            return '<div class="playlist-song-card" data-playlist-id="' + escapeHtml(p.playlist_id) + '">' +
+                '<div class="playlist-song-header">' +
+                    '<h3 class="playlist-song-name">' + escapeHtml(p.playlist_name) + '</h3>' +
+                    '<div class="playlist-song-summary">' +
+                        '<span class="summary-stat">' +
+                            '<span class="summary-value">' + p.unique_songs_played + '</span>' +
+                            '<span class="summary-label" data-i18n="analyticsDashboard.songsPlayed">songs played</span>' +
+                        '</span>' +
+                        '<span class="summary-stat">' +
+                            '<span class="summary-value ' + accuracyClass + '">' + avgAccuracy + '%</span>' +
+                            '<span class="summary-label" data-i18n="analyticsDashboard.avgAccuracy">avg accuracy</span>' +
+                        '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<button type="button" class="view-details-btn" data-playlist-id="' + escapeHtml(p.playlist_id) + '" ' +
+                    'aria-label="View details for ' + escapeHtml(p.playlist_name) + '">' +
+                    '<span data-i18n="analyticsDashboard.viewDetails">View Details</span>' +
+                '</button>' +
+            '</div>';
+        }).join('');
+
+        // Apply translations if available
+        if (window.applyTranslations) {
+            window.applyTranslations();
+        }
+    }
+
+    /**
+     * Show song stats empty state (AC7)
+     */
+    function showSongStatsEmpty() {
+        var emptyEl = document.getElementById('song-stats-empty');
+        var summaryEl = document.getElementById('song-summary-cards');
+        var playlistEl = document.getElementById('playlist-song-stats');
+
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        if (summaryEl) summaryEl.classList.add('hidden');
+        if (playlistEl) playlistEl.innerHTML = '';
+    }
+
+    /**
+     * Get CSS class for accuracy value (AC6)
+     * @param {number} accuracy - Accuracy percentage
+     * @returns {string} CSS class name
+     */
+    function getAccuracyClass(accuracy) {
+        if (accuracy >= 70) return 'accuracy-high';
+        if (accuracy >= 40) return 'accuracy-mid';
+        return 'accuracy-low';
+    }
+
+    /**
+     * Open playlist modal (AC4)
+     * @param {string} playlistId - Playlist ID to display
+     */
+    function openPlaylistModal(playlistId) {
+        if (!songStatsData || !songStatsData.by_playlist) return;
+
+        var playlist = songStatsData.by_playlist.find(function(p) {
+            return p.playlist_id === playlistId;
+        });
+
+        if (!playlist) return;
+
+        modalPlaylistData = playlist;
+        modalCurrentPage = 1;
+        modalSearchQuery = '';
+        modalSortField = 'play_count';
+        modalSortDir = 'desc';
+
+        var modal = document.getElementById('playlist-modal');
+        var titleEl = document.getElementById('modal-title');
+        var searchEl = document.getElementById('modal-search');
+        var sortEl = document.getElementById('modal-sort-select');
+
+        if (titleEl) titleEl.textContent = playlist.playlist_name;
+        if (searchEl) searchEl.value = '';
+        if (sortEl) sortEl.value = 'play_count';
+
+        renderModalTable();
+
+        if (modal && modal.showModal) {
+            modal.showModal();
+            // Focus trap (AC10)
+            var firstFocusable = modal.querySelector('button, input, select');
+            if (firstFocusable) firstFocusable.focus();
+        }
+    }
+
+    /**
+     * Close playlist modal
+     */
+    function closePlaylistModal() {
+        var modal = document.getElementById('playlist-modal');
+        if (modal && modal.close) {
+            modal.close();
+        }
+        modalPlaylistData = null;
+    }
+
+    /**
+     * Render modal table with current filters/sorting (AC4)
+     */
+    function renderModalTable() {
+        if (!modalPlaylistData || !modalPlaylistData.songs) return;
+
+        var songs = modalPlaylistData.songs.slice();
+
+        // Apply search filter
+        if (modalSearchQuery) {
+            var query = modalSearchQuery.toLowerCase();
+            songs = songs.filter(function(s) {
+                return (s.title && s.title.toLowerCase().includes(query)) ||
+                       (s.artist && s.artist.toLowerCase().includes(query));
+            });
+        }
+
+        // Apply sorting
+        songs.sort(function(a, b) {
+            var aVal = a[modalSortField];
+            var bVal = b[modalSortField];
+
+            if (typeof aVal === 'string') {
+                aVal = aVal.toLowerCase();
+                bVal = (bVal || '').toLowerCase();
+                return modalSortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            }
+
+            aVal = aVal || 0;
+            bVal = bVal || 0;
+            return modalSortDir === 'asc' ? aVal - bVal : bVal - aVal;
+        });
+
+        // Pagination
+        var totalPages = Math.ceil(songs.length / modalPageSize) || 1;
+        if (modalCurrentPage > totalPages) modalCurrentPage = totalPages;
+        var startIdx = (modalCurrentPage - 1) * modalPageSize;
+        var pageSongs = songs.slice(startIdx, startIdx + modalPageSize);
+
+        // Render table body
+        var tbody = document.getElementById('modal-song-tbody');
+        if (tbody) {
+            tbody.innerHTML = pageSongs.map(function(s) {
+                var accuracy = ((s.accuracy || 0) * 100).toFixed(0);
+                var accuracyClass = getAccuracyClass(accuracy);
+                var playHeat = getPlayCountHeat(s.play_count);
+
+                return '<tr>' +
+                    '<td>' + escapeHtml(s.title || 'Unknown') + '</td>' +
+                    '<td>' + escapeHtml(s.artist || 'Unknown') + '</td>' +
+                    '<td>' + (s.year || '--') + '</td>' +
+                    '<td><span class="' + playHeat + '">' + (s.play_count || 0) + '</span></td>' +
+                    '<td><span class="' + accuracyClass + '">' + accuracy + '%</span></td>' +
+                    '<td>' + (s.avg_year_diff || 0).toFixed(1) + '</td>' +
+                '</tr>';
+            }).join('');
+
+            // Empty state for filtered results (AC7)
+            if (pageSongs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">' +
+                    '<span data-i18n="analyticsDashboard.noMatchingSongs">No matching songs found</span>' +
+                '</td></tr>';
+            }
+        }
+
+        // Update pagination
+        updatePagination(songs.length, totalPages);
+    }
+
+    /**
+     * Get CSS class for play count heat indicator (AC6)
+     * @param {number} count - Play count
+     * @returns {string} CSS class name
+     */
+    function getPlayCountHeat(count) {
+        if (count >= 10) return 'heat-high';
+        if (count >= 5) return 'heat-mid';
+        return 'heat-low';
+    }
+
+    /**
+     * Update pagination controls
+     * @param {number} totalItems - Total items in filtered list
+     * @param {number} totalPages - Total pages
+     */
+    function updatePagination(totalItems, totalPages) {
+        var infoEl = document.getElementById('pagination-info');
+        var prevBtn = document.getElementById('pagination-prev');
+        var nextBtn = document.getElementById('pagination-next');
+
+        if (infoEl) {
+            infoEl.textContent = 'Page ' + modalCurrentPage + ' of ' + totalPages;
+        }
+
+        if (prevBtn) {
+            prevBtn.disabled = modalCurrentPage <= 1;
+        }
+
+        if (nextBtn) {
+            nextBtn.disabled = modalCurrentPage >= totalPages;
+        }
+    }
+
+    /**
+     * Handle modal search input
+     * @param {Event} e - Input event
+     */
+    function handleModalSearch(e) {
+        modalSearchQuery = e.target.value;
+        modalCurrentPage = 1;
+        renderModalTable();
+    }
+
+    /**
+     * Handle modal sort change
+     * @param {Event} e - Change event
+     */
+    function handleModalSort(e) {
+        var newField = e.target.value;
+        if (newField === modalSortField) {
+            // Toggle direction
+            modalSortDir = modalSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            modalSortField = newField;
+            // Default sort direction based on field type
+            modalSortDir = (newField === 'title' || newField === 'artist') ? 'asc' : 'desc';
+        }
+        modalCurrentPage = 1;
+        renderModalTable();
+    }
+
+    /**
+     * Handle pagination button click
+     * @param {number} direction - -1 for prev, 1 for next
+     */
+    function handlePagination(direction) {
+        modalCurrentPage += direction;
+        renderModalTable();
+    }
+
+    /**
+     * Handle summary card click - scroll to song in playlist (AC1)
+     * @param {Event} e - Click event
+     */
+    function handleSummaryCardClick(e) {
+        var card = e.target.closest('.song-summary-card');
+        if (!card || card.disabled) return;
+
+        var playlistName = card.dataset.playlist;
+        if (playlistName) {
+            // Find and open the playlist
+            var playlistId = playlistName.toLowerCase().replace(/ /g, '-');
+            openPlaylistModal(playlistId);
+        }
+    }
+
+    /**
+     * Handle keyboard navigation in modal (AC10)
+     * @param {KeyboardEvent} e - Keyboard event
+     */
+    function handleModalKeydown(e) {
+        if (e.key === 'Escape') {
+            closePlaylistModal();
+        }
+    }
+
     /**
      * Format timestamp as relative time
      */
@@ -485,8 +872,82 @@
             }, 150);
         });
 
+        // =====================================================
+        // Song Statistics Event Listeners (Story 19.7)
+        // =====================================================
+
+        // Summary card clicks (AC1)
+        var summaryCards = document.getElementById('song-summary-cards');
+        if (summaryCards) {
+            summaryCards.addEventListener('click', handleSummaryCardClick);
+        }
+
+        // Playlist card "View Details" button clicks (AC2)
+        var playlistSongStats = document.getElementById('playlist-song-stats');
+        if (playlistSongStats) {
+            playlistSongStats.addEventListener('click', function(e) {
+                var btn = e.target.closest('.view-details-btn');
+                if (btn) {
+                    var playlistId = btn.dataset.playlistId;
+                    if (playlistId) openPlaylistModal(playlistId);
+                }
+            });
+        }
+
+        // Modal controls (AC4)
+        var modal = document.getElementById('playlist-modal');
+        if (modal) {
+            // Close button
+            var closeBtn = modal.querySelector('.modal-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closePlaylistModal);
+            }
+
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closePlaylistModal();
+            });
+
+            // Keyboard navigation (AC10)
+            modal.addEventListener('keydown', handleModalKeydown);
+        }
+
+        // Modal search (AC4)
+        var modalSearch = document.getElementById('modal-search');
+        if (modalSearch) {
+            // Debounced search
+            var searchTimeout;
+            modalSearch.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    handleModalSearch(e);
+                }, 150);
+            });
+        }
+
+        // Modal sort (AC4)
+        var modalSort = document.getElementById('modal-sort-select');
+        if (modalSort) {
+            modalSort.addEventListener('change', handleModalSort);
+        }
+
+        // Modal pagination (AC4)
+        var prevBtn = document.getElementById('pagination-prev');
+        var nextBtn = document.getElementById('pagination-next');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                handlePagination(-1);
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                handlePagination(1);
+            });
+        }
+
         // Initial load
         loadAnalytics(currentPeriod);
+        loadSongStats(); // Story 19.7
     }
 
     // Initialize when DOM is ready
