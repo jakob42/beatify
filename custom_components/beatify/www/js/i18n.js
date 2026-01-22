@@ -2,7 +2,8 @@
  * Beatify Internationalization (i18n) Module
  * Provides translation functionality for all UI text
  */
-var BeatifyI18n = (function() {
+// Use window.BeatifyI18n to ensure global availability after minification (IIFE wrapping)
+window.BeatifyI18n = (function() {
     'use strict';
 
     // Current language code
@@ -253,5 +254,5 @@ var BeatifyI18n = (function() {
     };
 })();
 
-// Shorthand for translation function
-var t = BeatifyI18n.t;
+// Shorthand for translation function (use window to ensure global availability after minification)
+window.t = window.BeatifyI18n.t;
