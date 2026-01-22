@@ -4,6 +4,7 @@
     "error": "Error",
     "close": "Close",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "ok": "OK",
     "back": "Back",
     "retry": "Try Again",
@@ -17,6 +18,11 @@
     "joiningButton": "Joining...",
     "scanQr": "Scan QR code to join",
     "shareQr": "Share this QR code"
+  },
+  "player": {
+    "leaveGameTitle": "Leave Game?",
+    "leaveGameWarning": "Your score will be lost.",
+    "leaveGame": "Leave"
   },
   "lobby": {
     "gameLobby": "Game Lobby",
@@ -69,6 +75,8 @@
     "selectTargetHint": "Copy their answer for this round",
     "waitForSubmit": "No players have submitted yet. Wait for someone to submit their guess.",
     "confirm": "Steal {name}'s answer?",
+    "confirmTitle": "Steal Answer?",
+    "confirmButton": "Steal",
     "success": "Stole {name}'s answer: {year}",
     "stolenFrom": "Stolen from {name}",
     "stolenBy": "Answer stolen by {name}"
@@ -155,6 +163,8 @@
     "endGameWarning": "All players will be disconnected.",
     "endCurrentGame": "End Current Game",
     "newGame": "New Game",
+    "newGameTitle": "New Game?",
+    "newGameConfirm": "Start a new game?",
     "startNewGame": "Start New Game",
     "stop": "Stop",
     "stopSong": "Stop",

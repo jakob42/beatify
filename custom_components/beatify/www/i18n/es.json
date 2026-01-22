@@ -4,6 +4,7 @@
     "error": "Error",
     "close": "Cerrar",
     "cancel": "Cancelar",
+    "confirm": "Confirmar",
     "ok": "OK",
     "back": "Volver",
     "retry": "Reintentar",
@@ -17,6 +18,11 @@
     "joiningButton": "Uniendose...",
     "scanQr": "Escanea el codigo QR para unirte",
     "shareQr": "Comparte este codigo QR"
+  },
+  "player": {
+    "leaveGameTitle": "¿Salir del juego?",
+    "leaveGameWarning": "Perderás tu puntuación.",
+    "leaveGame": "Salir"
   },
   "lobby": {
     "gameLobby": "Sala de espera",
@@ -69,6 +75,8 @@
     "selectTargetHint": "Copia su respuesta para esta ronda",
     "waitForSubmit": "Ningun jugador ha enviado aun. Espera a que alguien envie su respuesta.",
     "confirm": "Robar la respuesta de {name}?",
+    "confirmTitle": "¿Robar respuesta?",
+    "confirmButton": "Robar",
     "success": "Robaste la respuesta de {name}: {year}",
     "stolenFrom": "Robado de {name}",
     "stolenBy": "Respuesta robada por {name}"
@@ -155,6 +163,8 @@
     "endGameWarning": "Todos los jugadores seran desconectados.",
     "endCurrentGame": "Terminar juego actual",
     "newGame": "Nuevo juego",
+    "newGameTitle": "¿Nuevo juego?",
+    "newGameConfirm": "¿Iniciar un nuevo juego?",
     "startNewGame": "Iniciar nuevo juego",
     "stop": "Detener",
     "stopSong": "Detener",

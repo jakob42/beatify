@@ -4,6 +4,7 @@
     "error": "Fehler",
     "close": "Schließen",
     "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
     "ok": "OK",
     "back": "Zurück",
     "retry": "Erneut versuchen",
@@ -17,6 +18,11 @@
     "joiningButton": "Beitritt...",
     "scanQr": "QR-Code scannen",
     "shareQr": "Teile diesen QR-Code"
+  },
+  "player": {
+    "leaveGameTitle": "Spiel verlassen?",
+    "leaveGameWarning": "Deine Punkte gehen verloren.",
+    "leaveGame": "Verlassen"
   },
   "lobby": {
     "gameLobby": "Spiellobby",
@@ -69,6 +75,8 @@
     "selectTargetHint": "Kopiere deren Antwort für diese Runde",
     "waitForSubmit": "Noch niemand hat abgegeben. Warte bis jemand tippt.",
     "confirm": "{name}s Antwort klauen?",
+    "confirmTitle": "Antwort klauen?",
+    "confirmButton": "Klauen",
     "success": "{name}s Antwort geklaut: {year}",
     "stolenFrom": "Geklaut von {name}",
     "stolenBy": "Antwort geklaut von {name}"
@@ -155,6 +163,8 @@
     "endGameWarning": "Alle Spieler werden getrennt.",
     "endCurrentGame": "Aktuelles Spiel beenden",
     "newGame": "Neues Spiel",
+    "newGameTitle": "Neues Spiel?",
+    "newGameConfirm": "Ein neues Spiel starten?",
     "startNewGame": "Neues Spiel starten",
     "stop": "Stop",
     "stopSong": "Stop",
