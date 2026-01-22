@@ -127,17 +127,18 @@ class MediaPlayerService:
                 # Use Music Assistant's native play_media service for MA players
                 # This handles Spotify/Apple Music URIs more reliably
                 _LOGGER.debug(
-                    "Using music_assistant.play_media for MA player %s",
+                    "Using music_assistant.play_media for MA player %s with URI %s",
                     self._entity_id,
+                    uri,
                 )
                 await self._hass.services.async_call(
                     "music_assistant",
                     "play_media",
                     {
-                        "entity_id": self._entity_id,
                         "media_id": uri,
                         "media_type": "track",
                     },
+                    target={"entity_id": self._entity_id},
                     blocking=True,
                 )
             else:
