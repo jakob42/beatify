@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,6 +12,8 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+
+    from custom_components.beatify.analytics import AnalyticsStorage
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,6 +32,24 @@ class StatsService:
         self._hass = hass
         self._stats_file = Path(hass.config.path("beatify/stats.json"))
         self._stats: dict[str, Any] = self._empty_stats()
+        self._analytics: AnalyticsStorage | None = None
+        self._game_start_time: int | None = None
+
+    def set_analytics(self, analytics: AnalyticsStorage) -> None:
+        """
+        Set analytics storage for data collection (Story 19.1).
+
+        Args:
+            analytics: AnalyticsStorage instance
+
+        """
+        self._analytics = analytics
+
+    def record_game_start(self) -> None:
+        """Record game start time for duration calculation (Story 19.1)."""
+        self._game_start_time = int(time.time())
+        if self._analytics:
+            self._analytics.reset_session_errors()
 
     def _empty_stats(self) -> dict[str, Any]:
         """Return empty stats structure."""
@@ -80,13 +101,16 @@ class StatsService:
         except OSError as err:
             _LOGGER.error("Failed to save stats: %s", err)
 
-    async def record_game(self, game_summary: dict) -> dict:
+    async def record_game(
+        self, game_summary: dict, difficulty: str = "normal"
+    ) -> dict:
         """
         Record completed game and return comparison data.
 
         Args:
             game_summary: Dict with playlist, rounds, player_count, winner,
                          winner_score, total_points
+            difficulty: Game difficulty setting (Story 19.1)
 
         Returns:
             Comparison data dict for frontend display
@@ -110,6 +134,7 @@ class StatsService:
 
         # Create game entry
         game_id = str(uuid.uuid4())[:8]
+        now = int(time.time())
         game_entry = {
             "id": game_id,
             "date": datetime.now(timezone.utc).isoformat(),
@@ -121,6 +146,29 @@ class StatsService:
             "avg_score_per_round": round(avg_score_per_round, 2),
             "total_points": total_points,
         }
+
+        # Record to analytics storage (Story 19.1 AC: #1)
+        if self._analytics:
+            started_at = self._game_start_time or now
+            duration = now - started_at
+            playlist_names = [game_summary.get("playlist", "unknown")]
+
+            from custom_components.beatify.analytics import GameRecord  # noqa: PLC0415
+
+            analytics_record: GameRecord = {
+                "game_id": game_id,
+                "started_at": started_at,
+                "ended_at": now,
+                "duration_seconds": duration,
+                "player_count": player_count,
+                "playlist_names": playlist_names,
+                "rounds_played": rounds,
+                "average_score": round(avg_score_per_round, 2),
+                "difficulty": difficulty,
+                "error_count": self._analytics.session_error_count,
+            }
+            await self._analytics.add_game(analytics_record)
+            self._game_start_time = None  # Reset for next game
 
         # Store comparison before updating stats
         comparison = self.get_game_comparison(avg_score_per_round)

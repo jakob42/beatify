@@ -34,6 +34,8 @@ from custom_components.beatify.game.state import GamePhase, GameState
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
+    from custom_components.beatify.analytics import AnalyticsStorage
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -56,6 +58,29 @@ class BeatifyWebSocketHandler:
         self.connections: set[web.WebSocketResponse] = set()
         self._pending_removals: dict[str, asyncio.Task] = {}
         self._admin_disconnect_task: asyncio.Task | None = None
+        self._analytics: AnalyticsStorage | None = None
+
+    def set_analytics(self, analytics: AnalyticsStorage) -> None:
+        """
+        Set analytics storage for error recording (Story 19.1).
+
+        Args:
+            analytics: AnalyticsStorage instance
+
+        """
+        self._analytics = analytics
+
+    def _record_error(self, error_type: str, message: str) -> None:
+        """
+        Record error event to analytics (Story 19.1 AC: #2).
+
+        Args:
+            error_type: Error type constant
+            message: Human-readable error message
+
+        """
+        if self._analytics:
+            self._analytics.record_error(error_type, message)
 
     async def handle(self, request: web.Request) -> web.WebSocketResponse:
         """
@@ -83,7 +108,14 @@ class BeatifyWebSocketHandler:
                     except Exception as err:  # noqa: BLE001
                         _LOGGER.warning("Failed to parse WebSocket message: %s", err)
                 elif msg.type == WSMsgType.ERROR:
-                    _LOGGER.error("WebSocket error: %s", ws.exception())
+                    err_msg = str(ws.exception())
+                    _LOGGER.error("WebSocket error: %s", err_msg)
+                    # Record WebSocket error to analytics (Story 19.1 AC: #2)
+                    from custom_components.beatify.analytics import (  # noqa: PLC0415
+                        ERROR_WEBSOCKET_DISCONNECT,
+                    )
+
+                    self._record_error(ERROR_WEBSOCKET_DISCONNECT, err_msg)
 
         finally:
             self.connections.discard(ws)
@@ -258,11 +290,13 @@ class BeatifyWebSocketHandler:
                 elif game_state.phase == GamePhase.REVEAL:
                     # Start next round or end game
                     if game_state.last_round:
-                        # Record game stats before ending (Story 14.4)
+                        # Record game stats before ending (Story 14.4, 19.1)
                         stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
                         if stats_service:
                             game_summary = game_state.finalize_game()
-                            await stats_service.record_game(game_summary)
+                            await stats_service.record_game(
+                                game_summary, difficulty=game_state.difficulty
+                            )
                             _LOGGER.debug("Game stats recorded for natural end")
 
                         # No more rounds, end game
@@ -274,11 +308,13 @@ class BeatifyWebSocketHandler:
                         if success:
                             await self.broadcast_state()
                         else:
-                            # Record stats before ending due to no songs (Story 14.4)
+                            # Record stats before ending due to no songs (Story 14.4, 19.1)
                             stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
                             if stats_service:
                                 game_summary = game_state.finalize_game()
-                                await stats_service.record_game(game_summary)
+                                await stats_service.record_game(
+                                    game_summary, difficulty=game_state.difficulty
+                                )
                                 _LOGGER.debug("Game stats recorded (no songs remaining)")
 
                             # No more songs
@@ -363,11 +399,13 @@ class BeatifyWebSocketHandler:
                 if game_state._media_player_service:
                     await game_state._media_player_service.stop()
 
-                # Record game stats BEFORE transitioning to END (Story 14.4)
+                # Record game stats BEFORE transitioning to END (Story 14.4, 19.1)
                 stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
                 if stats_service:
                     game_summary = game_state.finalize_game()
-                    await stats_service.record_game(game_summary)
+                    await stats_service.record_game(
+                        game_summary, difficulty=game_state.difficulty
+                    )
                     _LOGGER.debug("Game stats recorded for early end")
 
                 # Transition to END

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title data-i18n="analyticsDashboard.title">Beatify Analytics</title>
+    <!-- Preconnect for faster font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/beatify/static/css/styles.min.css" onerror="this.onerror=null;this.href='/beatify/static/css/styles.css'">
+    <link rel="stylesheet" href="/beatify/static/css/analytics.css">
+</head>
+<body class="theme-dark">
+    <header class="analytics-header">
+        <a href="/beatify/admin" class="back-link">
+            <span class="back-icon" aria-hidden="true">&larr;</span>
+            <span data-i18n="analyticsDashboard.backToAdmin">Back to Admin</span>
+        </a>
+        <h1 class="wordmark">
+            <span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span>
+            <span class="analytics-subtitle" data-i18n="analyticsDashboard.subtitle">Analytics</span>
+        </h1>
+    </header>
+
+    <main class="analytics-main">
+        <!-- Period Selector -->
+        <section class="period-selector" role="group" aria-label="Time period selection">
+            <button type="button" class="period-btn" data-period="7d">
+                <span data-i18n="analyticsDashboard.period7d">7 Days</span>
+            </button>
+            <button type="button" class="period-btn period-btn--active" data-period="30d">
+                <span data-i18n="analyticsDashboard.period30d">30 Days</span>
+            </button>
+            <button type="button" class="period-btn" data-period="90d">
+                <span data-i18n="analyticsDashboard.period90d">90 Days</span>
+            </button>
+            <button type="button" class="period-btn" data-period="all">
+                <span data-i18n="analyticsDashboard.periodAll">All Time</span>
+            </button>
+        </section>
+
+        <!-- Stat Cards Grid -->
+        <section class="stat-cards">
+            <div class="stat-card" id="stat-total-games">
+                <div class="stat-icon" aria-hidden="true">🎮</div>
+                <div class="stat-value">--</div>
+                <div class="stat-label" data-i18n="analyticsDashboard.totalGames">Total Games</div>
+                <div class="stat-trend"></div>
+            </div>
+
+            <div class="stat-card" id="stat-avg-players">
+                <div class="stat-icon" aria-hidden="true">👥</div>
+                <div class="stat-value">--</div>
+                <div class="stat-label" data-i18n="analyticsDashboard.avgPlayers">Avg Players</div>
+                <div class="stat-trend"></div>
+            </div>
+
+            <div class="stat-card" id="stat-avg-score">
+                <div class="stat-icon" aria-hidden="true">🏆</div>
+                <div class="stat-value">--</div>
+                <div class="stat-label" data-i18n="analyticsDashboard.avgScore">Avg Score</div>
+                <div class="stat-trend"></div>
+            </div>
+
+            <div class="stat-card" id="stat-error-rate">
+                <div class="stat-icon" aria-hidden="true">⚡</div>
+                <div class="stat-value">--</div>
+                <div class="stat-label" data-i18n="analyticsDashboard.errorRate">Error Rate</div>
+                <div class="stat-trend"></div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state hidden">
+            <div class="loading-spinner"></div>
+            <span data-i18n="common.loading">Loading...</span>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden">
+            <div class="error-icon" aria-hidden="true">⚠️</div>
+            <p data-i18n="analyticsDashboard.loadError">Failed to load analytics data</p>
+            <button type="button" id="retry-btn" class="btn btn-primary" data-i18n="common.retry">Retry</button>
+        </div>
+
+        <!-- Top Playlists Section (Story 19.4) -->
+        <section class="playlist-analytics">
+            <h2 class="section-header">
+                <span class="section-icon">🎵</span>
+                <span data-i18n="analyticsDashboard.topPlaylists">Top Playlists</span>
+            </h2>
+            <div class="playlist-list" id="playlist-list"></div>
+            <div class="empty-state hidden" id="playlist-empty">
+                <span data-i18n="analyticsDashboard.noPlaylists">No playlists played yet</span>
+            </div>
+        </section>
+
+        <!-- Games Over Time Chart (Story 19.5) -->
+        <section class="chart-analytics">
+            <h2 class="section-header">
+                <span class="section-icon">📈</span>
+                <span data-i18n="analyticsDashboard.gamesOverTime">Games Over Time</span>
+            </h2>
+            <div class="chart-container">
+                <canvas id="games-chart" width="600" height="300"></canvas>
+            </div>
+            <table class="sr-only" id="games-chart-data">
+                <caption>Games played over time</caption>
+                <thead><tr><th>Period</th><th>Games</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <!-- System Health / Error Panel (Story 19.6) -->
+        <section class="error-analytics">
+            <h2 class="section-header">
+                <span class="section-icon">🔧</span>
+                <span data-i18n="analyticsDashboard.systemHealth">System Health</span>
+            </h2>
+            <div class="error-panel" id="error-panel">
+                <div class="error-summary">
+                    <div class="error-rate-display">
+                        <span class="error-rate-value" id="error-rate-value">0%</span>
+                        <span class="error-rate-label" data-i18n="analyticsDashboard.errorRateLabel">Error Rate</span>
+                    </div>
+                    <div class="health-badge healthy" id="health-badge">
+                        <span class="badge-icon">✓</span>
+                        <span class="badge-text" data-i18n="analyticsDashboard.healthy">Healthy</span>
+                    </div>
+                </div>
+                <button type="button" class="expand-btn hidden" id="error-expand-btn">
+                    <span data-i18n="analyticsDashboard.viewDetails">View Details</span>
+                    <span class="expand-icon">▼</span>
+                </button>
+                <div class="error-list-container hidden" id="error-list-container">
+                    <ul class="error-list" id="error-list"></ul>
+                </div>
+                <div class="no-errors hidden" id="no-errors-msg">
+                    <span class="success-icon">✓</span>
+                    <span data-i18n="analyticsDashboard.noErrors">No errors recorded</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Refresh Button -->
+        <div class="refresh-section">
+            <button type="button" id="refresh-btn" class="btn btn-secondary">
+                <span class="refresh-icon" aria-hidden="true">🔄</span>
+                <span data-i18n="analyticsDashboard.refresh">Refresh</span>
+            </button>
+            <span id="last-updated" class="last-updated"></span>
+        </div>
+    </main>
+
+    <!-- Translation Script -->
+    <script src="/beatify/static/js/i18n.js"></script>
+    <script src="/beatify/static/js/analytics.js"></script>
+</body>
+</html>

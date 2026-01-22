@@ -22,8 +22,11 @@ from .game.playlist import (
 )
 from .game.state import GameState
 from .server import async_register_static_paths
+from .analytics import AnalyticsStorage
 from .server.views import (
     AdminView,
+    AnalyticsPageView,
+    AnalyticsView,
     DashboardView,
     EndGameView,
     GameStatusView,
@@ -73,6 +76,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await stats_service.load()
     _LOGGER.debug("Stats service initialized: %d games played", stats_service.games_played)
 
+    # Initialize analytics storage (Story 19.1)
+    analytics = AnalyticsStorage(hass)
+    await analytics.load()
+    _LOGGER.debug("Analytics initialized: %d games recorded", analytics.total_games)
+
+    # Connect analytics to stats service for unified data collection
+    stats_service.set_analytics(analytics)
+
     # Connect stats service to game state for performance tracking (Story 14.4)
     game_state.set_stats_service(stats_service)
 
@@ -81,6 +92,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Set up round end callback for timer expiry (Story 4.5)
     game_state.set_round_end_callback(ws_handler.broadcast_state)
+
+    # Connect analytics to websocket handler for error recording (Story 19.1)
+    ws_handler.set_analytics(analytics)
 
     # Store discovery results and game infrastructure
     hass.data[DOMAIN] = {
@@ -91,6 +105,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "game": game_state,
         "ws_handler": ws_handler,
         "stats": stats_service,
+        "analytics": analytics,
     }
 
     # Register HTTP views
@@ -104,6 +119,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.http.register_view(GameStatusView(hass))
     hass.http.register_view(DashboardView(hass))
     hass.http.register_view(StatsView(hass))
+    hass.http.register_view(AnalyticsView(hass))
+    hass.http.register_view(AnalyticsPageView(hass))
 
     # Register WebSocket endpoint
     hass.http.app.router.add_get("/beatify/ws", ws_handler.handle)

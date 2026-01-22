@@ -11,6 +11,8 @@ from ..const import MEDIA_CONTENT_TYPES, MEDIA_CONTENT_TYPE_DEFAULT
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
+    from custom_components.beatify.analytics import AnalyticsStorage
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -77,6 +79,29 @@ class MediaPlayerService:
         """
         self._hass = hass
         self._entity_id = entity_id
+        self._analytics: AnalyticsStorage | None = None
+
+    def set_analytics(self, analytics: AnalyticsStorage) -> None:
+        """
+        Set analytics storage for error recording (Story 19.1 AC: #2).
+
+        Args:
+            analytics: AnalyticsStorage instance
+
+        """
+        self._analytics = analytics
+
+    def _record_error(self, error_type: str, message: str) -> None:
+        """
+        Record error event to analytics (Story 19.1 AC: #2).
+
+        Args:
+            error_type: Error type constant
+            message: Human-readable error message
+
+        """
+        if self._analytics:
+            self._analytics.record_error(error_type, message)
 
     async def play_song(self, uri: str) -> bool:
         """
@@ -107,6 +132,7 @@ class MediaPlayerService:
             return True  # noqa: TRY300
         except Exception as err:  # noqa: BLE001
             _LOGGER.error("Failed to play song %s: %s", uri, err)  # noqa: TRY400
+            self._record_error("PLAYBACK_FAILURE", f"Failed to play {uri}: {err}")
             return False
 
     async def get_metadata(self) -> dict[str, Any]:
@@ -217,6 +243,7 @@ class MediaPlayerService:
             return True  # noqa: TRY300
         except Exception as err:  # noqa: BLE001
             _LOGGER.error("Failed to stop playback: %s", err)  # noqa: TRY400
+            self._record_error("MEDIA_PLAYER_ERROR", f"Failed to stop: {err}")
             return False
 
     def get_volume(self) -> float:
@@ -258,6 +285,7 @@ class MediaPlayerService:
             return True  # noqa: TRY300
         except Exception as err:  # noqa: BLE001
             _LOGGER.error("Failed to set volume: %s", err)  # noqa: TRY400
+            self._record_error("MEDIA_PLAYER_ERROR", f"Failed to set volume: {err}")
             return False
 
     def is_available(self) -> bool:

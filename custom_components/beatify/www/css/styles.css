@@ -213,6 +213,33 @@ header h1 {
     color: var(--color-text-dark);
 }
 
+/* Header Link (Story 19.2) */
+.header-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs, 4px);
+    padding: var(--space-xs, 4px) var(--space-sm, 8px);
+    margin-top: var(--space-sm, 8px);
+    border-radius: var(--radius-sm, 8px);
+    text-decoration: none;
+    font-size: var(--font-size-sm, 0.875rem);
+    transition: background-color 0.2s ease;
+}
+
+.header-link-icon {
+    font-size: 1.125rem;
+}
+
+body.theme-dark .header-link {
+    color: var(--neon-cyan, #00f5ff);
+    background: rgba(0, 245, 255, 0.1);
+}
+
+body.theme-dark .header-link:hover,
+body.theme-dark .header-link:focus {
+    background: rgba(0, 245, 255, 0.2);
+}
+
 /* Sections */
 .status-section,
 .card-section {

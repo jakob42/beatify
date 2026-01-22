@@ -978,6 +978,9 @@ class GameState:
         # Create media player service if needed
         if self.media_player and not self._media_player_service:
             self._media_player_service = MediaPlayerService(hass, self.media_player)
+            # Connect analytics for error recording (Story 19.1 AC: #2)
+            if self._stats_service and hasattr(self._stats_service, "_analytics"):
+                self._media_player_service.set_analytics(self._stats_service._analytics)
 
         # Play song via media player
         if self._media_player_service:

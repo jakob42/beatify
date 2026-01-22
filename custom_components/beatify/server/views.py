@@ -286,6 +286,11 @@ class StartGameView(HomeAssistantView):
         result = game_state.create_game(**create_kwargs)
         result["warnings"] = warnings
 
+        # Record game start time for analytics (Story 19.1)
+        stats_service = data.get("stats")
+        if stats_service:
+            stats_service.record_game_start()
+
         # Set game language (Story 12.4, 16.3)
         if language in ("en", "de", "es"):
             game_state.language = language
@@ -521,3 +526,117 @@ class StatsView(HomeAssistantView):
             "summary": summary,
             "history": history,
         })
+
+
+class AnalyticsView(HomeAssistantView):
+    """API endpoint for analytics dashboard data (Story 19.2)."""
+
+    url = "/beatify/api/analytics"
+    name = "beatify:api:analytics"
+    requires_auth = False
+
+    # Valid period values
+    VALID_PERIODS = ("7d", "30d", "90d", "all")
+    # Rate limiting: max requests per IP per minute
+    RATE_LIMIT_REQUESTS = 30
+    RATE_LIMIT_WINDOW = 60  # seconds
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize view."""
+        self.hass = hass
+        self._cache: dict | None = None
+        self._cache_time: float = 0
+        self._cache_ttl: float = 60.0  # 60 second cache
+        self._rate_limits: dict[str, list[float]] = {}  # IP -> list of request times
+
+    def _check_rate_limit(self, ip: str) -> bool:
+        """
+        Check if IP is within rate limit.
+
+        Args:
+            ip: Client IP address
+
+        Returns:
+            True if allowed, False if rate limited
+
+        """
+        import time  # noqa: PLC0415
+
+        now = time.time()
+        cutoff = now - self.RATE_LIMIT_WINDOW
+
+        # Get request times for this IP, filter old entries
+        times = [t for t in self._rate_limits.get(ip, []) if t > cutoff]
+        self._rate_limits[ip] = times
+
+        if len(times) >= self.RATE_LIMIT_REQUESTS:
+            return False
+
+        times.append(now)
+        return True
+
+    async def get(self, request: web.Request) -> web.Response:
+        """Get analytics metrics with caching and rate limiting."""
+        import time  # noqa: PLC0415
+
+        # Rate limiting check
+        client_ip = request.remote or "unknown"
+        if not self._check_rate_limit(client_ip):
+            return web.json_response(
+                {"error": "RATE_LIMITED", "message": "Too many requests"},
+                status=429,
+            )
+
+        # Validate period parameter
+        period = request.query.get("period", "30d")
+        if period not in self.VALID_PERIODS:
+            period = "30d"  # Fallback to default
+
+        analytics = self.hass.data.get(DOMAIN, {}).get("analytics")
+
+        if not analytics:
+            return web.json_response({
+                "period": period,
+                "total_games": 0,
+                "avg_players_per_game": 0,
+                "avg_score": 0,
+                "error_rate": 0,
+                "trends": {"games": 0, "players": 0, "score": 0, "errors": 0},
+                "generated_at": int(time.time()),
+            })
+
+        # Check cache (invalidate if period changed or TTL expired)
+        now = time.time()
+        if (
+            self._cache
+            and self._cache.get("period") == period
+            and (now - self._cache_time) < self._cache_ttl
+        ):
+            return web.json_response(self._cache)
+
+        # Compute fresh metrics
+        data = analytics.compute_metrics(period)
+        self._cache = data
+        self._cache_time = now
+
+        return web.json_response(data)
+
+
+class AnalyticsPageView(HomeAssistantView):
+    """Serve the analytics dashboard page (Story 19.2)."""
+
+    url = "/beatify/analytics"
+    name = "beatify:analytics"
+    requires_auth = False
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the view."""
+        self.hass = hass
+
+    async def get(self, request: web.Request) -> web.Response:  # noqa: ARG002
+        """Serve analytics page."""
+        www_path = Path(__file__).parent.parent / "www" / "analytics.html"
+        if www_path.exists():
+            content = await self.hass.async_add_executor_job(_read_file, www_path)
+            return web.Response(text=content, content_type="text/html")
+        return web.Response(text="Analytics page not found", status=404)
