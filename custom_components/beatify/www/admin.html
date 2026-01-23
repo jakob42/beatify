@@ -22,13 +22,13 @@
 
     <main>
         <section id="media-players" class="card-section">
-            <h2 data-i18n="admin.mediaPlayers">Media Players</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🔊</span><span data-i18n="admin.mediaPlayers">Media Players</span></h2>
             <div id="media-players-list" data-i18n="common.loading">Loading...</div>
             <p id="media-player-validation-msg" class="status-error hidden" style="margin-top: 12px;" data-i18n="admin.selectMediaPlayerHint">Select a media player</p>
         </section>
 
         <section id="playlists" class="card-section">
-            <h2 data-i18n="admin.playlists">Playlists</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🎵</span><span data-i18n="admin.playlists">Playlists</span></h2>
             <div id="playlists-list" data-i18n="common.loading">Loading...</div>
             <div id="playlist-summary" class="selection-summary hidden">
                 <span data-i18n="admin.selected">Selected:</span> <span id="selected-count">0</span> <span data-i18n="admin.playlistsLabel">playlists,</span>
@@ -38,7 +38,7 @@
 
         <!-- Provider Selector (Story 17.2) -->
         <section id="provider-section" class="card-section">
-            <h2 data-i18n="admin.selectProvider">Music Provider</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🎧</span><span data-i18n="admin.selectProvider">Music Provider</span></h2>
             <div class="provider-selector" role="group" aria-label="Music provider selection">
                 <button type="button" class="provider-btn provider-btn--active" data-provider="spotify" tabindex="0">
                     <span class="provider-icon" aria-hidden="true">🎵</span>
@@ -49,7 +49,7 @@
 
         <!-- Language Selector (Story 12.4) -->
         <section id="language-section" class="card-section">
-            <h2 data-i18n="admin.selectLanguage">Game Language</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🌐</span><span data-i18n="admin.selectLanguage">Game Language</span></h2>
             <div class="language-selector">
                 <button type="button" id="lang-en" class="lang-btn lang-btn--active" data-lang="en">
                     <span class="lang-flag">🇬🇧</span>
@@ -68,7 +68,7 @@
 
         <!-- Timer Selector (Story 13.1) -->
         <section id="timer-section" class="card-section">
-            <h2 data-i18n="admin.selectTimer">Round Timer</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">⏱️</span><span data-i18n="admin.selectTimer">Round Timer</span></h2>
             <div class="timer-selector" role="group" aria-label="Round timer duration">
                 <button type="button" id="timer-quick" class="timer-btn" data-duration="30" tabindex="0">
                     <span class="timer-icon" aria-hidden="true">⚡</span>
@@ -90,7 +90,7 @@
 
         <!-- Difficulty Selector (Story 14.1) -->
         <section id="difficulty-section" class="card-section">
-            <h2 data-i18n="admin.selectDifficulty">Difficulty</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🎯</span><span data-i18n="admin.selectDifficulty">Difficulty</span></h2>
             <div class="difficulty-selector" role="group" aria-label="Scoring difficulty">
                 <button type="button" class="difficulty-btn" data-difficulty="easy" tabindex="0">
                     <span class="difficulty-icon" aria-hidden="true">😊</span>
@@ -116,7 +116,7 @@
 
         <!-- Lobby view (Story 2.3) -->
         <section id="lobby-section" class="card-section hidden">
-            <h2 data-i18n="lobby.gameLobby">Game Lobby</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🎮</span><span data-i18n="lobby.gameLobby">Game Lobby</span></h2>
             <div class="qr-print-area">
                 <div class="qr-container">
                     <div id="qr-code" aria-label="QR code to join Beatify game"></div>
@@ -155,7 +155,7 @@
 
         <!-- Existing game view (Story 2.3) -->
         <section id="existing-game-section" class="card-section hidden">
-            <h2 data-i18n="admin.gameInProgress">Game In Progress</h2>
+            <h2 class="section-header"><span class="section-icon" aria-hidden="true">▶️</span><span data-i18n="admin.gameInProgress">Game In Progress</span></h2>
             <div class="game-info">
                 <p><strong data-i18n="admin.gameId">Game ID:</strong> <span id="existing-game-id"></span></p>
                 <p><strong data-i18n="admin.phase">Phase:</strong> <span id="existing-game-phase"></span></p>

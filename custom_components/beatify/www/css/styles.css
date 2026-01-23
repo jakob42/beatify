@@ -225,6 +225,13 @@ header h1 {
     margin: 0;
 }
 
+/* Admin Main Content - Centered Layout (Story 19.13) */
+body.theme-dark main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-md, 16px);
+}
+
 /* Analytics Icon Link (Story 19.13) */
 .analytics-icon-link {
     display: flex;
@@ -257,10 +264,32 @@ body.theme-dark .analytics-icon-link:focus {
     padding: var(--space-md);
     margin-bottom: var(--space-md);
     box-shadow: var(--shadow-sm);
+    border: 1px solid transparent;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Section Headers with Icons (Story 19.13) */
+.card-section .section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    margin-bottom: var(--space-sm);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-heading);
+}
+
+.card-section .section-icon {
+    font-size: 1.25rem;
 }
 
 .status-section h2,
-.card-section h2 {
+.card-section h2:not(.section-header) {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
     margin-bottom: var(--space-sm);
@@ -291,10 +320,20 @@ body.theme-dark .analytics-icon-link:focus {
     justify-content: space-between;
     align-items: center;
     gap: var(--space-sm);
+    transition: background-color 0.2s ease;
 }
 
 .list-item:last-child {
     border-bottom: none;
+}
+
+/* Dark mode list items (Story 19.13) */
+body.theme-dark .list-item {
+    border-bottom-color: var(--surface-border, #333);
+}
+
+body.theme-dark .list-item:hover {
+    background: rgba(157, 78, 221, 0.1);
 }
 
 .list-item .name {
@@ -329,6 +368,13 @@ body.theme-dark .analytics-icon-link:focus {
     border-left: 3px solid var(--color-accent-blue);
 }
 
+/* Dark mode selected state - neon styling (Story 19.13) */
+body.theme-dark .playlist-item.is-selected,
+body.theme-dark .media-player-item.is-selected {
+    background: rgba(0, 245, 255, 0.1);
+    border-left: 3px solid var(--neon-cyan, #00f5ff);
+}
+
 .playlist-checkbox {
     width: 20px;
     height: 20px;
@@ -359,6 +405,26 @@ body.theme-dark .analytics-icon-link:focus {
     margin-top: var(--space-sm);
     font-weight: var(--font-weight-medium);
     color: #166534;
+}
+
+/* Selection summary counts - neon styling (Story 19.13) */
+.selection-summary #selected-count,
+.selection-summary #total-songs {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+}
+
+/* Dark mode selection summary */
+body.theme-dark .selection-summary {
+    background: rgba(0, 245, 255, 0.1);
+    border: 1px solid var(--neon-cyan, #00f5ff);
+    color: var(--text-primary, #ffffff);
+}
+
+body.theme-dark .selection-summary #selected-count,
+body.theme-dark .selection-summary #total-songs {
+    color: var(--neon-cyan, #00f5ff);
+    font-size: 1.1em;
 }
 
 /* Media player selection (Story 2.2) */
@@ -501,13 +567,20 @@ body.theme-dark .player-container {
     background: var(--color-bg-primary);
 }
 
-/* Admin page cards in dark mode need dark text on light backgrounds */
+/* Admin page cards in dark mode - neon styling (Story 19.13) */
 body.theme-dark .card-section {
-    color: var(--color-text-primary);
+    background: var(--surface-color, #1a1a2e);
+    border-color: var(--neon-purple, #9d4edd);
+    color: var(--text-primary, #ffffff);
 }
 
-body.theme-dark .card-section h2 {
-    color: var(--color-text-heading);
+body.theme-dark .card-section:hover {
+    box-shadow: 0 4px 20px rgba(157, 78, 221, 0.3);
+}
+
+body.theme-dark .card-section h2,
+body.theme-dark .card-section .section-header {
+    color: var(--text-primary, #ffffff);
 }
 
 body.theme-dark .card-section p,
