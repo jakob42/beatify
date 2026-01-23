@@ -2117,7 +2117,7 @@ body.theme-dark .qr-modal-label {
     gap: var(--space-xs);
     font-size: var(--font-size-sm);
     color: #ffffff;
-    background: var(--color-dark-surface);
+    background: var(--color-surface-dark);
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-md);
     margin: 0;
