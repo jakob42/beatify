@@ -932,8 +932,21 @@
     color: var(--text-primary, #ffffff);
 }
 
-.song-table td:nth-child(2) {
+/* Combined song/artist cell */
+.song-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.song-title {
+    font-weight: 500;
     color: var(--text-primary, #ffffff);
+}
+
+.song-artist {
+    font-size: 0.8em;
+    color: var(--text-secondary, #888);
 }
 
 .empty-cell {

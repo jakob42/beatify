@@ -548,8 +548,10 @@
                 var playHeat = getPlayCountHeat(s.play_count);
 
                 return '<tr>' +
-                    '<td>' + escapeHtml(s.title || 'Unknown') + '</td>' +
-                    '<td>' + escapeHtml(s.artist || 'Unknown') + '</td>' +
+                    '<td class="song-cell">' +
+                        '<span class="song-title">' + escapeHtml(s.title || 'Unknown') + '</span>' +
+                        '<span class="song-artist">' + escapeHtml(s.artist || 'Unknown') + '</span>' +
+                    '</td>' +
                     '<td>' + (s.year || '--') + '</td>' +
                     '<td><span class="' + playHeat + '">' + (s.play_count || 0) + '</span></td>' +
                     '<td><span class="' + accuracyClass + '">' + accuracy + '%</span></td>' +
@@ -559,7 +561,7 @@
 
             // Empty state for filtered results (AC7)
             if (pageSongs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">' +
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">' +
                     '<span data-i18n="analyticsDashboard.noMatchingSongs">No matching songs found</span>' +
                 '</td></tr>';
             }
