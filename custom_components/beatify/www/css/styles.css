@@ -590,20 +590,23 @@ body.theme-dark .card-section .playlist-name,
 body.theme-dark .card-section .list-item,
 body.theme-dark .card-section .radio-label,
 body.theme-dark .card-section .checkbox-label,
-body.theme-dark .card-section .meta,
 body.theme-dark .card-section strong,
 body.theme-dark .card-section span {
-    color: var(--color-text-primary);
+    color: var(--text-primary, #ffffff);
+}
+
+body.theme-dark .card-section .meta {
+    color: var(--text-secondary, #a0a0a0);
 }
 
 body.theme-dark .game-info {
-    color: var(--color-text-primary);
+    color: var(--text-primary, #ffffff);
 }
 
 body.theme-dark .game-info p,
 body.theme-dark .game-info strong,
 body.theme-dark .game-info span {
-    color: var(--color-text-primary);
+    color: var(--text-primary, #ffffff);
 }
 
 /* Ensure button text stays white in dark mode (override card-section span rule) */
