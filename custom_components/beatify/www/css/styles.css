@@ -615,6 +615,19 @@ body.theme-dark .btn-secondary span {
     color: inherit;
 }
 
+/* Inactive selector buttons need dark text on light backgrounds (Story 19.13) */
+body.theme-dark .lang-btn:not(.lang-btn--active),
+body.theme-dark .timer-btn:not(.timer-btn--active),
+body.theme-dark .difficulty-btn:not(.difficulty-btn--active) {
+    color: var(--color-text-primary, #1a1a2e);
+}
+
+body.theme-dark .lang-btn:not(.lang-btn--active) span,
+body.theme-dark .timer-btn:not(.timer-btn--active) span,
+body.theme-dark .difficulty-btn:not(.difficulty-btn--active) span {
+    color: var(--color-text-primary, #1a1a2e);
+}
+
 /* Language Selector (Story 12.4) */
 .language-selector {
     display: flex;
