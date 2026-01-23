@@ -66,6 +66,7 @@
     --color-dark-surface: rgba(255, 255, 255, 0.05);
     --color-dark-surface-hover: rgba(255, 255, 255, 0.08);
     --color-dark-card: rgba(255, 255, 255, 0.03);
+    --color-surface-dark: #1a1a2e;  /* Card background in dark mode */
 
     /* Spacing Tokens */
     --space-xs: 4px;
@@ -572,7 +573,7 @@ body.theme-dark .player-container {
 
 /* Admin page cards in dark mode - neon styling (Story 19.13) */
 body.theme-dark .card-section {
-    background: var(--color-bg-primary);
+    background: var(--color-surface-dark);
     border-color: var(--color-neon-purple);
     color: var(--color-text-white);
 }
