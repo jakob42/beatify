@@ -43,7 +43,12 @@
     "joinGameQr": "Codigo QR para unirse",
     "scanToJoin": "Escanea para unirte al juego",
     "invitePlayers": "Invitar jugadores",
-    "invitePlayersHint": "Comparte este codigo QR o enlace con amigos"
+    "invitePlayersHint": "Comparte este codigo QR o enlace con amigos",
+    "howToPlay": "Cómo jugar",
+    "howToPlayStep1": "Escucha la canción que suena",
+    "howToPlayStep2": "Adivina el año en que salió",
+    "howToPlayStep3": "Envía antes de que se acabe el tiempo",
+    "howToPlayStep4": "¡Las respuestas más cercanas ganan más puntos!"
   },
   "game": {
     "roundLabel": "Ronda",
@@ -82,6 +87,13 @@
     "success": "Robaste la respuesta de {name}: {year}",
     "stolenFrom": "Robado de {name}",
     "stolenBy": "Respuesta robada por {name}"
+  },
+  "reaction": {
+    "fire": "Reacción de fuego",
+    "laugh": "Reacción de risa",
+    "shocked": "Reacción de sorpresa",
+    "applause": "Reacción de aplauso",
+    "thinking": "Reacción pensativa"
   },
   "reveal": {
     "correct": "Correcto!",

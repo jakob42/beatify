@@ -1025,6 +1025,40 @@
     }
 
     // ============================================
+    // QR Section - Responsive Collapse (Story 18.8)
+    // ============================================
+
+    /**
+     * Initialize QR section collapsible behavior
+     * AC1: Mobile (<768px) starts collapsed by default
+     * AC4: Tablet/desktop (≥768px) starts expanded by default
+     * AC3: Expansion state persists during session via sessionStorage
+     */
+    function initQrCollapsible() {
+        var qrSection = document.getElementById('qr-share-area');
+        if (!qrSection || qrSection.tagName !== 'DETAILS') return;
+
+        var STORAGE_KEY = 'beatify_qr_expanded';
+        var MOBILE_BREAKPOINT = 768;
+
+        // Check for saved state first
+        var savedState = sessionStorage.getItem(STORAGE_KEY);
+
+        if (savedState !== null) {
+            // Use saved state
+            qrSection.open = savedState === 'true';
+        } else {
+            // Default: collapsed on mobile, expanded on desktop
+            qrSection.open = window.innerWidth >= MOBILE_BREAKPOINT;
+        }
+
+        // Save state on toggle
+        qrSection.addEventListener('toggle', function() {
+            sessionStorage.setItem(STORAGE_KEY, qrSection.open.toString());
+        });
+    }
+
+    // ============================================
     // Virtual List for Player Lists (Story 18.2)
     // ============================================
 
@@ -3727,6 +3761,73 @@
         }
     }
 
+    // ============================================
+    // Live Reactions (Story 18.9)
+    // ============================================
+
+    /**
+     * Show reaction bar during REVEAL phase
+     */
+    function showReactionBar() {
+        var bar = document.getElementById('reaction-bar');
+        if (bar) {
+            bar.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Hide reaction bar (non-REVEAL phases)
+     */
+    function hideReactionBar() {
+        var bar = document.getElementById('reaction-bar');
+        if (bar) {
+            bar.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Send reaction via WebSocket (fire-and-forget)
+     * @param {string} emoji - The emoji to send
+     */
+    function sendReaction(emoji) {
+        // Rate limit: 1 reaction per phase
+        if (hasReactedThisPhase) {
+            return; // Silently ignore (AC: #2)
+        }
+
+        // Mark as reacted
+        hasReactedThisPhase = true;
+
+        // Send to server (fire-and-forget, no acknowledgment expected)
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'reaction',
+                emoji: emoji
+            }));
+        }
+    }
+
+    /**
+     * Setup reaction bar click handlers
+     */
+    function setupReactionBar() {
+        var bar = document.getElementById('reaction-bar');
+        if (!bar) return;
+
+        var buttons = bar.querySelectorAll('.reaction-btn');
+        buttons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var emoji = btn.getAttribute('data-emoji');
+                if (emoji) {
+                    sendReaction(emoji);
+                }
+            });
+        });
+    }
+
+    // Initialize reaction bar handlers
+    setupReactionBar();
+
     /**
      * Update control bar button states based on phase
      * @param {string} phase - Current game phase
@@ -4097,6 +4198,9 @@
     // Intentional leave flag (Story 11.5) - prevents auto-reconnect after Leave Game
     let intentionalLeave = false;
 
+    // Reaction state (Story 18.9) - rate limit: 1 reaction per reveal phase
+    let hasReactedThisPhase = false;
+
     /**
      * Get reconnection delay with exponential backoff
      * @returns {number} Delay in milliseconds
@@ -4345,6 +4449,7 @@
             if (data.phase === 'LOBBY') {
                 stopCountdown();
                 hideAdminControlBar();  // Story 6.1
+                hideReactionBar();  // Story 18.9
                 currentRoundNumber = 0;  // Reset for new game
                 setEnergyLevel('warmup');  // Story 9.9
                 showView('lobby-view');
@@ -4382,6 +4487,7 @@
                 // Show admin control bar (Story 6.1)
                 showAdminControlBar();
                 updateControlBarState('PLAYING');
+                hideReactionBar();  // Story 18.9 - only visible during REVEAL
             } else if (data.phase === 'REVEAL') {
                 stopCountdown();
                 setEnergyLevel('party');  // Story 9.9 - maintain party for reveal
@@ -4390,16 +4496,21 @@
                 // Show admin control bar (Story 6.1)
                 showAdminControlBar();
                 updateControlBarState('REVEAL');
+                // Show reaction bar and reset rate limit (Story 18.9)
+                hasReactedThisPhase = false;
+                showReactionBar();
             } else if (data.phase === 'PAUSED') {
                 // Story 7-1: Show paused view
                 stopCountdown();
                 hideAdminControlBar();
+                hideReactionBar();  // Story 18.9
                 setEnergyLevel('warmup');  // Story 9.9 - lower energy during pause
                 showView('paused-view');
                 updatePausedView(data);
             } else if (data.phase === 'END') {
                 stopCountdown();
                 hideAdminControlBar();  // Story 6.1
+                hideReactionBar();  // Story 18.9
                 currentRoundNumber = 0;  // Reset for potential new game
                 setEnergyLevel('warmup');  // Story 9.9 - final standings, lower energy
                 showView('end-view');
@@ -4997,6 +5108,7 @@
         setupAdminControlBar();  // Story 6.1
         setupRetryConnection();  // Story 7-4
         setupLeaderboardResizeHandler();  // Story 18.1
+        initQrCollapsible();  // Story 18.8
         // Note: canvas-confetti library (Story 14.5) needs no initialization
 
         // Check if this is an admin redirect

@@ -496,6 +496,26 @@ class BeatifyWebSocketHandler:
             # Execute steal power-up (Story 15.3 AC2, AC3)
             await self._handle_steal(ws, data, game_state)
 
+        elif msg_type == "reaction":
+            # Live reactions during reveal (Story 18.9)
+            player = game_state.get_player_by_ws(ws)
+            if not player:
+                return
+
+            if game_state.phase != GamePhase.REVEAL:
+                return  # Silent ignore - only during REVEAL
+
+            emoji = data.get("emoji", "")
+            if emoji not in ["🔥", "😂", "😱", "👏", "🤔"]:
+                return  # Invalid emoji
+
+            if game_state.record_reaction(player.name, emoji):
+                await self.broadcast({
+                    "type": "player_reaction",
+                    "player_name": player.name,
+                    "emoji": emoji
+                })
+
         else:
             _LOGGER.warning("Unknown message type: %s", msg_type)
 

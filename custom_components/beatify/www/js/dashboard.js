@@ -182,6 +182,9 @@
         } else if (data.type === 'error') {
             console.log('[Dashboard] Server error:', data.message);
             // Dashboard ignores most errors since it's read-only
+        } else if (data.type === 'player_reaction') {
+            // Live reactions from players (Story 18.9)
+            showFloatingReaction(data.player_name, data.emoji);
         }
         // Dashboard ignores submit_ack, song_stopped, volume_changed since it doesn't interact
     }
@@ -1123,6 +1126,34 @@
         if (typeof confetti !== 'undefined' && confetti.reset) {
             confetti.reset();
         }
+    }
+
+    // ============================================
+    // Live Reactions (Story 18.9)
+    // ============================================
+
+    /**
+     * Show a floating reaction bubble on the dashboard
+     * @param {string} playerName - Name of the player who reacted
+     * @param {string} emoji - The emoji reaction
+     */
+    function showFloatingReaction(playerName, emoji) {
+        var container = document.getElementById('reaction-container');
+        if (!container) return;
+
+        var bubble = document.createElement('div');
+        bubble.className = 'reaction-bubble';
+        bubble.textContent = playerName + ' ' + emoji;
+
+        // Random horizontal position (20% to 80% of screen width)
+        bubble.style.left = (20 + Math.random() * 60) + '%';
+
+        container.appendChild(bubble);
+
+        // Remove after animation completes (3s)
+        setTimeout(function() {
+            bubble.remove();
+        }, 3000);
     }
 
     // ============================================

@@ -43,7 +43,12 @@
     "joinGameQr": "Join Game QR Code",
     "scanToJoin": "Scan to join the game",
     "invitePlayers": "Invite Players",
-    "invitePlayersHint": "Share this QR code or link with friends"
+    "invitePlayersHint": "Share this QR code or link with friends",
+    "howToPlay": "How to Play",
+    "howToPlayStep1": "Listen to the song that plays",
+    "howToPlayStep2": "Guess what year it was released",
+    "howToPlayStep3": "Submit before the timer runs out",
+    "howToPlayStep4": "Closer guesses earn more points!"
   },
   "game": {
     "roundLabel": "Round",
@@ -82,6 +87,13 @@
     "success": "Stole {name}'s answer: {year}",
     "stolenFrom": "Stolen from {name}",
     "stolenBy": "Answer stolen by {name}"
+  },
+  "reaction": {
+    "fire": "Fire reaction",
+    "laugh": "Laugh reaction",
+    "shocked": "Shocked reaction",
+    "applause": "Applause reaction",
+    "thinking": "Thinking reaction"
   },
   "reveal": {
     "correct": "Correct!",

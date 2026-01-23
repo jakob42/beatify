@@ -1160,3 +1160,56 @@
         font-size: var(--font-size-lg);
     }
 }
+
+/* ==========================================
+   Live Reactions (Story 18.9)
+   ========================================== */
+
+.reaction-container {
+    position: fixed;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.reaction-bubble {
+    position: absolute;
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-white);
+    text-shadow: 0 0 10px var(--color-accent-primary);
+    animation: reaction-float 3s ease-out forwards;
+    white-space: nowrap;
+}
+
+@keyframes reaction-float {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .reaction-bubble {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+/* TV Breakpoint for reactions */
+@media (min-width: 1400px) {
+    .reaction-bubble {
+        font-size: 1.5rem;
+    }
+
+    .reaction-container {
+        bottom: 150px;
+    }
+}

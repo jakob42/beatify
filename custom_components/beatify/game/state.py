@@ -202,6 +202,9 @@ class GameState:
             "bets_won": 0,  # Bets that won
         }
 
+        # Story 18.9: Reaction rate limiting per reveal phase
+        self._reactions_this_phase: set[str] = set()
+
     def create_game(
         self,
         playlists: list[str],
@@ -718,6 +721,41 @@ class GameState:
         """
         name = self._sessions.get(session_id)
         return self.players.get(name) if name else None
+
+    def get_player_by_ws(self, ws: web.WebSocketResponse) -> PlayerSession | None:
+        """
+        Get player by WebSocket connection (Story 18.9).
+
+        Args:
+            ws: WebSocket connection
+
+        Returns:
+            PlayerSession or None if not found
+
+        """
+        for player in self.players.values():
+            if player.ws == ws:
+                return player
+        return None
+
+    def record_reaction(self, player_name: str, emoji: str) -> bool:
+        """
+        Record a player reaction (Story 18.9).
+
+        Rate limited to 1 reaction per player per reveal phase.
+
+        Args:
+            player_name: Name of the player
+            emoji: The emoji reaction
+
+        Returns:
+            True if reaction was recorded, False if rate limited
+
+        """
+        if player_name in self._reactions_this_phase:
+            return False
+        self._reactions_this_phase.add(player_name)
+        return True
 
     def get_steal_targets(self, stealer_name: str) -> list[str]:
         """
@@ -1328,6 +1366,7 @@ class GameState:
                 )
 
         # Transition to REVEAL
+        self._reactions_this_phase = set()  # Story 18.9: Clear for new reveal phase
         self.phase = GamePhase.REVEAL
         _LOGGER.info("Round %d ended, phase: REVEAL", self.round)
 

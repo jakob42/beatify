@@ -127,6 +127,7 @@
 
     /* Z-Index Tokens */
     --z-control-bar: 100;
+    --z-reaction-bar: 101;  /* Story 18.9: Above control bar */
     --z-modal: 1000;
     --z-overlay: 1100;
 }
@@ -1136,11 +1137,16 @@ body.theme-dark .qr-share-area {
     border: 1px solid var(--color-border-neon);
 }
 
-body.theme-dark .qr-label {
+body.theme-dark .qr-hint {
+    color: var(--color-text-neon-muted);
+}
+
+/* Dark theme - QR collapsible (Story 18.8) */
+body.theme-dark .qr-share-header {
     color: var(--color-text-white);
 }
 
-body.theme-dark .qr-hint {
+body.theme-dark .qr-share-chevron {
     color: var(--color-text-neon-muted);
 }
 
@@ -1989,17 +1995,6 @@ body.theme-dark .qr-modal-label {
     margin-bottom: var(--space-md);
 }
 
-.qr-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-sm);
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-md);
-}
-
 .qr-icon {
     font-size: var(--font-size-xl);
 }
@@ -2033,6 +2028,76 @@ body.theme-dark .qr-modal-label {
     margin-top: var(--space-sm);
     font-size: 13px;
     color: var(--color-text-muted);
+}
+
+/* QR Share Section - Collapsible (Story 18.8) */
+.qr-collapsible {
+    /* Override default details styling */
+}
+
+.qr-share-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    cursor: pointer;
+    user-select: none;
+    list-style: none; /* Remove default marker */
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    min-height: 44px; /* Touch target */
+}
+
+.qr-share-header::-webkit-details-marker {
+    display: none; /* Hide Safari default marker */
+}
+
+.qr-share-chevron {
+    margin-left: var(--space-sm);
+    transition: transform var(--transition-normal);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.qr-collapsible[open] .qr-share-chevron {
+    transform: rotate(180deg);
+}
+
+.qr-share-content {
+    padding: 0 var(--space-md) var(--space-lg);
+    animation: qrSlideDown var(--transition-normal) ease-out;
+}
+
+@keyframes qrSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Collapsed state - just show header */
+.qr-collapsible:not([open]) {
+    padding-bottom: 0;
+}
+
+.qr-collapsible:not([open]) .qr-share-header {
+    padding-bottom: var(--space-md);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .qr-share-chevron {
+        transition: none;
+    }
+    .qr-share-content {
+        animation: none;
+    }
 }
 
 /* Dashboard Hint (Story 16.4) */
@@ -2162,6 +2227,78 @@ body.theme-dark .qr-modal-label {
     text-align: center;
     padding: var(--space-md);
     color: var(--color-text-muted);
+}
+
+/* How to Play Section (Story 18.7) */
+.how-to-play {
+    margin: var(--space-md) 0;
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+}
+
+.how-to-play-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    min-height: 44px;
+}
+
+.how-to-play-header::-webkit-details-marker {
+    display: none;
+}
+
+.how-to-play-icon {
+    font-size: 1.2rem;
+}
+
+.how-to-play-chevron {
+    margin-left: auto;
+    transition: transform var(--transition-normal);
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.how-to-play[open] .how-to-play-chevron {
+    transform: rotate(180deg);
+}
+
+.how-to-play-content {
+    padding: 0 var(--space-md) var(--space-md);
+    animation: howToPlaySlideDown var(--transition-normal) ease-out;
+}
+
+.how-to-play-steps {
+    margin: 0;
+    padding-left: var(--space-lg);
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.how-to-play-steps li {
+    margin-bottom: var(--space-xs);
+}
+
+.how-to-play-steps li:last-child {
+    margin-bottom: 0;
+}
+
+@keyframes howToPlaySlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Leave Game Container (Story 11.5, Story 18.6) */
@@ -4818,6 +4955,67 @@ body.theme-dark .card-score {
 
 .has-control-bar .end-container {
     padding-bottom: 80px;
+}
+
+/* ============================================
+   Live Reactions Bar (Story 18.9)
+   ============================================ */
+
+.reaction-bar {
+    position: fixed;
+    bottom: 70px;  /* Above admin control bar */
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    z-index: var(--z-reaction-bar);
+    pointer-events: auto;
+}
+
+.reaction-bar.hidden {
+    display: none;
+}
+
+.reaction-btn {
+    font-size: 1.5rem;
+    padding: var(--space-sm);
+    min-width: 44px;
+    min-height: 44px;
+    background: var(--color-dark-surface);
+    border: 2px solid var(--color-accent-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.reaction-btn:hover {
+    border-color: var(--color-accent-secondary);
+}
+
+.reaction-btn:active {
+    transform: scale(0.9);
+}
+
+/* Neon glow effect on tap */
+@media (hover: none) {
+    .reaction-btn:active {
+        box-shadow: 0 0 15px var(--color-accent-primary);
+    }
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .reaction-btn {
+        transition: none;
+    }
+
+    .reaction-btn:active {
+        transform: none;
+    }
 }
 
 /* ============================================

@@ -77,21 +77,42 @@
                     <span id="lobby-difficulty-badge" class="difficulty-badge"></span>
                 </header>
 
+                <!-- How to Play section (Story 18.7) -->
+                <details id="how-to-play" class="how-to-play">
+                    <summary class="how-to-play-header">
+                        <span class="how-to-play-icon">🎵</span>
+                        <span data-i18n="lobby.howToPlay">How to Play</span>
+                        <span class="how-to-play-chevron">▼</span>
+                    </summary>
+                    <div class="how-to-play-content">
+                        <ol class="how-to-play-steps">
+                            <li data-i18n="lobby.howToPlayStep1">Listen to the song that plays</li>
+                            <li data-i18n="lobby.howToPlayStep2">Guess what year it was released</li>
+                            <li data-i18n="lobby.howToPlayStep3">Submit before the timer runs out</li>
+                            <li data-i18n="lobby.howToPlayStep4">Closer guesses earn more points!</li>
+                        </ol>
+                    </div>
+                </details>
+
                 <div id="player-list" class="player-list">
                     <!-- Player cards rendered by JS -->
                 </div>
 
-                <div id="qr-share-area" class="qr-share-area">
-                    <p class="qr-label">
+                <!-- QR Share Section (Story 18.8 - Collapsible) -->
+                <details id="qr-share-area" class="qr-share-area qr-collapsible">
+                    <summary class="qr-share-header">
                         <span class="qr-icon">📲</span>
                         <span data-i18n="lobby.inviteFriends">Invite friends</span>
-                    </p>
-                    <div id="player-qr-code" class="qr-container" role="button" tabindex="0"
-                         aria-label="Tap to enlarge QR code">
-                        <!-- QR code rendered here by JS -->
+                        <span class="qr-share-chevron">▼</span>
+                    </summary>
+                    <div class="qr-share-content">
+                        <div id="player-qr-code" class="qr-container" role="button" tabindex="0"
+                             aria-label="Tap to enlarge QR code">
+                            <!-- QR code rendered here by JS -->
+                        </div>
+                        <p class="qr-hint" data-i18n="lobby.tapToEnlarge">Tap to enlarge</p>
                     </div>
-                    <p class="qr-hint" data-i18n="lobby.tapToEnlarge">Tap to enlarge</p>
-                </div>
+                </details>
 
                 <!-- Dashboard hint (Story 16.4) -->
                 <div class="dashboard-hint-container">
@@ -443,6 +464,15 @@
                 <span class="control-icon">🛑</span>
                 <span class="control-label" data-i18n="admin.end">End</span>
             </button>
+        </div>
+
+        <!-- Reaction Bar (Story 18.9) - visible during REVEAL only -->
+        <div id="reaction-bar" class="reaction-bar hidden">
+            <button class="reaction-btn" data-emoji="🔥" data-i18n-aria-label="reaction.fire" aria-label="Fire reaction">🔥</button>
+            <button class="reaction-btn" data-emoji="😂" data-i18n-aria-label="reaction.laugh" aria-label="Laugh reaction">😂</button>
+            <button class="reaction-btn" data-emoji="😱" data-i18n-aria-label="reaction.shocked" aria-label="Shocked reaction">😱</button>
+            <button class="reaction-btn" data-emoji="👏" data-i18n-aria-label="reaction.applause" aria-label="Applause reaction">👏</button>
+            <button class="reaction-btn" data-emoji="🤔" data-i18n-aria-label="reaction.thinking" aria-label="Thinking reaction">🤔</button>
         </div>
     </main>
 

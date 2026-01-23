@@ -1492,3 +1492,147 @@ class TestCalculateSuperlatives:
             (a for a in result["superlatives"] if a["id"] == "lucky_streak"), None
         )
         assert streak_award is not None
+
+
+# =============================================================================
+# LIVE REACTIONS TESTS (Story 18.9)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestLiveReactions:
+    """Tests for live reaction feature during REVEAL phase."""
+
+    def test_record_reaction_allows_first_reaction(self):
+        """record_reaction() allows first reaction from a player."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        result = state.record_reaction("Alice", "🔥")
+
+        assert result is True
+        assert "Alice" in state._reactions_this_phase
+
+    def test_record_reaction_rate_limits_second_reaction(self):
+        """record_reaction() rate limits second reaction from same player."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        first_result = state.record_reaction("Alice", "🔥")
+        second_result = state.record_reaction("Alice", "😂")
+
+        assert first_result is True
+        assert second_result is False
+
+    def test_record_reaction_allows_different_players(self):
+        """record_reaction() allows reactions from different players."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        alice_result = state.record_reaction("Alice", "🔥")
+        bob_result = state.record_reaction("Bob", "😂")
+
+        assert alice_result is True
+        assert bob_result is True
+        assert "Alice" in state._reactions_this_phase
+        assert "Bob" in state._reactions_this_phase
+
+    def test_reactions_cleared_on_reveal_transition(self):
+        """_reactions_this_phase is cleared when transitioning to REVEAL."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GamePhase, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}, {"year": 1990, "uri": "test2"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+        state.add_player("Bob", mock_ws)
+
+        # Add a reaction before starting
+        state._reactions_this_phase.add("Alice")
+
+        # Start game and transition to REVEAL
+        state.start_game()
+        assert state.phase == GamePhase.PLAYING
+
+        # Manually trigger end_round to transition to REVEAL
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(state.end_round())
+
+        # Reactions should be cleared
+        assert state.phase == GamePhase.REVEAL
+        assert len(state._reactions_this_phase) == 0
+
+    def test_get_player_by_ws_finds_player(self):
+        """get_player_by_ws() returns player with matching WebSocket."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        mock_ws_alice = MagicMock()
+        mock_ws_bob = MagicMock()
+        state.add_player("Alice", mock_ws_alice)
+        state.add_player("Bob", mock_ws_bob)
+
+        result = state.get_player_by_ws(mock_ws_alice)
+
+        assert result is not None
+        assert result.name == "Alice"
+
+    def test_get_player_by_ws_returns_none_for_unknown(self):
+        """get_player_by_ws() returns None for unknown WebSocket."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        mock_ws_alice = MagicMock()
+        mock_ws_unknown = MagicMock()
+        state.add_player("Alice", mock_ws_alice)
+
+        result = state.get_player_by_ws(mock_ws_unknown)
+
+        assert result is None
