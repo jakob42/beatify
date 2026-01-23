@@ -39,6 +39,7 @@
     /* Purple colors for steal power-up (Story 15.3) */
     --color-purple-primary: #8b5cf6;
     --color-purple-secondary: #7c3aed;
+    --color-neon-purple: #9d4edd;  /* Analytics accent color */
 
     /* Color Tokens - Badge Backgrounds (Story 14.1) */
     --color-success-bg: rgba(16, 185, 129, 0.15);
@@ -374,7 +375,7 @@ body.theme-dark .list-item:hover {
 body.theme-dark .playlist-item.is-selected,
 body.theme-dark .media-player-item.is-selected {
     background: rgba(0, 245, 255, 0.1);
-    border-left: 3px solid var(--neon-cyan, #00f5ff);
+    border-left: 3px solid var(--color-accent-secondary);
 }
 
 .playlist-checkbox {
@@ -419,13 +420,13 @@ body.theme-dark .media-player-item.is-selected {
 /* Dark mode selection summary */
 body.theme-dark .selection-summary {
     background: rgba(0, 245, 255, 0.1);
-    border: 1px solid var(--neon-cyan, #00f5ff);
-    color: var(--text-primary, #ffffff);
+    border: 1px solid var(--color-accent-secondary);
+    color: var(--color-text-white);
 }
 
 body.theme-dark .selection-summary #selected-count,
 body.theme-dark .selection-summary #total-songs {
-    color: var(--neon-cyan, #00f5ff);
+    color: var(--color-accent-secondary);
     font-size: 1.1em;
 }
 
@@ -571,9 +572,9 @@ body.theme-dark .player-container {
 
 /* Admin page cards in dark mode - neon styling (Story 19.13) */
 body.theme-dark .card-section {
-    background: var(--surface-color, #1a1a2e);
-    border-color: var(--neon-purple, #9d4edd);
-    color: var(--text-primary, #ffffff);
+    background: var(--color-bg-primary);
+    border-color: var(--color-neon-purple);
+    color: var(--color-text-white);
 }
 
 body.theme-dark .card-section:hover {
@@ -582,7 +583,7 @@ body.theme-dark .card-section:hover {
 
 body.theme-dark .card-section h2,
 body.theme-dark .card-section .section-header {
-    color: var(--text-primary, #ffffff);
+    color: var(--color-text-white);
 }
 
 body.theme-dark .card-section p,
@@ -594,21 +595,21 @@ body.theme-dark .card-section .radio-label,
 body.theme-dark .card-section .checkbox-label,
 body.theme-dark .card-section strong,
 body.theme-dark .card-section span {
-    color: var(--text-primary, #ffffff);
+    color: var(--color-text-white);
 }
 
 body.theme-dark .card-section .meta {
-    color: var(--text-secondary, #a0a0a0);
+    color: var(--color-text-neon-muted);
 }
 
 body.theme-dark .game-info {
-    color: var(--text-primary, #ffffff);
+    color: var(--color-text-white);
 }
 
 body.theme-dark .game-info p,
 body.theme-dark .game-info strong,
 body.theme-dark .game-info span {
-    color: var(--text-primary, #ffffff);
+    color: var(--color-text-white);
 }
 
 /* Ensure button text stays white in dark mode (override card-section span rule) */
