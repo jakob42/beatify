@@ -227,7 +227,8 @@ header h1 {
 }
 
 /* Admin Main Content - Centered Layout (Story 19.13) */
-body.theme-dark main {
+/* Scoped to admin-content to avoid affecting dashboard */
+body.theme-dark main.admin-content {
     max-width: 800px;
     margin: 0 auto;
     padding: var(--space-md, 16px);
@@ -2032,7 +2033,8 @@ body.theme-dark .qr-modal-label {
 
 /* QR Share Section - Collapsible (Story 18.8) */
 .qr-collapsible {
-    /* Override default details styling */
+    /* Override base qr-share-area padding for collapsible */
+    padding: 0;
 }
 
 .qr-share-header {
@@ -2276,14 +2278,29 @@ body.theme-dark .qr-modal-label {
 
 .how-to-play-steps {
     margin: 0;
-    padding-left: var(--space-lg);
+    padding: 0;
+    list-style: none;
     color: var(--color-text-secondary);
     font-size: 0.9rem;
     line-height: 1.6;
+    counter-reset: step-counter;
 }
 
 .how-to-play-steps li {
-    margin-bottom: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    padding-left: var(--space-lg);
+    position: relative;
+    counter-increment: step-counter;
+}
+
+.how-to-play-steps li::before {
+    content: counter(step-counter) ".";
+    position: absolute;
+    left: 0;
+    width: var(--space-md);
+    text-align: right;
+    font-weight: 600;
+    color: var(--color-text-primary);
 }
 
 .how-to-play-steps li:last-child {
@@ -4963,21 +4980,36 @@ body.theme-dark .card-score {
 
 .reaction-bar {
     position: fixed;
-    bottom: 70px;  /* Above admin control bar */
+    bottom: 0;  /* Default: at bottom for regular players */
     left: 0;
     right: 0;
     display: flex;
     justify-content: center;
-    gap: var(--space-sm);
     padding: var(--space-sm);
     padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     z-index: var(--z-reaction-bar);
-    pointer-events: auto;
+    pointer-events: none;  /* Allow clicks through the bar */
+}
+
+/* When admin control bar is visible, position reaction bar above it */
+main:has(.admin-control-bar:not(.hidden)) .reaction-bar {
+    bottom: 70px;
 }
 
 .reaction-bar.hidden {
     display: none;
+}
+
+.reaction-bar-container {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    pointer-events: auto;  /* Restore clicks on container */
 }
 
 .reaction-btn {
@@ -4985,15 +5017,15 @@ body.theme-dark .card-score {
     padding: var(--space-sm);
     min-width: 44px;
     min-height: 44px;
-    background: var(--color-dark-surface);
-    border: 2px solid var(--color-accent-primary);
+    background: rgba(30, 30, 40, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: transform var(--transition-fast), border-color var(--transition-fast);
+    transition: transform var(--transition-fast), background var(--transition-fast);
 }
 
 .reaction-btn:hover {
-    border-color: var(--color-accent-secondary);
+    background: rgba(50, 50, 60, 0.7);
 }
 
 .reaction-btn:active {
@@ -5015,6 +5047,49 @@ body.theme-dark .card-score {
 
     .reaction-btn:active {
         transform: none;
+    }
+}
+
+/* Floating Reactions Display (Story 18.9) */
+.reaction-container {
+    position: fixed;
+    bottom: 120px;  /* Above reaction bar */
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 99;  /* Below reaction bar */
+}
+
+/* When admin control bar visible, adjust position */
+main:has(.admin-control-bar:not(.hidden)) .reaction-container {
+    bottom: 180px;
+}
+
+.reaction-bubble {
+    position: absolute;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-white);
+    text-shadow: 0 0 8px var(--color-accent-primary);
+    animation: reaction-float 3s ease-out forwards;
+    white-space: nowrap;
+}
+
+@keyframes reaction-float {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-80px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reaction-bubble {
+        animation: none;
+        opacity: 1;
     }
 }
 

@@ -3829,6 +3829,30 @@
     setupReactionBar();
 
     /**
+     * Show floating reaction bubble from another player (Story 18.9)
+     * @param {string} playerName - Name of player who sent reaction
+     * @param {string} emoji - The emoji reaction
+     */
+    function showFloatingReaction(playerName, emoji) {
+        var container = document.getElementById('reaction-container');
+        if (!container) return;
+
+        var bubble = document.createElement('div');
+        bubble.className = 'reaction-bubble';
+        bubble.textContent = playerName + ' ' + emoji;
+
+        // Random horizontal position (20% to 80% of screen width)
+        bubble.style.left = (20 + Math.random() * 60) + '%';
+
+        container.appendChild(bubble);
+
+        // Remove after animation completes (3s)
+        setTimeout(function() {
+            bubble.remove();
+        }, 3000);
+    }
+
+    /**
      * Update control bar button states based on phase
      * @param {string} phase - Current game phase
      */
@@ -4636,6 +4660,9 @@
         } else if (data.type === 'steal_ack') {
             // Story 15.3 - handle steal acknowledgment
             handleStealAck(data);
+        } else if (data.type === 'player_reaction') {
+            // Story 18.9 - show floating reaction from other players
+            showFloatingReaction(data.player_name, data.emoji);
         }
     }
 
