@@ -265,7 +265,7 @@
 
 /* Playlist Analytics (Story 19.4) */
 .playlist-analytics {
-    margin-top: var(--space-xl);
+    /* margin handled by .card-section */
 }
 
 .playlist-list {
@@ -317,14 +317,11 @@
 
 /* Chart Analytics (Story 19.5) */
 .chart-analytics {
-    margin-top: var(--space-xl);
+    /* margin handled by .card-section */
 }
 
 .chart-container {
-    background: var(--color-surface-dark);
-    border: 1px solid var(--color-neon-purple);
-    border-radius: var(--radius-lg);
-    padding: var(--space-md);
+    /* Background and border handled by parent .card-section */
     overflow: hidden;
 }
 
@@ -369,7 +366,7 @@
    ===================================================== */
 
 .streak-analytics {
-    margin-top: var(--space-xl);
+    /* margin handled by .card-section */
 }
 
 .streak-cards {
@@ -431,7 +428,7 @@
    ===================================================== */
 
 .betting-analytics {
-    margin-top: var(--space-xl);
+    /* margin handled by .card-section */
 }
 
 .betting-cards {
@@ -506,7 +503,7 @@
    ===================================================== */
 
 .song-analytics {
-    margin-top: var(--space-xl);
+    /* margin handled by .card-section */
 }
 
 /* Summary Cards Grid (AC1) */
@@ -647,14 +644,14 @@
 /* Playlist Song Card */
 .playlist-song-card {
     background: var(--color-surface-dark);
-    border: 1px solid var(--color-border-dark);
+    border: 1px solid var(--color-neon-purple);
     border-radius: var(--radius-lg);
     padding: var(--space-md);
-    transition: border-color 0.2s ease;
+    transition: box-shadow 0.2s ease;
 }
 
 .playlist-song-card:hover {
-    border-color: var(--color-neon-purple);
+    box-shadow: 0 4px 20px rgba(157, 78, 221, 0.3);
 }
 
 .playlist-song-header {
