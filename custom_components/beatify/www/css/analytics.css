@@ -720,15 +720,18 @@
     max-height: 100vh !important;
     margin: 0 !important;
     padding: 0 !important;
-    border: 2px solid var(--color-neon-purple) !important;
-    background: var(--color-surface-dark) !important;
+    border: none !important;
+    background: var(--color-bg-primary) !important;
     color: var(--color-text-white);
     z-index: 1000 !important;
     box-sizing: border-box;
+    /* Ensure modal is fully opaque */
+    isolation: isolate;
 }
 
 .playlist-modal::backdrop {
-    background: rgba(0, 0, 0, 0.9);
+    background: #000 !important;
+    opacity: 1 !important;
 }
 
 .playlist-modal[open] {
