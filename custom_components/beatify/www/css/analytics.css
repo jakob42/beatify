@@ -802,15 +802,22 @@
     overflow-y: auto;
     overflow-x: auto;
     padding: var(--spacing-md, 16px);
+    background: var(--bg-color, #0a0a0f);
 }
 
 /* Song Table */
 .song-table {
     width: 100%;
-    min-width: 100%;
+    min-width: 600px;
     border-collapse: collapse;
     font-size: 0.875rem;
     background: transparent;
+    table-layout: auto;
+}
+
+/* Ensure table fills modal width */
+.modal-content .song-table {
+    min-width: 100%;
 }
 
 .song-table thead,
