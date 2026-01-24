@@ -344,12 +344,12 @@ def pytest_configure(config):
 
 
 @pytest.fixture(autouse=True)
-async def cleanup_after_test():
+def cleanup_after_test():
     """
     Auto-cleanup fixture that runs after each test.
 
     Ensures no state leaks between tests.
     """
-    return
+    yield
     # Add cleanup logic here when needed
     # e.g., reset singletons, clear caches, etc.
