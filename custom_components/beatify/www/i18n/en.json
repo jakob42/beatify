@@ -48,7 +48,17 @@
     "howToPlayStep1": "Listen to the song that plays",
     "howToPlayStep2": "Guess what year it was released",
     "howToPlayStep3": "Submit before the timer runs out",
-    "howToPlayStep4": "Closer guesses earn more points!"
+    "howToPlayStep4": "Closer guesses earn more points!",
+    "playersLabel": "Players",
+    "statusLabel": "Status",
+    "playersInLobby": "Players in Lobby",
+    "scanQrHint": "Share the QR code or URL above",
+    "statusWaiting": "Waiting",
+    "statusReady": "Ready",
+    "statusNeedMore": "Need 1+",
+    "away": "away",
+    "player": "player",
+    "players": "players"
   },
   "game": {
     "roundLabel": "Round",

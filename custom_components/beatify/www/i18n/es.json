@@ -48,7 +48,17 @@
     "howToPlayStep1": "Escucha la canción que suena",
     "howToPlayStep2": "Adivina el año en que salió",
     "howToPlayStep3": "Envía antes de que se acabe el tiempo",
-    "howToPlayStep4": "¡Las respuestas más cercanas ganan más puntos!"
+    "howToPlayStep4": "¡Las respuestas más cercanas ganan más puntos!",
+    "playersLabel": "Jugadores",
+    "statusLabel": "Estado",
+    "playersInLobby": "Jugadores en la sala",
+    "scanQrHint": "Comparte el código QR o la URL",
+    "statusWaiting": "Esperando",
+    "statusReady": "Listo",
+    "statusNeedMore": "Falta 1+",
+    "away": "ausente",
+    "player": "jugador",
+    "players": "jugadores"
   },
   "game": {
     "roundLabel": "Ronda",

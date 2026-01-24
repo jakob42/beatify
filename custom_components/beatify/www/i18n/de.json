@@ -48,7 +48,17 @@
     "howToPlayStep1": "Höre dir den Song an",
     "howToPlayStep2": "Rate in welchem Jahr er erschienen ist",
     "howToPlayStep3": "Tippe ab bevor die Zeit abläuft",
-    "howToPlayStep4": "Nähere Tipps bringen mehr Punkte!"
+    "howToPlayStep4": "Nähere Tipps bringen mehr Punkte!",
+    "playersLabel": "Spieler",
+    "statusLabel": "Status",
+    "playersInLobby": "Spieler in der Lobby",
+    "scanQrHint": "Teile den QR-Code oder die URL",
+    "statusWaiting": "Warten",
+    "statusReady": "Bereit",
+    "statusNeedMore": "Mind. 1+",
+    "away": "abwesend",
+    "player": "Spieler",
+    "players": "Spieler"
   },
   "game": {
     "roundLabel": "Runde",
