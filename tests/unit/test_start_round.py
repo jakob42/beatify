@@ -111,9 +111,12 @@ class TestStartRoundDeadline:
 
         await state.start_round(mock_hass)
 
-        # Deadline should be current time (1000.0) + 30 seconds = 1030 seconds
-        # Converted to milliseconds = 1030000
-        assert state.deadline == 1030000
+        # Deadline should be current time (1000.0) + DEFAULT_ROUND_DURATION (45) seconds
+        # Converted to milliseconds = 1045000
+        from custom_components.beatify.const import DEFAULT_ROUND_DURATION
+
+        expected_deadline = int((1000.0 + DEFAULT_ROUND_DURATION) * 1000)
+        assert state.deadline == expected_deadline
 
 
 @pytest.mark.unit

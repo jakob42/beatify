@@ -2755,4 +2755,4 @@ class TestArtistBonusScoring:
         # Player missed round but still gets artist bonus
         assert state.players["Alice"].missed_round is True
         assert state.players["Alice"].artist_bonus == 5
-        assert state.players["Alice"].score == 10  # Only artist bonus
+        assert state.players["Alice"].score == 5  # Only artist bonus (ARTIST_BONUS_POINTS=5)

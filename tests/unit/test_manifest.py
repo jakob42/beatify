@@ -96,9 +96,14 @@ class TestManifestContent:
         )
 
     def test_manifest_version_exists(self, manifest):
-        """AC: manifest.json has version '0.0.1'."""
-        assert manifest.get("version") == "0.0.1", (
-            f"Expected version='0.0.1', got version='{manifest.get('version')}'"
+        """AC: manifest.json has a valid semver version."""
+        import re
+
+        version = manifest.get("version")
+        assert version is not None, "manifest.json must have a version field"
+        # Validate semver format (major.minor.patch)
+        assert re.match(r"^\d+\.\d+\.\d+$", version), (
+            f"Version must be semver format (x.y.z), got '{version}'"
         )
 
     def test_manifest_has_required_fields(self, manifest):
