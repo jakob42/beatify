@@ -59,13 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('print-qr')?.addEventListener('click', printQRCode);
     document.getElementById('rejoin-game')?.addEventListener('click', rejoinGame);
 
-    // Set dashboard URL with full address (Story 16.4)
-    var dashboardUrl = window.location.origin + '/beatify/dashboard';
-    var dashboardLink = document.getElementById('admin-dashboard-url');
-    if (dashboardLink) {
-        dashboardLink.textContent = dashboardUrl;
-        dashboardLink.href = dashboardUrl;
-    }
+    // Dashboard URL is now set in showLobbyView() for analytics layout
     document.getElementById('end-game')?.addEventListener('click', endGame);
     document.getElementById('end-game-lobby')?.addEventListener('click', endGame);
 
@@ -504,6 +498,18 @@ function showLobbyView(gameData) {
     const urlEl = document.getElementById('join-url');
     if (urlEl && gameData.join_url) {
         urlEl.textContent = gameData.join_url;
+    }
+
+    // Update dashboard URL display (analytics layout)
+    var dashboardUrl = window.location.origin + '/beatify/dashboard';
+    var dashboardLink = document.getElementById('admin-dashboard-url');
+    var dashboardDisplay = document.getElementById('dashboard-url-display');
+    if (dashboardLink) {
+        dashboardLink.href = dashboardUrl;
+    }
+    if (dashboardDisplay) {
+        // Show shortened URL for display
+        dashboardDisplay.textContent = dashboardUrl.replace(/^https?:\/\//, '');
     }
 
     // Render initial player list and start polling (Story 16.8)
@@ -1067,32 +1073,44 @@ function setProvider(provider) {
 // t() moved to BeatifyUtils
 
 /**
- * Render player list in admin lobby
+ * Render player list in admin lobby (analytics grid layout)
  * @param {Array} players - Array of player objects from game state
  */
 function renderLobbyPlayers(players) {
     var listEl = document.getElementById('lobby-players');
     var countEl = document.getElementById('lobby-player-count');
+    var emptyEl = document.getElementById('lobby-players-empty');
+    var statusEl = document.getElementById('lobby-status-value');
     if (!listEl) return;
 
     players = players || [];
-    var waitingText = utils.t('lobby.waitingForPlayers', 'Waiting for players to join...');
 
-    // Update player count - waiting text shown in list area only
+    // Update player count (stat card value - just the number)
     if (countEl) {
-        var count = players.length;
-        var playerWord = count === 1
-            ? utils.t('lobby.player', 'player')
-            : utils.t('lobby.players', 'players');
-        countEl.textContent = count + ' ' + playerWord;
+        countEl.textContent = players.length;
     }
 
-    // Handle empty state - show waiting text only here
+    // Update status based on player count
+    if (statusEl) {
+        if (players.length === 0) {
+            statusEl.textContent = utils.t('lobby.statusWaiting', 'Waiting');
+        } else if (players.length >= 2) {
+            statusEl.textContent = utils.t('lobby.statusReady', 'Ready');
+        } else {
+            statusEl.textContent = utils.t('lobby.statusNeedMore', 'Need 1+');
+        }
+    }
+
+    // Handle empty state visibility
     if (players.length === 0) {
-        listEl.innerHTML = '<p class="empty-state">' + utils.escapeHtml(waitingText) + '</p>';
+        listEl.innerHTML = '';
+        if (emptyEl) emptyEl.classList.remove('hidden');
         previousLobbyPlayers = [];
         return;
     }
+
+    // Hide empty state when we have players
+    if (emptyEl) emptyEl.classList.add('hidden');
 
     // Sort: connected first, disconnected last
     var sortedPlayers = players.slice().sort(function(a, b) {
@@ -1108,7 +1126,7 @@ function renderLobbyPlayers(players) {
         .filter(function(p) { return previousNames.indexOf(p.name) === -1; })
         .map(function(p) { return p.name; });
 
-    // Render player cards
+    // Render player cards (grid layout)
     listEl.innerHTML = sortedPlayers.map(function(player) {
         var isNew = newNames.indexOf(player.name) !== -1;
         var isDisconnected = player.connected === false;
@@ -1119,17 +1137,17 @@ function renderLobbyPlayers(players) {
             isDisconnected ? 'player-card--disconnected' : ''
         ].filter(Boolean).join(' ');
 
-        // Badge for disconnected players
-        var awayBadge = isDisconnected ? '<span class="away-badge">(away)</span>' : '';
         // Crown badge for admin
         var adminBadge = isAdmin ? '<span class="admin-badge">👑</span>' : '';
+        // Badge for disconnected players
+        var awayBadge = isDisconnected ? '<span class="away-badge">' + utils.t('lobby.away', 'away') + '</span>' : '';
 
         return '<div class="' + classes + '" data-player="' + utils.escapeHtml(player.name) + '">' +
             '<span class="player-name">' +
                 utils.escapeHtml(player.name) +
                 adminBadge +
-                awayBadge +
             '</span>' +
+            awayBadge +
         '</div>';
     }).join('');
 
