@@ -1805,7 +1805,7 @@ body.theme-dark .qr-modal-label {
     max-width: 500px;
     margin: 0 auto;
     /* Edge-to-edge layout with safe area support (Story 9.6) */
-    padding-top: max(var(--space-sm), env(safe-area-inset-top));
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
     padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
     padding-left: max(var(--space-sm), env(safe-area-inset-left));
     padding-right: max(var(--space-sm), env(safe-area-inset-right));
@@ -1813,7 +1813,7 @@ body.theme-dark .qr-modal-label {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 /* Tablet breakpoint - center content (Story 9.6) */
