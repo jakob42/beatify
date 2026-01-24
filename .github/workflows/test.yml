@@ -86,11 +86,17 @@ jobs:
 
       - name: Run unit tests
         run: pytest tests/unit/ -v --tb=short
+        env:
+          PYTHONPATH: ${{ github.workspace }}
 
       - name: Run integration tests
         run: pytest tests/integration/ -v --tb=short
+        env:
+          PYTHONPATH: ${{ github.workspace }}
 
       - name: Run all tests with coverage
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           pytest tests/ \
             --cov=custom_components/beatify \
@@ -145,6 +151,8 @@ jobs:
           pip install -r requirements_test.txt
 
       - name: Run burn-in loop (10 iterations)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           echo "🔥 Starting burn-in loop - 10 iterations"
           echo "Purpose: Detect flaky/non-deterministic tests"
