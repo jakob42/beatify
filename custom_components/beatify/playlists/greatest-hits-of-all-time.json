@@ -1,11 +1,12 @@
 {
   "name": "Greatest Hits of All Time",
-  "version": "1.2",
+  "version": "1.3",
   "songs": [
     {
       "year": 1975,
       "uri": "spotify:track:4u7EnebtmKWzUH433cf5Qv",
       "artist": "Queen",
+      "alt_artists": ["Elton John", "Genesis"],
       "title": "Bohemian Rhapsody",
       "chart_info": {
         "billboard_peak": 9,
@@ -33,6 +34,7 @@
       "year": 1982,
       "uri": "spotify:track:2374M0fQpWi3dLnB54qaLX",
       "artist": "Toto",
+      "alt_artists": ["Foreigner", "Boston"],
       "title": "Africa",
       "chart_info": {
         "billboard_peak": 1,
@@ -51,6 +53,7 @@
       "year": 1997,
       "uri": "spotify:track:1M2nd8jNUkkwrc1dgBPTJz",
       "artist": "Robbie Williams",
+      "alt_artists": ["George Michael", "James Blunt"],
       "title": "Angels",
       "chart_info": {
         "billboard_peak": 53,
@@ -69,6 +72,7 @@
       "year": 1980,
       "uri": "spotify:track:08mG3Y1vljYA6bvDt4Wqkj",
       "artist": "AC/DC",
+      "alt_artists": ["Def Leppard", "Judas Priest"],
       "title": "Back In Black",
       "chart_info": {
         "billboard_peak": 37,
@@ -88,6 +92,7 @@
       "year": 1982,
       "uri": "spotify:track:7azo4rpSUh8nXgtonC6Pkq",
       "artist": "Michael Jackson",
+      "alt_artists": ["Prince", "Lionel Richie"],
       "title": "Thriller",
       "chart_info": {
         "billboard_peak": 4,
@@ -114,6 +119,7 @@
       "year": 1984,
       "uri": "spotify:track:7yzbimr8WVyAtBX3Eg6UL9",
       "artist": "Leonard Cohen",
+      "alt_artists": ["Bob Dylan", "Nick Cave"],
       "title": "Hallelujah",
       "chart_info": {
         "billboard_peak": 59
@@ -131,6 +137,7 @@
       "year": 1970,
       "uri": "spotify:track:19slC7k8bsPOAKDjHYLU2W",
       "artist": "Cat Stevens",
+      "alt_artists": ["James Taylor", "Jim Croce"],
       "title": "Father and Son",
       "chart_info": {
         "billboard_peak": 11,
@@ -149,6 +156,7 @@
       "year": 1968,
       "uri": "spotify:track:0aym2LBJBk9DAYuHHutrIl",
       "artist": "The Beatles",
+      "alt_artists": ["The Rolling Stones", "The Kinks"],
       "title": "Hey Jude",
       "chart_info": {
         "billboard_peak": 1,
@@ -176,6 +184,7 @@
       "year": 1984,
       "uri": "spotify:track:0GONea6G2XdnHWjNZd6zt3",
       "artist": "Bryan Adams",
+      "alt_artists": ["John Mellencamp", "Bruce Springsteen"],
       "title": "Summer of '69",
       "chart_info": {
         "billboard_peak": 5,
@@ -194,6 +203,7 @@
       "year": 1970,
       "uri": "spotify:track:7iN1s7xHE4ifF5povM6A48",
       "artist": "The Beatles",
+      "alt_artists": ["Simon & Garfunkel", "The Who"],
       "title": "Let It Be",
       "chart_info": {
         "billboard_peak": 1,
@@ -223,6 +233,7 @@
       "year": 1979,
       "uri": "spotify:track:2zYzyRzz6pRmhPzyfMEC8s",
       "artist": "AC/DC",
+      "alt_artists": ["Scorpions", "Motörhead"],
       "title": "Highway to Hell",
       "chart_info": {
         "billboard_peak": 47,
@@ -249,6 +260,7 @@
       "year": 1976,
       "uri": "spotify:track:40riOy7x9W7GXjyGp4pjAv",
       "artist": "Eagles",
+      "alt_artists": ["Fleetwood Mac", "Steely Dan"],
       "title": "Hotel California",
       "chart_info": {
         "billboard_peak": 1,
@@ -278,6 +290,7 @@
       "year": 1980,
       "uri": "spotify:track:5vdp5UmvTsnMEMESIF2Ym7",
       "artist": "Queen",
+      "alt_artists": ["Chic", "The Police"],
       "title": "Another One Bites the Dust",
       "chart_info": {
         "billboard_peak": 1,
@@ -304,6 +317,7 @@
       "year": 1982,
       "uri": "spotify:track:1OOtq8tRnDM8kG2gqUPjAj",
       "artist": "Michael Jackson",
+      "alt_artists": ["Van Halen", "Rick James"],
       "title": "Beat It",
       "chart_info": {
         "billboard_peak": 1,
@@ -333,6 +347,7 @@
       "year": 1970,
       "uri": "spotify:track:78lgmZwycJ3nzsdgmPPGNx",
       "artist": "Led Zeppelin",
+      "alt_artists": ["Black Sabbath", "Deep Purple"],
       "title": "Immigrant Song",
       "chart_info": {
         "billboard_peak": 16,
@@ -351,6 +366,7 @@
       "year": 1972,
       "uri": "spotify:track:3gdewACMIVMEWVbyb8O9sY",
       "artist": "Elton John",
+      "alt_artists": ["David Bowie", "Billy Joel"],
       "title": "Rocket Man",
       "chart_info": {
         "billboard_peak": 6,
@@ -377,6 +393,7 @@
       "year": 1982,
       "uri": "spotify:track:2HHtWyy5CgaQbC7XSoOb0e",
       "artist": "Survivor",
+      "alt_artists": ["Journey", "REO Speedwagon"],
       "title": "Eye of the Tiger",
       "chart_info": {
         "billboard_peak": 1,
@@ -403,6 +420,7 @@
       "year": 1990,
       "uri": "spotify:track:57bgtoPSgt236HzfBOd8kj",
       "artist": "AC/DC",
+      "alt_artists": ["Metallica", "Van Halen"],
       "title": "Thunderstruck",
       "chart_info": {
         "billboard_peak": 5,
@@ -421,6 +439,7 @@
       "year": 1972,
       "uri": "spotify:track:5MMnwYs0hIxkENRsbkWJ2G",
       "artist": "Deep Purple",
+      "alt_artists": ["Led Zeppelin", "Black Sabbath"],
       "title": "Smoke on the Water",
       "chart_info": {
         "billboard_peak": 4,
@@ -447,6 +466,7 @@
       "year": 1977,
       "uri": "spotify:track:79hJaqmVdohltPBNN6BULM",
       "artist": "Bee Gees",
+      "alt_artists": ["KC and the Sunshine Band", "ABBA"],
       "title": "Stayin' Alive",
       "chart_info": {
         "billboard_peak": 1,
@@ -473,6 +493,7 @@
       "year": 1977,
       "uri": "spotify:track:1lCRw5FEZ1gPDNPzy1K4zW",
       "artist": "Queen",
+      "alt_artists": ["Foreigner", "Styx"],
       "title": "We Are the Champions",
       "chart_info": {
         "billboard_peak": 4,
@@ -499,6 +520,7 @@
       "year": 1985,
       "uri": "spotify:track:2WfaOiMkCvy7F5fcp2zZ8L",
       "artist": "a-ha",
+      "alt_artists": ["Duran Duran", "Tears for Fears"],
       "title": "Take On Me",
       "chart_info": {
         "billboard_peak": 1,
@@ -525,6 +547,7 @@
       "year": 1976,
       "uri": "spotify:track:7LRMbd3LEoV5wZJvXT1Lwb",
       "artist": "AC/DC",
+      "alt_artists": ["Kiss", "Thin Lizzy"],
       "title": "T.N.T.",
       "chart_info": {
         "billboard_peak": 0,
@@ -543,6 +566,7 @@
       "year": 1965,
       "uri": "spotify:track:3BQHpFgAp4l80e1XslIjNI",
       "artist": "The Beatles",
+      "alt_artists": ["The Hollies", "The Beach Boys"],
       "title": "Yesterday",
       "chart_info": {
         "billboard_peak": 1,
@@ -572,6 +596,7 @@
       "year": 1983,
       "uri": "spotify:track:1TfqLAPs4K3s2rJMoCokcS",
       "artist": "Eurythmics",
+      "alt_artists": ["Depeche Mode", "Pet Shop Boys"],
       "title": "Sweet Dreams (Are Made of This)",
       "chart_info": {
         "billboard_peak": 1,
@@ -598,6 +623,7 @@
       "year": 2000,
       "uri": "spotify:track:0v1XpBHnsbkCn7iJ9Ucr1l",
       "artist": "Bon Jovi",
+      "alt_artists": ["Nickelback", "3 Doors Down"],
       "title": "It's My Life",
       "chart_info": {
         "billboard_peak": 33,
@@ -616,6 +642,7 @@
       "year": 1984,
       "uri": "spotify:track:0ikz6tENMONtK6qGkOrU3c",
       "artist": "Wham!",
+      "alt_artists": ["Culture Club", "Duran Duran"],
       "title": "Wake Me Up Before You Go-Go",
       "chart_info": {
         "billboard_peak": 1,
@@ -634,6 +661,7 @@
       "year": 1977,
       "uri": "spotify:track:4pbJqGIASGPr0ZpGpnWkDn",
       "artist": "Queen",
+      "alt_artists": ["Gary Glitter", "Kiss"],
       "title": "We Will Rock You",
       "chart_info": {
         "billboard_peak": 4,
@@ -660,6 +688,7 @@
       "year": 1990,
       "uri": "spotify:track:3ovjw5HZZv43SxTwApooCM",
       "artist": "Scorpions",
+      "alt_artists": ["Bon Jovi", "Europe"],
       "title": "Wind of Change",
       "chart_info": {
         "billboard_peak": 4,
@@ -678,6 +707,7 @@
       "year": 1995,
       "uri": "spotify:track:3ic5SdHoppddKCuXPUz2fV",
       "artist": "Oasis",
+      "alt_artists": ["Blur", "Radiohead"],
       "title": "Wonderwall",
       "chart_info": {
         "billboard_peak": 8,
@@ -697,6 +727,7 @@
       "year": 1961,
       "uri": "spotify:track:44AyOl4qVkzS48vBsbNXaC",
       "artist": "Elvis Presley",
+      "alt_artists": ["Roy Orbison", "Dean Martin"],
       "title": "Can't Help Falling in Love",
       "chart_info": {
         "billboard_peak": 2,
@@ -715,6 +746,7 @@
       "year": 1984,
       "uri": "spotify:track:4S1VYqwfkLit9mKVY3MXoo",
       "artist": "Alphaville",
+      "alt_artists": ["OMD", "Ultravox"],
       "title": "Forever Young",
       "chart_info": {
         "billboard_peak": 65,
@@ -733,6 +765,7 @@
       "year": 1969,
       "uri": "spotify:track:62AuGbAkt8Ox2IrFFb8GKV",
       "artist": "Neil Diamond",
+      "alt_artists": ["Barry Manilow", "Tom Jones"],
       "title": "Sweet Caroline",
       "chart_info": {
         "billboard_peak": 4,
@@ -759,6 +792,7 @@
       "year": 1962,
       "uri": "spotify:track:3SdTKo2uVsxFblQjpScoHy",
       "artist": "Ben E. King",
+      "alt_artists": ["Sam Cooke", "Otis Redding"],
       "title": "Stand By Me",
       "chart_info": {
         "billboard_peak": 4,
@@ -785,6 +819,7 @@
       "year": 1968,
       "uri": "spotify:track:1qCQTy0fTXerET4x8VHyr9",
       "artist": "Louis Armstrong",
+      "alt_artists": ["Nat King Cole", "Ella Fitzgerald"],
       "title": "What a Wonderful World",
       "chart_info": {
         "billboard_peak": 116,
@@ -811,6 +846,7 @@
       "year": 1969,
       "uri": "spotify:track:5LxvwujISqiB8vpRYv887S",
       "artist": "The Jackson 5",
+      "alt_artists": ["The Temptations", "The Supremes"],
       "title": "I Want You Back",
       "chart_info": {
         "billboard_peak": 1,
@@ -837,6 +873,7 @@
       "year": 1971,
       "uri": "spotify:track:2xYlyywNgefLCRDG8hlxZq",
       "artist": "John Denver",
+      "alt_artists": ["James Taylor", "Glen Campbell"],
       "title": "Take Me Home, Country Roads",
       "chart_info": {
         "billboard_peak": 2,
@@ -855,6 +892,7 @@
       "year": 1985,
       "uri": "spotify:track:3Z2tPWiNiIpg8UMMoowHIk",
       "artist": "USA for Africa",
+      "alt_artists": ["Band Aid", "Live Aid"],
       "title": "We Are the World",
       "chart_info": {
         "billboard_peak": 1,
@@ -884,6 +922,7 @@
       "year": 1975,
       "uri": "spotify:track:2TxCwUlqaOH3TIyJqGgR91",
       "artist": "ABBA",
+      "alt_artists": ["Boney M.", "The Carpenters"],
       "title": "Mamma Mia",
       "chart_info": {
         "billboard_peak": 32,
@@ -902,6 +941,7 @@
       "year": 1976,
       "uri": "spotify:track:3pf96IFggfQuT6Gafqx2rt",
       "artist": "Boney M.",
+      "alt_artists": ["ABBA", "Silver Convention"],
       "title": "Sunny",
       "chart_info": {
         "billboard_peak": 0,
@@ -920,6 +960,7 @@
       "year": 1995,
       "uri": "spotify:track:4fXGWiVhlOLdhwRDP6pIFG",
       "artist": "Fools Garden",
+      "alt_artists": ["The Cardigans", "Crowded House"],
       "title": "Lemon Tree",
       "chart_info": {
         "billboard_peak": 0,
@@ -938,6 +979,7 @@
       "year": 1988,
       "uri": "spotify:track:4hObp5bmIJ3PP3cKA9K9GY",
       "artist": "Bobby McFerrin",
+      "alt_artists": ["UB40", "Bob Marley"],
       "title": "Don't Worry, Be Happy",
       "chart_info": {
         "billboard_peak": 1,
@@ -967,6 +1009,7 @@
       "year": 1974,
       "uri": "spotify:track:3Dy4REq8O09IlgiwuHQ3sk",
       "artist": "ABBA",
+      "alt_artists": ["Bee Gees", "Brotherhood of Man"],
       "title": "Waterloo",
       "chart_info": {
         "billboard_peak": 6,
@@ -993,6 +1036,7 @@
       "year": 1978,
       "uri": "spotify:track:3ypMsqUwfNFMiooMLVHfkp",
       "artist": "Village People",
+      "alt_artists": ["KC and the Sunshine Band", "The Weather Girls"],
       "title": "Y.M.C.A.",
       "chart_info": {
         "billboard_peak": 2,
@@ -1011,6 +1055,7 @@
       "year": 1978,
       "uri": "spotify:track:5nNmj1cLH3r4aA4XDJ2bgY",
       "artist": "Earth, Wind & Fire",
+      "alt_artists": ["Kool & The Gang", "Commodores"],
       "title": "September",
       "chart_info": {
         "billboard_peak": 8,
@@ -1029,6 +1074,7 @@
       "year": 1999,
       "uri": "spotify:track:6x4tKaOzfNJpEJHySoiJcs",
       "artist": "Lou Bega",
+      "alt_artists": ["Ricky Martin", "Gloria Estefan"],
       "title": "Mambo No. 5",
       "chart_info": {
         "billboard_peak": 3,
@@ -1047,6 +1093,7 @@
       "year": 1974,
       "uri": "spotify:track:7e89621JPkKaeDSTQ3avtg",
       "artist": "Lynyrd Skynyrd",
+      "alt_artists": ["The Allman Brothers Band", "ZZ Top"],
       "title": "Sweet Home Alabama",
       "chart_info": {
         "billboard_peak": 8,
@@ -1065,6 +1112,7 @@
       "year": 1976,
       "uri": "spotify:track:3WMbD1OyfKuwWDWMNbPQ4g",
       "artist": "Boney M.",
+      "alt_artists": ["Donna Summer", "Bee Gees"],
       "title": "Daddy Cool",
       "chart_info": {
         "billboard_peak": 0,
@@ -1083,6 +1131,7 @@
       "year": 1986,
       "uri": "spotify:track:6I9HXaU8zbTgASGe7evWnu",
       "artist": "Europe",
+      "alt_artists": ["Whitesnake", "Def Leppard"],
       "title": "The Final Countdown",
       "chart_info": {
         "billboard_peak": 8,
@@ -1101,6 +1150,7 @@
       "year": 1981,
       "uri": "spotify:track:2Cdvbe2G4hZsnhNMKyGrie",
       "artist": "Joan Jett & The Blackhearts",
+      "alt_artists": ["Pat Benatar", "The Runaways"],
       "title": "I Love Rock 'n' Roll",
       "chart_info": {
         "billboard_peak": 1,
@@ -1119,6 +1169,7 @@
       "year": 1984,
       "uri": "spotify:track:7N3PAbqfTjSEU1edb2tY8j",
       "artist": "Van Halen",
+      "alt_artists": ["Bon Jovi", "Def Leppard"],
       "title": "Jump",
       "chart_info": {
         "billboard_peak": 1,
@@ -1137,6 +1188,7 @@
       "year": 1982,
       "uri": "spotify:track:4caiYv89C9GZdDD1RzshWd",
       "artist": "The Weather Girls",
+      "alt_artists": ["Gloria Gaynor", "Donna Summer"],
       "title": "It's Raining Men",
       "chart_info": {
         "billboard_peak": 46,
@@ -1155,6 +1207,7 @@
       "year": 1982,
       "uri": "spotify:track:39shmbIHICJ2Wxnk1fPSdz",
       "artist": "The Clash",
+      "alt_artists": ["The Sex Pistols", "The Ramones"],
       "title": "Should I Stay or Should I Go",
       "chart_info": {
         "billboard_peak": 45,
@@ -1173,6 +1226,7 @@
       "year": 1980,
       "uri": "spotify:track:7AMnWNkwYPxaVDgkwmEEKj",
       "artist": "ABBA",
+      "alt_artists": ["Blondie", "Fleetwood Mac"],
       "title": "Super Trouper",
       "chart_info": {
         "billboard_peak": 45,
@@ -1191,6 +1245,7 @@
       "year": 1985,
       "uri": "spotify:track:05wIrZSwuaVWhcv5FfqeH0",
       "artist": "Katrina and the Waves",
+      "alt_artists": ["Cyndi Lauper", "The Go-Go's"],
       "title": "Walking on Sunshine",
       "chart_info": {
         "billboard_peak": 9,
@@ -1209,6 +1264,7 @@
       "year": 1976,
       "uri": "spotify:track:4rDbp1vnvEhieiccprPMdI",
       "artist": "Queen",
+      "alt_artists": ["Elton John", "David Bowie"],
       "title": "Somebody to Love",
       "chart_info": {
         "billboard_peak": 13,
@@ -1227,6 +1283,7 @@
       "year": 1967,
       "uri": "spotify:track:7s25THrKz86DM225dOYwnr",
       "artist": "Aretha Franklin",
+      "alt_artists": ["Diana Ross", "Tina Turner"],
       "title": "Respect",
       "chart_info": {
         "billboard_peak": 1,
@@ -1259,6 +1316,7 @@
       "year": 1982,
       "uri": "spotify:track:37BTh5g05cxBIRYMbw8g2T",
       "artist": "Toto",
+      "alt_artists": ["Chicago", "Hall & Oates"],
       "title": "Rosanna",
       "chart_info": {
         "billboard_peak": 2,
@@ -1285,6 +1343,7 @@
       "year": 1976,
       "uri": "spotify:track:0GjEhVFGZW8afUYGChu3Rr",
       "artist": "ABBA",
+      "alt_artists": ["Bee Gees", "Donna Summer"],
       "title": "Dancing Queen",
       "chart_info": {
         "billboard_peak": 1,
@@ -1312,6 +1371,7 @@
       "year": 1978,
       "uri": "spotify:track:5T8EDUDqKcs6OSOwEsfqG7",
       "artist": "Queen",
+      "alt_artists": ["ELO", "Supertramp"],
       "title": "Don't Stop Me Now",
       "chart_info": {
         "billboard_peak": 86,
@@ -1330,6 +1390,7 @@
       "year": 1992,
       "uri": "spotify:track:4eHbdreAnSOrDDsFfc4Fpm",
       "artist": "Whitney Houston",
+      "alt_artists": ["Mariah Carey", "Celine Dion"],
       "title": "I Will Always Love You",
       "chart_info": {
         "billboard_peak": 1,
@@ -1359,6 +1420,7 @@
       "year": 1963,
       "uri": "spotify:track:0wz1LjDb9ZNEYwOmDJ3Q4b",
       "artist": "The Beach Boys",
+      "alt_artists": ["Jan & Dean", "The Ventures"],
       "title": "Surfin' U.S.A.",
       "chart_info": {
         "billboard_peak": 3,
@@ -1385,6 +1447,7 @@
       "year": 1987,
       "uri": "spotify:track:2bCQHF9gdG5BNDVuEIEnNk",
       "artist": "Michael Jackson",
+      "alt_artists": ["Prince", "Bobby Brown"],
       "title": "Smooth Criminal",
       "chart_info": {
         "billboard_peak": 7,
@@ -1403,6 +1466,7 @@
       "year": 1982,
       "uri": "spotify:track:1ot6jEe4w4hYnsOPjd3xKQ",
       "artist": "The Pointer Sisters",
+      "alt_artists": ["Sister Sledge", "The Emotions"],
       "title": "I'm So Excited",
       "chart_info": {
         "billboard_peak": 9,
@@ -1421,6 +1485,7 @@
       "year": 1987,
       "uri": "spotify:track:2tUBqZG2AbRi7Q0BIrVrEj",
       "artist": "Whitney Houston",
+      "alt_artists": ["Janet Jackson", "Paula Abdul"],
       "title": "I Wanna Dance with Somebody",
       "chart_info": {
         "billboard_peak": 1,
@@ -1447,6 +1512,7 @@
       "year": 1983,
       "uri": "spotify:track:5zA8vzDGqPl2AzZkEYQGKh",
       "artist": "Billy Joel",
+      "alt_artists": ["Elton John", "Phil Collins"],
       "title": "Uptown Girl",
       "chart_info": {
         "billboard_peak": 3,
@@ -1465,6 +1531,7 @@
       "year": 1976,
       "uri": "spotify:track:2oXchyEBxQBe8vH6iFgbv0",
       "artist": "John Miles",
+      "alt_artists": ["10cc", "Alan Parsons Project"],
       "title": "Music",
       "chart_info": {
         "billboard_peak": 0,
@@ -1482,6 +1549,7 @@
       "year": 1981,
       "uri": "spotify:track:4bHsxqR3GMrXTxEPLuK5ue",
       "artist": "Journey",
+      "alt_artists": ["Foreigner", "Boston"],
       "title": "Don't Stop Believin'",
       "chart_info": {
         "billboard_peak": 9,
@@ -1508,6 +1576,7 @@
       "year": 1994,
       "uri": "spotify:track:2IZZqH4K02UIYg5EohpNHF",
       "artist": "The Cranberries",
+      "alt_artists": ["Garbage", "The Cardigans"],
       "title": "Zombie",
       "chart_info": {
         "billboard_peak": 22,
@@ -1526,6 +1595,7 @@
       "year": 1978,
       "uri": "spotify:track:4xmjDH6auBwuZ4GHimjXGe",
       "artist": "Gloria Gaynor",
+      "alt_artists": ["Donna Summer", "Diana Ross"],
       "title": "I Will Survive",
       "chart_info": {
         "billboard_peak": 1,
@@ -1552,6 +1622,7 @@
       "year": 1978,
       "uri": "spotify:track:5gOd6zDC8vhlYjqbQdJVWP",
       "artist": "Gerry Rafferty",
+      "alt_artists": ["Supertramp", "Steely Dan"],
       "title": "Baker Street",
       "chart_info": {
         "billboard_peak": 2,
@@ -1570,6 +1641,7 @@
       "year": 1979,
       "uri": "spotify:track:3vkQ5DAB1qQMYO4Mr9zJN6",
       "artist": "ABBA",
+      "alt_artists": ["Boney M.", "Blondie"],
       "title": "Gimme! Gimme! Gimme!",
       "chart_info": {
         "billboard_peak": 0,
@@ -1588,6 +1660,7 @@
       "year": 1982,
       "uri": "spotify:track:5ChkMS8OtdzJeqyybCc9R5",
       "artist": "Michael Jackson",
+      "alt_artists": ["Prince", "Stevie Wonder"],
       "title": "Billie Jean",
       "chart_info": {
         "billboard_peak": 1,
@@ -1617,6 +1690,7 @@
       "year": 1983,
       "uri": "spotify:track:0QKfiqpEU4h9ycPSzIFwYe",
       "artist": "Michael Sembello",
+      "alt_artists": ["Kenny Loggins", "Irene Cara"],
       "title": "Maniac",
       "chart_info": {
         "billboard_peak": 1,
@@ -1635,6 +1709,7 @@
       "year": 1978,
       "uri": "spotify:track:4aVuWgvD0X63hcOCnZtNFA",
       "artist": "Toto",
+      "alt_artists": ["Journey", "Styx"],
       "title": "Hold the Line",
       "chart_info": {
         "billboard_peak": 5,
@@ -1653,6 +1728,7 @@
       "year": 1980,
       "uri": "spotify:track:0CUEc6T65lrU6rVW3HVYsl",
       "artist": "Kool & The Gang",
+      "alt_artists": ["Earth, Wind & Fire", "Commodores"],
       "title": "Celebration",
       "chart_info": {
         "billboard_peak": 1,
@@ -1671,6 +1747,7 @@
       "year": 1994,
       "uri": "spotify:track:6L89mwZXSOwYl76YXfX13s",
       "artist": "Green Day",
+      "alt_artists": ["Blink-182", "The Offspring"],
       "title": "Basket Case",
       "chart_info": {
         "billboard_peak": 0,
@@ -1689,6 +1766,7 @@
       "year": 1997,
       "uri": "spotify:track:1di1BEgJYzPvXUuinsYJGP",
       "artist": "Backstreet Boys",
+      "alt_artists": ["*NSYNC", "98 Degrees"],
       "title": "Everybody (Backstreet's Back)",
       "chart_info": {
         "billboard_peak": 4,
@@ -1707,6 +1785,7 @@
       "year": 1998,
       "uri": "spotify:track:1H5VQuShs4qfwBXyHF0PeH",
       "artist": "Liquido",
+      "alt_artists": ["Wheatus", "Semisonic"],
       "title": "Narcotic",
       "chart_info": {
         "billboard_peak": 0,
@@ -1725,6 +1804,7 @@
       "year": 1997,
       "uri": "spotify:track:0Dmao2oWlAZzIBX2Q1B5AH",
       "artist": "The Verve",
+      "alt_artists": ["Oasis", "Blur"],
       "title": "Bitter Sweet Symphony",
       "chart_info": {
         "billboard_peak": 12,
@@ -1743,6 +1823,7 @@
       "year": 2005,
       "uri": "spotify:track:1bx7OUl2UmAnA5oZkm9If7",
       "artist": "Caesars",
+      "alt_artists": ["Franz Ferdinand", "The Hives"],
       "title": "Jerk It Out",
       "chart_info": {
         "billboard_peak": 0,
@@ -1761,6 +1842,7 @@
       "year": 1997,
       "uri": "spotify:track:0SLtqCrXBRrnkxSOMA3X4W",
       "artist": "Robbie Williams",
+      "alt_artists": ["George Michael", "Sting"],
       "title": "Let Me Entertain You",
       "chart_info": {
         "billboard_peak": 0,
@@ -1779,6 +1861,7 @@
       "year": 1991,
       "uri": "spotify:track:5n6RDaGFSN88oRWuGtYAIN",
       "artist": "Queen",
+      "alt_artists": ["Genesis", "Pink Floyd"],
       "title": "The Show Must Go On",
       "chart_info": {
         "billboard_peak": 0,
@@ -1797,6 +1880,7 @@
       "year": 1961,
       "uri": "spotify:track:1INWPr855fwWdAOeecbu0W",
       "artist": "Chubby Checker",
+      "alt_artists": ["Little Richard", "Chuck Berry"],
       "title": "Let's Twist Again",
       "chart_info": {
         "billboard_peak": 8,
@@ -1823,6 +1907,7 @@
       "year": 1982,
       "uri": "spotify:track:2fuCquhmrzHpu5xcA1ci9x",
       "artist": "Queen & David Bowie",
+      "alt_artists": ["Mick Jagger & David Bowie", "The Rolling Stones"],
       "title": "Under Pressure",
       "chart_info": {
         "billboard_peak": 29,
@@ -1841,6 +1926,7 @@
       "year": 1963,
       "uri": "spotify:track:5ZBeML7Lf3FMEVviTyvi8l",
       "artist": "The Beatles",
+      "alt_artists": ["The Isley Brothers", "The Animals"],
       "title": "Twist and Shout",
       "chart_info": {
         "billboard_peak": 2,
@@ -1859,6 +1945,7 @@
       "year": 1964,
       "uri": "spotify:track:5y788ya4NvwhBznoDIcXwK",
       "artist": "Simon & Garfunkel",
+      "alt_artists": ["Peter, Paul and Mary", "The Byrds"],
       "title": "The Sound of Silence",
       "chart_info": {
         "billboard_peak": 1,
@@ -1884,6 +1971,7 @@
       "year": 1989,
       "uri": "spotify:track:3Cx4yrFaX8CeHwBMReOWXI",
       "artist": "Billy Joel",
+      "alt_artists": ["Bruce Springsteen", "John Mellencamp"],
       "title": "We Didn't Start the Fire",
       "chart_info": {
         "billboard_peak": 1,
@@ -1902,6 +1990,7 @@
       "year": 1973,
       "uri": "spotify:track:6WCeFNVAXUtNczb7lqLiZU",
       "artist": "Elton John",
+      "alt_artists": ["Rod Stewart", "Neil Sedaka"],
       "title": "Crocodile Rock",
       "chart_info": {
         "billboard_peak": 1,
@@ -1920,6 +2009,7 @@
       "year": 1986,
       "uri": "spotify:track:0rmGAIH9LNJewFw7nKzZnc",
       "artist": "Bon Jovi",
+      "alt_artists": ["Poison", "Mötley Crüe"],
       "title": "You Give Love a Bad Name",
       "chart_info": {
         "billboard_peak": 1,
@@ -1938,6 +2028,7 @@
       "year": 1991,
       "uri": "spotify:track:1f3yAtsJtY87CTmM8RLnxf",
       "artist": "Nirvana",
+      "alt_artists": ["Pearl Jam", "Soundgarden"],
       "title": "Smells Like Teen Spirit",
       "chart_info": {
         "billboard_peak": 6,
@@ -1964,6 +2055,7 @@
       "year": 1983,
       "uri": "spotify:track:4y1LsJpmMti1PfRQV9AWWe",
       "artist": "Cyndi Lauper",
+      "alt_artists": ["Madonna", "Pat Benatar"],
       "title": "Girls Just Want to Have Fun",
       "chart_info": {
         "billboard_peak": 2,
@@ -1982,6 +2074,7 @@
       "year": 1993,
       "uri": "spotify:track:3NvS0SxNWIPiAJoPWUpZzr",
       "artist": "Haddaway",
+      "alt_artists": ["La Bouche", "Corona"],
       "title": "What Is Love",
       "chart_info": {
         "billboard_peak": 11,
@@ -2000,6 +2093,7 @@
       "year": 1987,
       "uri": "spotify:track:6eN1f9KNmiWEhpE2RhQqB5",
       "artist": "Guns N' Roses",
+      "alt_artists": ["Aerosmith", "Mötley Crüe"],
       "title": "Paradise City",
       "chart_info": {
         "billboard_peak": 5,
@@ -2018,6 +2112,7 @@
       "year": 1983,
       "uri": "spotify:track:3cbV252akVZInSvJk7jAYX",
       "artist": "Irene Cara",
+      "alt_artists": ["Bonnie Tyler", "Laura Branigan"],
       "title": "Flashdance... What a Feeling",
       "chart_info": {
         "billboard_peak": 1,
@@ -2047,6 +2142,7 @@
       "year": 2002,
       "uri": "spotify:track:3ZOEytgrvLwQaqXreDs2Jx",
       "artist": "Red Hot Chili Peppers",
+      "alt_artists": ["Foo Fighters", "Incubus"],
       "title": "Can't Stop",
       "chart_info": {
         "billboard_peak": 57,
@@ -2065,6 +2161,7 @@
       "year": 1999,
       "uri": "spotify:track:6e40mgJiCid5HRAGrbpGA6",
       "artist": "Backstreet Boys",
+      "alt_artists": ["*NSYNC", "Westlife"],
       "title": "I Want It That Way",
       "chart_info": {
         "billboard_peak": 6,
@@ -2083,6 +2180,7 @@
       "year": 1986,
       "uri": "spotify:track:37ZJ0p5Jm13JPevGcx4SkF",
       "artist": "Bon Jovi",
+      "alt_artists": ["Journey", "Foreigner"],
       "title": "Livin' on a Prayer",
       "chart_info": {
         "billboard_peak": 1,
@@ -2101,6 +2199,7 @@
       "year": 1987,
       "uri": "spotify:track:7o2CTH4ctstm8TNelqjb51",
       "artist": "Guns N' Roses",
+      "alt_artists": ["Def Leppard", "Bon Jovi"],
       "title": "Sweet Child O' Mine",
       "chart_info": {
         "billboard_peak": 1,
@@ -2127,6 +2226,7 @@
       "year": 2000,
       "uri": "spotify:track:60a0Rd6pjrkxjPbaKzXjfq",
       "artist": "Linkin Park",
+      "alt_artists": ["Limp Bizkit", "Papa Roach"],
       "title": "In the End",
       "chart_info": {
         "billboard_peak": 2,

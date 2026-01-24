@@ -25,7 +25,7 @@ VOLUME_STEP = 0.1
 STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100}
 
 # Artist challenge bonus (Story 20.1)
-ARTIST_BONUS_POINTS = 10
+ARTIST_BONUS_POINTS = 5
 
 # Steal power-up constants (Story 15.3)
 STEAL_UNLOCK_STREAK = 3  # Consecutive correct answers to unlock steal
