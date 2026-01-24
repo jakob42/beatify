@@ -3024,10 +3024,15 @@ body.theme-dark .admin-controls {
 }
 
 .lobby-container--compact .section-toggle {
-    margin-left: var(--space-sm);
     font-size: 0.625rem;
     color: var(--color-text-neon-muted);
     transition: transform 0.2s ease;
+    margin-left: var(--space-sm);
+}
+
+/* Push toggle to right when no summary present (toggle is 3rd child) */
+.lobby-container--compact .section-header-collapsible > .section-toggle:nth-child(3) {
+    margin-left: auto;
 }
 
 .lobby-container--compact .section-collapsible:not(.collapsed) .section-toggle {
