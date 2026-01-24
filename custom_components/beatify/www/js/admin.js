@@ -35,8 +35,12 @@ let artistChallengeEnabled = true;
 let previousLobbyPlayers = [];
 let lobbyPollingInterval = null;
 
-// Setup sections to hide/show as a group (Story 9.10: game-controls removed, button is standalone)
-const setupSections = ['media-players', 'playlists', 'provider-section', 'language-section', 'timer-section', 'difficulty-section', 'artist-challenge-section'];
+// LocalStorage keys
+const STORAGE_LAST_PLAYER = 'beatify_last_player';
+const STORAGE_GAME_SETTINGS = 'beatify_game_settings';
+
+// Setup sections to hide/show as a group
+const setupSections = ['media-players', 'playlists', 'game-settings', 'admin-actions'];
 
 // Alias BeatifyUtils for convenience
 const utils = window.BeatifyUtils || {};
@@ -52,7 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         BeatifyI18n.initPageTranslations();
         selectedLanguage = BeatifyI18n.getLanguage();
     }
-    updateLanguageButtons(selectedLanguage);
+    // Set initial language chip active state
+    document.querySelectorAll('.chip[data-lang]').forEach(c => {
+        c.classList.toggle('chip--active', c.dataset.lang === selectedLanguage);
+    });
 
     // Wire event listeners
     document.getElementById('start-game')?.addEventListener('click', startGame);
@@ -62,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Dashboard URL is now set in showLobbyView() for analytics layout
     document.getElementById('end-game')?.addEventListener('click', endGame);
     document.getElementById('end-game-lobby')?.addEventListener('click', endGame);
+    document.getElementById('end-game-existing')?.addEventListener('click', endGame);
 
     // Admin join setup
     setupAdminJoin();
@@ -69,20 +77,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // End game modal setup (Story 9.10)
     setupEndGameModal();
 
-    // Language selector setup (Story 12.4)
-    setupLanguageSelector();
+    // Collapsible sections setup
+    setupCollapsibleSections();
 
-    // Timer selector setup (Story 13.1)
-    setupTimerSelector();
+    // Game settings setup (language, timer, difficulty, artist challenge)
+    setupGameSettings();
 
-    // Difficulty selector setup (Story 14.1)
-    setupDifficultySelector();
-
-    // Provider selector setup (Story 17.2)
-    setupProviderSelector();
-
-    // Artist Challenge toggle setup (Story 20.7)
-    setupArtistChallengeToggle();
+    // Load saved game settings from localStorage
+    loadSavedSettings();
 
     await loadStatus();
 });
@@ -125,6 +127,172 @@ async function loadStatus() {
         if (container) {
             container.innerHTML = '<span class="status-error">Failed to load status</span>';
         }
+    }
+}
+
+/**
+ * Setup collapsible section toggles
+ */
+function setupCollapsibleSections() {
+    // Media players toggle
+    document.getElementById('media-players-toggle')?.addEventListener('click', function() {
+        const section = document.getElementById('media-players');
+        if (section) {
+            section.classList.toggle('collapsed');
+            this.setAttribute('aria-expanded', !section.classList.contains('collapsed'));
+        }
+    });
+
+    // Game settings toggle
+    document.getElementById('game-settings-toggle')?.addEventListener('click', function() {
+        const section = document.getElementById('game-settings');
+        if (section) {
+            section.classList.toggle('collapsed');
+            this.setAttribute('aria-expanded', !section.classList.contains('collapsed'));
+        }
+    });
+}
+
+/**
+ * Setup game settings controls (chips for language, timer, difficulty, toggle for artist challenge)
+ */
+function setupGameSettings() {
+    // Language chips
+    document.querySelectorAll('.chip[data-lang]').forEach(chip => {
+        chip.addEventListener('click', function() {
+            const lang = this.dataset.lang;
+            document.querySelectorAll('.chip[data-lang]').forEach(c => c.classList.remove('chip--active'));
+            this.classList.add('chip--active');
+            selectedLanguage = lang;
+            if (window.BeatifyI18n) {
+                BeatifyI18n.setLanguage(lang);
+            }
+            updateGameSettingsSummary();
+            saveGameSettings();
+        });
+    });
+
+    // Timer chips
+    document.querySelectorAll('.chip[data-duration]').forEach(chip => {
+        chip.addEventListener('click', function() {
+            const duration = parseInt(this.dataset.duration, 10);
+            document.querySelectorAll('.chip[data-duration]').forEach(c => c.classList.remove('chip--active'));
+            this.classList.add('chip--active');
+            selectedDuration = duration;
+            updateGameSettingsSummary();
+            saveGameSettings();
+        });
+    });
+
+    // Difficulty chips
+    document.querySelectorAll('.chip[data-difficulty]').forEach(chip => {
+        chip.addEventListener('click', function() {
+            const difficulty = this.dataset.difficulty;
+            document.querySelectorAll('.chip[data-difficulty]').forEach(c => c.classList.remove('chip--active'));
+            this.classList.add('chip--active');
+            selectedDifficulty = difficulty;
+            updateGameSettingsSummary();
+            saveGameSettings();
+        });
+    });
+
+    // Artist Challenge toggle
+    document.getElementById('artist-challenge-toggle')?.addEventListener('change', function() {
+        artistChallengeEnabled = this.checked;
+        updateGameSettingsSummary();
+        saveGameSettings();
+    });
+}
+
+/**
+ * Load saved settings from localStorage
+ */
+function loadSavedSettings() {
+    try {
+        const saved = localStorage.getItem(STORAGE_GAME_SETTINGS);
+        if (saved) {
+            const settings = JSON.parse(saved);
+
+            // Apply language
+            if (settings.language) {
+                selectedLanguage = settings.language;
+                document.querySelectorAll('.chip[data-lang]').forEach(c => {
+                    c.classList.toggle('chip--active', c.dataset.lang === settings.language);
+                });
+                if (window.BeatifyI18n) {
+                    BeatifyI18n.setLanguage(settings.language);
+                }
+            }
+
+            // Apply timer
+            if (settings.duration) {
+                selectedDuration = settings.duration;
+                document.querySelectorAll('.chip[data-duration]').forEach(c => {
+                    c.classList.toggle('chip--active', parseInt(c.dataset.duration, 10) === settings.duration);
+                });
+            }
+
+            // Apply difficulty
+            if (settings.difficulty) {
+                selectedDifficulty = settings.difficulty;
+                document.querySelectorAll('.chip[data-difficulty]').forEach(c => {
+                    c.classList.toggle('chip--active', c.dataset.difficulty === settings.difficulty);
+                });
+            }
+
+            // Apply artist challenge
+            if (typeof settings.artistChallenge === 'boolean') {
+                artistChallengeEnabled = settings.artistChallenge;
+                const toggle = document.getElementById('artist-challenge-toggle');
+                if (toggle) toggle.checked = settings.artistChallenge;
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to load saved settings:', e);
+    }
+    // Always update summary (uses current state values)
+    updateGameSettingsSummary();
+}
+
+/**
+ * Save game settings to localStorage
+ */
+function saveGameSettings() {
+    try {
+        const settings = {
+            language: selectedLanguage,
+            duration: selectedDuration,
+            difficulty: selectedDifficulty,
+            artistChallenge: artistChallengeEnabled
+        };
+        localStorage.setItem(STORAGE_GAME_SETTINGS, JSON.stringify(settings));
+    } catch (e) {
+        console.warn('Failed to save settings:', e);
+    }
+}
+
+/**
+ * Update the game settings summary badge
+ */
+function updateGameSettingsSummary() {
+    const summary = document.getElementById('game-settings-summary');
+    if (!summary) return;
+
+    const difficultyLabels = { easy: 'Easy', normal: 'Normal', hard: 'Hard' };
+    const langLabels = { en: 'EN', de: 'DE', es: 'ES' };
+    const artistIcon = artistChallengeEnabled ? ' • 🎤' : '';
+
+    summary.textContent = `${difficultyLabels[selectedDifficulty] || 'Normal'} • ${selectedDuration}s • ${langLabels[selectedLanguage] || 'EN'}${artistIcon}`;
+}
+
+/**
+ * Update media player summary badge
+ * @param {string} playerName - Friendly name of selected player
+ */
+function updateMediaPlayerSummary(playerName) {
+    const summary = document.getElementById('media-player-summary');
+    if (summary) {
+        summary.textContent = playerName || 'Select...';
     }
 }
 
@@ -215,13 +383,44 @@ function renderMediaPlayers(players) {
             handleMediaPlayerSelect(this);
         });
     });
+
+    // Make entire row clickable (for hidden input UX)
+    container.querySelectorAll('.media-player-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't double-trigger if clicking on the radio itself
+            if (e.target.classList.contains('media-player-radio')) return;
+            const radio = item.querySelector('.media-player-radio');
+            if (radio && !radio.checked) {
+                radio.checked = true;
+                handleMediaPlayerSelect(radio);
+            }
+        });
+    });
+
+    // Try to auto-select last used player from localStorage
+    const lastPlayerId = localStorage.getItem(STORAGE_LAST_PLAYER);
+    if (lastPlayerId) {
+        const lastPlayerRadio = container.querySelector(`[data-entity-id="${lastPlayerId}"]`);
+        if (lastPlayerRadio) {
+            lastPlayerRadio.checked = true;
+            handleMediaPlayerSelect(lastPlayerRadio, true); // true = skip localStorage save
+            // Collapse section since we have a valid selection
+            const section = document.getElementById('media-players');
+            if (section) {
+                section.classList.add('collapsed');
+                const toggle = document.getElementById('media-players-toggle');
+                if (toggle) toggle.setAttribute('aria-expanded', 'false');
+            }
+        }
+    }
 }
 
 /**
  * Handle media player radio button selection (AC4)
  * @param {HTMLInputElement} radio
+ * @param {boolean} skipSave - If true, don't save to localStorage (used for auto-select)
  */
-function handleMediaPlayerSelect(radio) {
+function handleMediaPlayerSelect(radio, skipSave = false) {
     const entityId = radio.dataset.entityId;
     const state = radio.dataset.state;
 
@@ -232,7 +431,21 @@ function handleMediaPlayerSelect(radio) {
     document.querySelectorAll('.media-player-item').forEach(item => {
         item.classList.remove('is-selected');
     });
-    radio.closest('.media-player-item').classList.add('is-selected');
+    const playerItem = radio.closest('.media-player-item');
+    playerItem.classList.add('is-selected');
+
+    // Get player name for summary
+    const playerName = playerItem.querySelector('.player-name')?.textContent?.replace('Music Assistant', '').trim() || entityId;
+    updateMediaPlayerSummary(playerName);
+
+    // Save to localStorage
+    if (!skipSave) {
+        try {
+            localStorage.setItem(STORAGE_LAST_PLAYER, entityId);
+        } catch (e) {
+            console.warn('Failed to save last player:', e);
+        }
+    }
 
     updateStartButtonState();
 }
@@ -315,6 +528,19 @@ function renderPlaylists(playlists, playlistDir) {
     container.querySelectorAll('.playlist-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             handlePlaylistToggle(this);
+        });
+    });
+
+    // Make entire row clickable (for hidden input UX)
+    container.querySelectorAll('.playlist-item.is-selectable').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't double-trigger if clicking on the checkbox itself
+            if (e.target.classList.contains('playlist-checkbox')) return;
+            const checkbox = item.querySelector('.playlist-checkbox');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                handlePlaylistToggle(checkbox);
+            }
         });
     });
 

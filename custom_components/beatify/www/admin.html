@@ -21,12 +21,20 @@
     </header>
 
     <main class="admin-content">
-        <section id="media-players" class="card-section">
-            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🔊</span><span data-i18n="admin.mediaPlayers">Media Players</span></h2>
-            <div id="media-players-list" data-i18n="common.loading">Loading...</div>
-            <p id="media-player-validation-msg" class="status-error hidden" style="margin-top: 12px;" data-i18n="admin.selectMediaPlayerHint">Select a media player</p>
+        <!-- Media Player Section - Collapsible with last-used memory -->
+        <section id="media-players" class="section-collapsible" aria-labelledby="media-players-heading">
+            <button type="button" class="section-header-collapsible" id="media-players-toggle" aria-expanded="true" aria-controls="media-players-content">
+                <span class="section-icon" aria-hidden="true">🔊</span>
+                <span data-i18n="admin.mediaPlayers">Media Players</span>
+                <span class="section-summary" id="media-player-summary">Select...</span>
+                <span class="section-toggle" aria-hidden="true">▼</span>
+            </button>
+            <div class="section-content" id="media-players-content">
+                <div id="media-players-list" data-i18n="common.loading">Loading...</div>
+            </div>
         </section>
 
+        <!-- Playlists Section - Always expanded -->
         <section id="playlists" class="card-section">
             <h2 class="section-header"><span class="section-icon" aria-hidden="true">🎵</span><span data-i18n="admin.playlists">Playlists</span></h2>
             <div id="playlists-list" data-i18n="common.loading">Loading...</div>
@@ -36,99 +44,74 @@
             </div>
         </section>
 
-        <!-- Provider Selector (Story 17.2) -->
-        <section id="provider-section" class="card-section">
-            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🎧</span><span data-i18n="admin.selectProvider">Music Provider</span></h2>
-            <div class="provider-selector" role="group" aria-label="Music provider selection">
-                <button type="button" class="provider-btn provider-btn--active" data-provider="spotify" tabindex="0">
-                    <span class="provider-icon" aria-hidden="true">🎵</span>
-                    <span class="provider-label" data-i18n="admin.providerSpotify">Spotify</span>
-                </button>
+        <!-- Game Settings Section - Collapsible with all settings -->
+        <section id="game-settings" class="section-collapsible collapsed" aria-labelledby="game-settings-heading">
+            <button type="button" class="section-header-collapsible" id="game-settings-toggle" aria-expanded="false" aria-controls="game-settings-content">
+                <span class="section-icon" aria-hidden="true">⚙️</span>
+                <span data-i18n="admin.gameSettings">Game Settings</span>
+                <span class="section-summary" id="game-settings-summary">Normal • 45s • EN</span>
+                <span class="section-toggle" aria-hidden="true">▼</span>
+            </button>
+            <div class="section-content" id="game-settings-content">
+                <!-- Language - Compact chips -->
+                <div class="setting-row">
+                    <span class="setting-label">
+                        <span class="setting-icon" aria-hidden="true">🌐</span>
+                        <span data-i18n="admin.language">Language</span>
+                    </span>
+                    <div class="chip-group" role="group" aria-label="Game language">
+                        <button type="button" id="lang-en" class="chip chip--active" data-lang="en">EN</button>
+                        <button type="button" id="lang-de" class="chip" data-lang="de">DE</button>
+                        <button type="button" id="lang-es" class="chip" data-lang="es">ES</button>
+                    </div>
+                </div>
+
+                <!-- Timer - Compact chips -->
+                <div class="setting-row">
+                    <span class="setting-label">
+                        <span class="setting-icon" aria-hidden="true">⏱️</span>
+                        <span data-i18n="admin.timer">Timer</span>
+                    </span>
+                    <div class="chip-group" role="group" aria-label="Round timer">
+                        <button type="button" id="timer-quick" class="chip" data-duration="30">30s</button>
+                        <button type="button" id="timer-normal" class="chip chip--active" data-duration="45">45s</button>
+                        <button type="button" id="timer-relaxed" class="chip" data-duration="60">60s</button>
+                    </div>
+                </div>
+
+                <!-- Difficulty - Compact chips -->
+                <div class="setting-row">
+                    <span class="setting-label">
+                        <span class="setting-icon" aria-hidden="true">🎯</span>
+                        <span data-i18n="admin.difficulty">Difficulty</span>
+                    </span>
+                    <div class="chip-group" role="group" aria-label="Difficulty">
+                        <button type="button" class="chip" data-difficulty="easy" data-i18n="admin.easy">Easy</button>
+                        <button type="button" class="chip chip--active" data-difficulty="normal" data-i18n="admin.normal">Normal</button>
+                        <button type="button" class="chip" data-difficulty="hard" data-i18n="admin.hard">Hard</button>
+                    </div>
+                </div>
+
+                <!-- Artist Challenge - Inline toggle -->
+                <div class="setting-row">
+                    <span class="setting-label">
+                        <span class="setting-icon" aria-hidden="true">🎤</span>
+                        <span data-i18n="admin.artistChallenge">Artist Challenge</span>
+                    </span>
+                    <label class="toggle-compact">
+                        <input type="checkbox" id="artist-challenge-toggle" checked>
+                        <span class="toggle-switch-compact"></span>
+                    </label>
+                </div>
             </div>
         </section>
 
-        <!-- Language Selector (Story 12.4) -->
-        <section id="language-section" class="card-section">
-            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🌐</span><span data-i18n="admin.selectLanguage">Game Language</span></h2>
-            <div class="language-selector">
-                <button type="button" id="lang-en" class="lang-btn lang-btn--active" data-lang="en">
-                    <span class="lang-flag">🇬🇧</span>
-                    <span class="lang-name">English</span>
-                </button>
-                <button type="button" id="lang-de" class="lang-btn" data-lang="de">
-                    <span class="lang-flag">🇩🇪</span>
-                    <span class="lang-name">Deutsch</span>
-                </button>
-                <button type="button" id="lang-es" class="lang-btn" data-lang="es">
-                    <span class="lang-flag">🇪🇸</span>
-                    <span class="lang-name">Español</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- Timer Selector (Story 13.1) -->
-        <section id="timer-section" class="card-section">
-            <h2 class="section-header"><span class="section-icon" aria-hidden="true">⏱️</span><span data-i18n="admin.selectTimer">Round Timer</span></h2>
-            <div class="timer-selector" role="group" aria-label="Round timer duration">
-                <button type="button" id="timer-quick" class="timer-btn" data-duration="30" tabindex="0">
-                    <span class="timer-icon" aria-hidden="true">⚡</span>
-                    <span class="timer-label" data-i18n="admin.timerQuick">Quick</span>
-                    <span class="timer-value">30s</span>
-                </button>
-                <button type="button" id="timer-normal" class="timer-btn timer-btn--active" data-duration="45" tabindex="0">
-                    <span class="timer-icon" aria-hidden="true">⏱️</span>
-                    <span class="timer-label" data-i18n="admin.timerNormal">Normal</span>
-                    <span class="timer-value">45s</span>
-                </button>
-                <button type="button" id="timer-relaxed" class="timer-btn" data-duration="60" tabindex="0">
-                    <span class="timer-icon" aria-hidden="true">🧘</span>
-                    <span class="timer-label" data-i18n="admin.timerRelaxed">Relaxed</span>
-                    <span class="timer-value">60s</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- Difficulty Selector (Story 14.1) -->
-        <section id="difficulty-section" class="card-section">
-            <h2 class="section-header"><span class="section-icon" aria-hidden="true">🎯</span><span data-i18n="admin.selectDifficulty">Difficulty</span></h2>
-            <div class="difficulty-selector" role="group" aria-label="Scoring difficulty">
-                <button type="button" class="difficulty-btn" data-difficulty="easy" tabindex="0">
-                    <span class="difficulty-icon" aria-hidden="true">😊</span>
-                    <span class="difficulty-label" data-i18n="admin.difficultyEasy">Easy</span>
-                </button>
-                <button type="button" class="difficulty-btn difficulty-btn--active" data-difficulty="normal" tabindex="0">
-                    <span class="difficulty-icon" aria-hidden="true">🎯</span>
-                    <span class="difficulty-label" data-i18n="admin.difficultyNormal">Normal</span>
-                </button>
-                <button type="button" class="difficulty-btn" data-difficulty="hard" tabindex="0">
-                    <span class="difficulty-icon" aria-hidden="true">🔥</span>
-                    <span class="difficulty-label" data-i18n="admin.difficultyHard">Hard</span>
-                </button>
-            </div>
-            <p class="difficulty-description" id="difficulty-description" data-i18n="admin.difficultyNormalDesc">
-                Guess within 3 years for points. Exact year = 10 points.
-            </p>
-        </section>
-
-        <!-- Artist Challenge Toggle (Story 20.7) -->
-        <section id="artist-challenge-section" class="card-section">
-            <h2 class="section-header">
-                <span class="section-icon" aria-hidden="true">🎤</span>
-                <span data-i18n="admin.artistChallenge">Artist Challenge</span>
-            </h2>
-            <label class="toggle-option">
-                <input type="checkbox" id="artist-challenge-toggle" checked>
-                <span class="toggle-switch"></span>
-                <span class="toggle-label" data-i18n="admin.enableArtistChallenge">Enable Artist Challenge</span>
-            </label>
-            <p class="option-description" data-i18n="admin.artistChallengeDesc">
-                First correct guess: +10 pts
-            </p>
-        </section>
-
-        <!-- Start Game button (Story 9.10: moved from Game Controls card) -->
-        <p id="playlist-validation-msg" class="status-error hidden" style="margin: var(--space-md) 0;" data-i18n="admin.selectPlaylistHint">Select at least one playlist</p>
-        <button id="start-game" class="btn btn-primary btn-large btn-full-width hidden" disabled data-i18n="admin.startGame">Start Game</button>
+        <!-- Validation messages and Start button -->
+        <div class="admin-actions">
+            <p id="media-player-validation-msg" class="status-error hidden" data-i18n="admin.selectMediaPlayerHint">Select a media player</p>
+            <p id="playlist-validation-msg" class="status-error hidden" data-i18n="admin.selectPlaylistHint">Select at least one playlist</p>
+            <button id="start-game" class="btn btn-primary btn-large btn-full-width hidden" disabled data-i18n="admin.startGame">Start Game</button>
+        </div>
 
         <!-- Lobby view (Story 2.3, mobile-optimized compact layout) -->
         <section id="lobby-section" class="card-section hidden">
@@ -199,6 +182,7 @@
             </div>
             <div class="game-controls-bar">
                 <button id="rejoin-game" class="btn btn-primary" data-i18n="admin.rejoinGame">Rejoin Game</button>
+                <button id="end-game-existing" class="btn btn-danger" data-i18n="admin.endGame">End Game</button>
             </div>
         </section>
     </main>
