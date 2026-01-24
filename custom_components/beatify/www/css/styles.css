@@ -4325,7 +4325,48 @@ body.theme-dark .artist-reveal-section {
 
 /* Round Analytics Card Section */
 .round-analytics-section {
+    width: 100%;
+    background: var(--color-surface-dark);
+    border: 1px solid var(--color-border-neon);
+    border-radius: var(--radius-md);
+    overflow: hidden;
     text-align: left;
+}
+
+.round-analytics-section .section-header-collapsible {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: transparent;
+    border: none;
+    color: var(--color-text-white);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.round-analytics-section .section-header-collapsible .section-icon {
+    font-size: 1rem;
+}
+
+.round-analytics-section .section-header-collapsible .section-summary {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-accent-secondary);
+    background: rgba(0, 245, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+}
+
+.round-analytics-section .section-header-collapsible .section-toggle {
+    margin-left: var(--space-sm);
+    font-size: 0.625rem;
+    color: var(--color-text-neon-muted);
+    transition: transform 0.2s ease;
 }
 
 .round-analytics-section .section-content {
@@ -4334,6 +4375,10 @@ body.theme-dark .artist-reveal-section {
 
 .round-analytics-section.collapsed .section-content {
     display: none;
+}
+
+.round-analytics-section:not(.collapsed) .section-toggle {
+    transform: rotate(180deg);
 }
 
 /* Legacy styles preserved */
