@@ -1636,3 +1636,1124 @@ class TestLiveReactions:
         result = state.get_player_by_ws(mock_ws_unknown)
 
         assert result is None
+
+
+# =============================================================================
+# ARTIST CHALLENGE TESTS (Story 20.1)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestArtistChallengeDataclass:
+    """Tests for ArtistChallenge dataclass (Story 20.1)."""
+
+    def test_artist_challenge_creation(self):
+        """ArtistChallenge can be created with required fields."""
+        from custom_components.beatify.game.state import ArtistChallenge
+
+        challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        assert challenge.correct_artist == "Queen"
+        assert challenge.options == ["Queen", "The Beatles", "ABBA"]
+        assert challenge.winner is None
+        assert challenge.winner_time is None
+
+    def test_artist_challenge_with_winner(self):
+        """ArtistChallenge tracks winner correctly."""
+        from custom_components.beatify.game.state import ArtistChallenge
+
+        challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+            winner_time=2.5,
+        )
+
+        assert challenge.winner == "Alice"
+        assert challenge.winner_time == 2.5
+
+    def test_to_dict_hides_answer_by_default(self):
+        """to_dict(include_answer=False) omits correct_artist (AC2)."""
+        from custom_components.beatify.game.state import ArtistChallenge
+
+        challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+            winner_time=2.5,
+        )
+
+        result = challenge.to_dict(include_answer=False)
+
+        assert "correct_artist" not in result
+        assert result["options"] == ["Queen", "The Beatles", "ABBA"]
+        assert result["winner"] == "Alice"
+        assert result["winner_time"] == 2.5
+
+    def test_to_dict_reveals_answer_when_requested(self):
+        """to_dict(include_answer=True) includes correct_artist (AC3)."""
+        from custom_components.beatify.game.state import ArtistChallenge
+
+        challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+        )
+
+        result = challenge.to_dict(include_answer=True)
+
+        assert result["correct_artist"] == "Queen"
+        assert result["options"] == ["Queen", "The Beatles", "ABBA"]
+        assert result["winner"] == "Alice"
+
+    def test_to_dict_omits_winner_time_when_none(self):
+        """to_dict omits winner_time when not set."""
+        from custom_components.beatify.game.state import ArtistChallenge
+
+        challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = challenge.to_dict(include_answer=False)
+
+        assert "winner_time" not in result
+        assert result["winner"] is None
+
+
+@pytest.mark.unit
+class TestArtistChallengeStateIntegration:
+    """Tests for artist challenge integration with GameState (Story 20.1)."""
+
+    def test_create_game_enables_artist_challenge_by_default(self):
+        """create_game enables artist_challenge by default (AC1)."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        assert state.artist_challenge_enabled is True
+        assert state.artist_challenge is None  # Not initialized until start_round
+
+    def test_create_game_can_disable_artist_challenge(self):
+        """create_game can disable artist_challenge."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+            artist_challenge_enabled=False,
+        )
+
+        assert state.artist_challenge_enabled is False
+
+    def test_end_game_resets_artist_challenge(self):
+        """end_game resets artist challenge state to defaults (Story 20.7)."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState()
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+            artist_challenge_enabled=False,  # Start with disabled
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        state.end_game()
+
+        assert state.artist_challenge is None
+        assert state.artist_challenge_enabled is True  # Reset to default (Story 20.7)
+
+    def test_get_state_playing_hides_artist_answer(self):
+        """get_state() in PLAYING phase hides correct_artist (AC2)."""
+        from custom_components.beatify.game.state import (
+            ArtistChallenge,
+            GamePhase,
+            GameState,
+        )
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.current_song = {
+            "year": 1985,
+            "artist": "Test",
+            "title": "Test Song",
+            "album_art": "/test.jpg",
+        }
+        state.round = 1
+        state.total_rounds = 5
+        state.deadline = 1030000
+        state.phase = GamePhase.PLAYING
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = state.get_state()
+
+        assert "artist_challenge" in result
+        assert "correct_artist" not in result["artist_challenge"]
+        assert result["artist_challenge"]["options"] == ["Queen", "The Beatles", "ABBA"]
+
+    def test_get_state_reveal_shows_artist_answer(self):
+        """get_state() in REVEAL phase shows correct_artist (AC3)."""
+        from custom_components.beatify.game.state import (
+            ArtistChallenge,
+            GamePhase,
+            GameState,
+        )
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.current_song = {"year": 1985}
+        state.round = 1
+        state.total_rounds = 5
+        state.phase = GamePhase.REVEAL
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+        )
+
+        result = state.get_state()
+
+        assert "artist_challenge" in result
+        assert result["artist_challenge"]["correct_artist"] == "Queen"
+        assert result["artist_challenge"]["winner"] == "Alice"
+
+    def test_get_state_no_artist_challenge_when_disabled(self):
+        """get_state() omits artist_challenge when disabled."""
+        from custom_components.beatify.game.state import GamePhase, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+            artist_challenge_enabled=False,
+        )
+        state.current_song = {
+            "year": 1985,
+            "artist": "Test",
+            "title": "Test Song",
+            "album_art": "/test.jpg",
+        }
+        state.round = 1
+        state.total_rounds = 5
+        state.deadline = 1030000
+        state.phase = GamePhase.PLAYING
+
+        result = state.get_state()
+
+        assert "artist_challenge" not in result
+
+    def test_get_state_no_artist_challenge_when_none(self):
+        """get_state() omits artist_challenge when not initialized."""
+        from custom_components.beatify.game.state import GamePhase, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.current_song = {
+            "year": 1985,
+            "artist": "Test",
+            "title": "Test Song",
+            "album_art": "/test.jpg",
+        }
+        state.round = 1
+        state.total_rounds = 5
+        state.deadline = 1030000
+        state.phase = GamePhase.PLAYING
+        # artist_challenge is None (not initialized)
+
+        result = state.get_state()
+
+        assert "artist_challenge" not in result
+
+    def test_artist_challenge_not_in_end_state(self):
+        """get_state() omits artist_challenge in END phase."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import (
+            ArtistChallenge,
+            GamePhase,
+            GameState,
+        )
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        # Add player BEFORE setting phase to END
+        mock_ws = MagicMock()
+        state.add_player("Winner", mock_ws)
+        state.players["Winner"].score = 100
+
+        state.phase = GamePhase.END
+        state.round = 5
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = state.get_state()
+
+        assert "artist_challenge" not in result
+
+
+@pytest.mark.unit
+class TestArtistBonusPointsConstant:
+    """Tests for ARTIST_BONUS_POINTS constant (Story 20.1)."""
+
+    def test_artist_bonus_points_defined(self):
+        """ARTIST_BONUS_POINTS constant is defined."""
+        from custom_components.beatify.const import ARTIST_BONUS_POINTS
+
+        assert ARTIST_BONUS_POINTS == 10
+
+    def test_artist_bonus_points_is_integer(self):
+        """ARTIST_BONUS_POINTS is an integer."""
+        from custom_components.beatify.const import ARTIST_BONUS_POINTS
+
+        assert isinstance(ARTIST_BONUS_POINTS, int)
+
+
+# =============================================================================
+# BUILD ARTIST OPTIONS TESTS (Story 20.2)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestBuildArtistOptions:
+    """Tests for build_artist_options helper function (Story 20.2)."""
+
+    def test_build_artist_options_with_valid_data(self):
+        """build_artist_options returns shuffled list with valid data (AC1)."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "Queen",
+            "alt_artists": ["The Beatles", "ABBA"],
+        }
+
+        result = build_artist_options(song)
+
+        assert result is not None
+        assert len(result) == 3
+        assert "Queen" in result
+        assert "The Beatles" in result
+        assert "ABBA" in result
+
+    def test_build_artist_options_returns_none_without_alt_artists(self):
+        """build_artist_options returns None when alt_artists missing (AC2)."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "Queen",
+        }
+
+        result = build_artist_options(song)
+
+        assert result is None
+
+    def test_build_artist_options_returns_none_with_empty_alt_artists(self):
+        """build_artist_options returns None when alt_artists empty (AC2)."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "Queen",
+            "alt_artists": [],
+        }
+
+        result = build_artist_options(song)
+
+        assert result is None
+
+    def test_build_artist_options_returns_none_without_artist(self):
+        """build_artist_options returns None when artist missing."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "alt_artists": ["The Beatles", "ABBA"],
+        }
+
+        result = build_artist_options(song)
+
+        assert result is None
+
+    def test_build_artist_options_returns_none_with_empty_artist(self):
+        """build_artist_options returns None when artist is empty string."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "   ",
+            "alt_artists": ["The Beatles", "ABBA"],
+        }
+
+        result = build_artist_options(song)
+
+        assert result is None
+
+    def test_build_artist_options_filters_invalid_alts(self):
+        """build_artist_options filters invalid alt_artists entries."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "Queen",
+            "alt_artists": ["The Beatles", "", "  ", None, "ABBA"],
+        }
+
+        result = build_artist_options(song)
+
+        assert result is not None
+        assert len(result) == 3
+        assert "" not in result
+
+    def test_build_artist_options_shuffles_results(self):
+        """build_artist_options produces shuffled order (AC3)."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "Queen",
+            "alt_artists": ["The Beatles", "ABBA", "Led Zeppelin", "Pink Floyd"],
+        }
+
+        # Run multiple times to verify shuffling produces varied results
+        orders = set()
+        for _ in range(20):
+            result = build_artist_options(song)
+            orders.add(tuple(result))
+
+        # With 5 items, we should see multiple different orders
+        assert len(orders) > 1, "Shuffling should produce varied order"
+
+    def test_build_artist_options_handles_single_alt_artist(self):
+        """build_artist_options works with single alt_artist."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "Queen",
+            "alt_artists": ["The Beatles"],
+        }
+
+        result = build_artist_options(song)
+
+        assert result is not None
+        assert len(result) == 2
+        assert "Queen" in result
+        assert "The Beatles" in result
+
+    def test_build_artist_options_strips_whitespace(self):
+        """build_artist_options strips whitespace from artist names."""
+        from custom_components.beatify.game.state import build_artist_options
+
+        song = {
+            "artist": "  Queen  ",
+            "alt_artists": ["  The Beatles  ", "  ABBA  "],
+        }
+
+        result = build_artist_options(song)
+
+        assert result is not None
+        assert "Queen" in result
+        assert "The Beatles" in result
+        assert "ABBA" in result
+
+
+@pytest.mark.unit
+class TestPlaylistAltArtistsValidation:
+    """Tests for alt_artists playlist validation (Story 20.2)."""
+
+    def test_validate_playlist_accepts_valid_alt_artists(self):
+        """validate_playlist accepts valid alt_artists array (AC4)."""
+        from custom_components.beatify.game.playlist import validate_playlist
+
+        data = {
+            "name": "Test Playlist",
+            "songs": [
+                {
+                    "year": 1985,
+                    "uri": "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+                    "artist": "Queen",
+                    "alt_artists": ["The Beatles", "ABBA"],
+                }
+            ],
+        }
+
+        is_valid, errors = validate_playlist(data)
+
+        assert is_valid is True
+        assert len(errors) == 0
+
+    def test_validate_playlist_accepts_song_without_alt_artists(self):
+        """validate_playlist accepts songs without alt_artists field."""
+        from custom_components.beatify.game.playlist import validate_playlist
+
+        data = {
+            "name": "Test Playlist",
+            "songs": [
+                {
+                    "year": 1985,
+                    "uri": "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+                    "artist": "Queen",
+                }
+            ],
+        }
+
+        is_valid, errors = validate_playlist(data)
+
+        assert is_valid is True
+        assert len(errors) == 0
+
+    def test_validate_playlist_rejects_non_array_alt_artists(self):
+        """validate_playlist rejects alt_artists that isn't an array (AC4)."""
+        from custom_components.beatify.game.playlist import validate_playlist
+
+        data = {
+            "name": "Test Playlist",
+            "songs": [
+                {
+                    "year": 1985,
+                    "uri": "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+                    "artist": "Queen",
+                    "alt_artists": "The Beatles",  # Should be array
+                }
+            ],
+        }
+
+        is_valid, errors = validate_playlist(data)
+
+        assert is_valid is False
+        assert any("alt_artists" in e and "array" in e for e in errors)
+
+    def test_validate_playlist_rejects_non_string_alt_artists(self):
+        """validate_playlist rejects non-string entries in alt_artists (AC4)."""
+        from custom_components.beatify.game.playlist import validate_playlist
+
+        data = {
+            "name": "Test Playlist",
+            "songs": [
+                {
+                    "year": 1985,
+                    "uri": "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+                    "artist": "Queen",
+                    "alt_artists": ["The Beatles", 123, "ABBA"],
+                }
+            ],
+        }
+
+        is_valid, errors = validate_playlist(data)
+
+        assert is_valid is False
+        assert any("alt_artists[1]" in e for e in errors)
+
+    def test_validate_playlist_rejects_empty_string_alt_artists(self):
+        """validate_playlist rejects empty string in alt_artists (AC4)."""
+        from custom_components.beatify.game.playlist import validate_playlist
+
+        data = {
+            "name": "Test Playlist",
+            "songs": [
+                {
+                    "year": 1985,
+                    "uri": "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+                    "artist": "Queen",
+                    "alt_artists": ["The Beatles", "", "ABBA"],
+                }
+            ],
+        }
+
+        is_valid, errors = validate_playlist(data)
+
+        assert is_valid is False
+        assert any("alt_artists[1]" in e and "non-empty" in e for e in errors)
+
+
+@pytest.mark.unit
+class TestInitArtistChallengeWithDecoys:
+    """Tests for _init_artist_challenge with decoy generation (Story 20.2)."""
+
+    def test_init_artist_challenge_creates_challenge_with_alt_artists(self):
+        """_init_artist_challenge creates ArtistChallenge when alt_artists present."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        song = {
+            "year": 1985,
+            "artist": "Queen",
+            "alt_artists": ["The Beatles", "ABBA"],
+        }
+
+        result = state._init_artist_challenge(song)
+
+        assert result is not None
+        assert result.correct_artist == "Queen"
+        assert len(result.options) == 3
+        assert "Queen" in result.options
+        assert "The Beatles" in result.options
+        assert "ABBA" in result.options
+
+    def test_init_artist_challenge_returns_none_without_alt_artists(self):
+        """_init_artist_challenge returns None when alt_artists missing (AC2)."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        song = {
+            "year": 1985,
+            "artist": "Queen",
+        }
+
+        result = state._init_artist_challenge(song)
+
+        assert result is None
+
+    def test_init_artist_challenge_returns_none_when_disabled(self):
+        """_init_artist_challenge returns None when artist challenge disabled."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+            artist_challenge_enabled=False,
+        )
+
+        song = {
+            "year": 1985,
+            "artist": "Queen",
+            "alt_artists": ["The Beatles", "ABBA"],
+        }
+
+        result = state._init_artist_challenge(song)
+
+        assert result is None
+
+    def test_init_artist_challenge_shuffles_options(self):
+        """_init_artist_challenge shuffles options (AC3)."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+
+        song = {
+            "year": 1985,
+            "artist": "Queen",
+            "alt_artists": ["The Beatles", "ABBA", "Led Zeppelin", "Pink Floyd"],
+        }
+
+        # Run multiple times to verify shuffling
+        orders = set()
+        for _ in range(20):
+            result = state._init_artist_challenge(song)
+            orders.add(tuple(result.options))
+
+        # With 5 items, we should see multiple different orders
+        assert len(orders) > 1, "Options should be shuffled"
+
+
+# =============================================================================
+# SUBMIT ARTIST GUESS TESTS (Story 20.3)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestSubmitArtistGuess:
+    """Tests for submit_artist_guess method (Story 20.3)."""
+
+    def test_first_correct_guess_sets_winner(self):
+        """First correct guess sets winner (AC1)."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = state.submit_artist_guess("Alice", "Queen", 1001.5)
+
+        assert result["correct"] is True
+        assert result["first"] is True
+        assert result["winner"] == "Alice"
+        assert state.artist_challenge.winner == "Alice"
+        assert state.artist_challenge.winner_time == 1001.5
+
+    def test_second_correct_guess_not_first(self):
+        """Second correct guess returns first: false (AC2)."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+            winner_time=1001.0,
+        )
+
+        result = state.submit_artist_guess("Bob", "Queen", 1002.0)
+
+        assert result["correct"] is True
+        assert result["first"] is False
+        assert result["winner"] == "Alice"
+        assert state.artist_challenge.winner == "Alice"  # Unchanged
+
+    def test_incorrect_guess_returns_correct_false(self):
+        """Incorrect guess returns correct: false (AC3)."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = state.submit_artist_guess("Alice", "ABBA", 1001.0)
+
+        assert result["correct"] is False
+        assert result["first"] is False
+        assert state.artist_challenge.winner is None
+
+    def test_case_insensitive_matching(self):
+        """Artist matching is case-insensitive."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = state.submit_artist_guess("Alice", "queen", 1001.0)
+
+        assert result["correct"] is True
+        assert result["first"] is True
+
+    def test_case_insensitive_matching_uppercase(self):
+        """Artist matching works with uppercase guess."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = state.submit_artist_guess("Alice", "QUEEN", 1001.0)
+
+        assert result["correct"] is True
+
+    def test_no_lockout_on_wrong_guesses(self):
+        """Players can guess again after wrong answer (AC5)."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        # First wrong guess
+        result1 = state.submit_artist_guess("Alice", "ABBA", 1001.0)
+        assert result1["correct"] is False
+
+        # Second guess - correct this time
+        result2 = state.submit_artist_guess("Alice", "Queen", 1002.0)
+        assert result2["correct"] is True
+        assert result2["first"] is True
+        assert state.artist_challenge.winner == "Alice"
+
+    def test_error_when_no_artist_challenge(self):
+        """ValueError when no artist challenge active (AC6)."""
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        # artist_challenge is None
+
+        with pytest.raises(ValueError, match="No artist challenge active"):
+            state.submit_artist_guess("Alice", "Queen", 1001.0)
+
+    def test_whitespace_stripped_from_guess(self):
+        """Whitespace is stripped from artist guess."""
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+        )
+
+        result = state.submit_artist_guess("Alice", "  Queen  ", 1001.0)
+
+        assert result["correct"] is True
+
+
+@pytest.mark.unit
+class TestArtistGuessErrorConstant:
+    """Tests for ERR_NO_ARTIST_CHALLENGE constant (Story 20.3)."""
+
+    def test_error_constant_defined(self):
+        """ERR_NO_ARTIST_CHALLENGE constant is defined."""
+        from custom_components.beatify.const import ERR_NO_ARTIST_CHALLENGE
+
+        assert ERR_NO_ARTIST_CHALLENGE == "NO_ARTIST_CHALLENGE"
+
+
+# =============================================================================
+# ARTIST BONUS SCORING TESTS (Story 20.4)
+# =============================================================================
+
+
+@pytest.mark.unit
+class TestArtistBonusScoring:
+    """Tests for artist bonus scoring integration (Story 20.4)."""
+
+    def test_player_session_has_artist_bonus_field(self):
+        """PlayerSession has artist_bonus field."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.player import PlayerSession
+
+        mock_ws = MagicMock()
+        player = PlayerSession(name="Test", ws=mock_ws)
+
+        assert hasattr(player, "artist_bonus")
+        assert player.artist_bonus == 0
+
+    def test_artist_bonus_resets_between_rounds(self):
+        """artist_bonus resets to 0 between rounds."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.player import PlayerSession
+
+        mock_ws = MagicMock()
+        player = PlayerSession(name="Test", ws=mock_ws)
+        player.artist_bonus = 10
+
+        player.reset_round()
+
+        assert player.artist_bonus == 0
+
+    @pytest.mark.asyncio
+    async def test_artist_winner_gets_bonus(self):
+        """Player who won artist challenge gets +10 artist_bonus (AC1)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+
+        # Simulate player submitting a guess
+        state.players["Alice"].submit_guess(1985, 1001.0)
+        state.current_song = {"year": 1985}
+        state.round_start_time = 1000.0
+
+        # Set up artist challenge with winner
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+            winner_time=1001.0,
+        )
+
+        await state.end_round()
+
+        assert state.players["Alice"].artist_bonus == 10
+
+    @pytest.mark.asyncio
+    async def test_non_winner_gets_zero_bonus(self):
+        """Player who didn't win gets artist_bonus=0 (AC2)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        mock_ws_alice = MagicMock()
+        mock_ws_bob = MagicMock()
+        state.add_player("Alice", mock_ws_alice)
+        state.add_player("Bob", mock_ws_bob)
+
+        # Both players submit
+        state.players["Alice"].submit_guess(1985, 1001.0)
+        state.players["Bob"].submit_guess(1985, 1002.0)
+        state.current_song = {"year": 1985}
+        state.round_start_time = 1000.0
+
+        # Alice wins the artist challenge
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+            winner_time=1001.0,
+        )
+
+        await state.end_round()
+
+        assert state.players["Alice"].artist_bonus == 10
+        assert state.players["Bob"].artist_bonus == 0
+
+    @pytest.mark.asyncio
+    async def test_artist_bonus_added_to_total_score(self):
+        """Artist bonus is added to total score (AC1)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+
+        state.players["Alice"].submit_guess(1985, 1001.0)
+        state.current_song = {"year": 1985}
+        state.round_start_time = 1000.0
+
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+            winner_time=1001.0,
+        )
+
+        initial_score = state.players["Alice"].score
+
+        await state.end_round()
+
+        # Score should include round_score + artist_bonus (10)
+        # Artist bonus is added separately, not multiplied
+        assert state.players["Alice"].score > initial_score
+        assert state.players["Alice"].artist_bonus == 10
+        # Total includes artist bonus
+        expected_score = (
+            state.players["Alice"].round_score
+            + state.players["Alice"].streak_bonus
+            + state.players["Alice"].artist_bonus
+        )
+        assert state.players["Alice"].score == expected_score
+
+    def test_reveal_state_includes_artist_bonus_when_enabled(self):
+        """Reveal state includes artist_bonus field when challenge enabled (AC1)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+        state.players["Alice"].artist_bonus = 10
+
+        result = state.get_reveal_players_state()
+
+        assert "artist_bonus" in result[0]
+        assert result[0]["artist_bonus"] == 10
+
+    def test_reveal_state_omits_artist_bonus_when_disabled(self):
+        """Reveal state omits artist_bonus when challenge disabled (AC3)."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+            artist_challenge_enabled=False,
+        )
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+
+        result = state.get_reveal_players_state()
+
+        assert "artist_bonus" not in result[0]
+
+    @pytest.mark.asyncio
+    async def test_no_artist_bonus_without_challenge(self):
+        """No artist_bonus when artist_challenge is None."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+
+        state.players["Alice"].submit_guess(1985, 1001.0)
+        state.current_song = {"year": 1985}
+        state.round_start_time = 1000.0
+        # artist_challenge is None (no alt_artists in song)
+
+        await state.end_round()
+
+        assert state.players["Alice"].artist_bonus == 0
+
+    @pytest.mark.asyncio
+    async def test_non_submitter_can_still_win_artist_bonus(self):
+        """Player who didn't submit year can still get artist bonus."""
+        from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import ArtistChallenge, GameState
+
+        state = GameState(time_fn=lambda: 1000.0)
+        state.create_game(
+            playlists=["playlist1.json"],
+            songs=[{"year": 1985, "uri": "spotify:track:test"}],
+            media_player="media_player.test",
+            base_url="http://test.local:8123",
+        )
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+
+        # Player did NOT submit year guess (missed round)
+        state.current_song = {"year": 1985}
+        state.round_start_time = 1000.0
+
+        # But they won the artist challenge
+        state.artist_challenge = ArtistChallenge(
+            correct_artist="Queen",
+            options=["Queen", "The Beatles", "ABBA"],
+            winner="Alice",
+            winner_time=1001.0,
+        )
+
+        await state.end_round()
+
+        # Player missed round but still gets artist bonus
+        assert state.players["Alice"].missed_round is True
+        assert state.players["Alice"].artist_bonus == 10
+        assert state.players["Alice"].score == 10  # Only artist bonus

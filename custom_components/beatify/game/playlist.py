@@ -315,6 +315,26 @@ def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
         if not has_valid_uri:
             errors.append(f"Song {i+1}: no valid URI")
 
+        # Story 20.2: Validate alt_artists if present (optional field)
+        alt_artists = song.get("alt_artists")
+        if alt_artists is not None:
+            if not isinstance(alt_artists, list):
+                errors.append(f"Song {i+1}: 'alt_artists' must be an array")
+            else:
+                for j, alt in enumerate(alt_artists):
+                    if not isinstance(alt, str) or not alt.strip():
+                        errors.append(
+                            f"Song {i+1}: 'alt_artists[{j}]' must be non-empty string"
+                        )
+                # Log warning if fewer than 2 alternatives (weak challenge)
+                valid_alts = [a for a in alt_artists if isinstance(a, str) and a.strip()]
+                if len(valid_alts) < 2:
+                    _LOGGER.debug(
+                        "Song %d has only %d alt_artists (2 recommended)",
+                        i + 1,
+                        len(valid_alts),
+                    )
+
     return (len(errors) == 0, errors)
 
 

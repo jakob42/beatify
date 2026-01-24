@@ -1946,6 +1946,11 @@
 
         // Update steal UI (Story 15.3)
         updateStealUI(data.players);
+
+        // Render artist challenge (Story 20.5)
+        if (data.artist_challenge !== undefined) {
+            renderArtistChallenge(data.artist_challenge, 'PLAYING');
+        }
     }
 
     // ============================================
@@ -2239,6 +2244,13 @@
     let currentRoundNumber = 0;  // Track round to detect new rounds
     let hasStealAvailable = false;  // Steal power-up state (Story 15.3)
 
+    // Artist Challenge state (Story 20.5)
+    var artistChallengeComplete = false;
+    var pendingArtistGuess = null;
+    var winningArtist = null;  // Track locally which artist won
+    var ARTIST_DEBOUNCE_MS = 300;
+    var lastArtistGuessTime = 0;
+
     /**
      * Initialize year selector interaction
      */
@@ -2435,6 +2447,264 @@
         // Reset steal UI (Story 15.3)
         hasStealAvailable = false;
         hideStealUI();
+
+        // Reset artist challenge state (Story 20.5)
+        resetArtistChallengeState();
+    }
+
+    // ============================================
+    // Artist Challenge (Story 20.5)
+    // ============================================
+
+    /**
+     * Render artist challenge UI
+     * @param {Object} artistChallenge - Artist challenge data from server
+     * @param {string} phase - Current game phase (PLAYING, REVEAL)
+     */
+    function renderArtistChallenge(artistChallenge, phase) {
+        var container = document.getElementById('artist-challenge-container');
+        if (!container) return;
+
+        // Hide if no challenge active
+        if (!artistChallenge || !artistChallenge.options) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        container.classList.remove('hidden');
+
+        var optionsEl = document.getElementById('artist-options');
+        var resultEl = document.getElementById('artist-result');
+
+        // Only rebuild buttons if options changed
+        var currentOptions = Array.from(optionsEl.querySelectorAll('.artist-option-btn'))
+            .map(function(btn) { return btn.dataset.artist; });
+        var newOptions = artistChallenge.options;
+
+        if (JSON.stringify(currentOptions) !== JSON.stringify(newOptions)) {
+            optionsEl.innerHTML = '';
+            newOptions.forEach(function(artist, index) {
+                var btn = document.createElement('button');
+                btn.className = 'artist-option-btn';
+                btn.dataset.artist = artist;
+                btn.dataset.index = index;
+                btn.textContent = artist;
+                btn.addEventListener('click', function() {
+                    handleArtistGuess(artist);
+                });
+                optionsEl.appendChild(btn);
+            });
+        }
+
+        // Handle winner state
+        if (artistChallenge.winner) {
+            var buttons = optionsEl.querySelectorAll('.artist-option-btn');
+            buttons.forEach(function(btn) {
+                btn.classList.add('is-disabled');
+                btn.classList.remove('is-loading', 'is-wrong');
+
+                // Highlight winning artist (tracked locally or from REVEAL phase)
+                var correctArtist = artistChallenge.correct_artist || winningArtist;
+                if (correctArtist && btn.dataset.artist === correctArtist) {
+                    btn.classList.add('is-winner');
+                }
+            });
+
+            // Show result
+            if (artistChallenge.winner === playerName) {
+                resultEl.textContent = t('artistChallenge.youGotIt') || 'You got it! +10 points';
+                resultEl.className = 'artist-result is-winner';
+            } else {
+                var msg = (t('artistChallenge.someoneBeatYou') || '{winner} got it first!')
+                    .replace('{winner}', artistChallenge.winner);
+                resultEl.textContent = msg;
+                resultEl.className = 'artist-result is-late';
+            }
+            resultEl.classList.remove('hidden');
+            artistChallengeComplete = true;
+        } else if (!artistChallengeComplete) {
+            resultEl.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Handle artist guess button click
+     * @param {string} artist - The artist name that was clicked
+     */
+    function handleArtistGuess(artist) {
+        var now = Date.now();
+        if (now - lastArtistGuessTime < ARTIST_DEBOUNCE_MS) return;
+        lastArtistGuessTime = now;
+
+        if (artistChallengeComplete) return;
+
+        // Visual feedback
+        var btn = document.querySelector('.artist-option-btn[data-artist="' + CSS.escape(artist) + '"]');
+        if (btn) {
+            btn.classList.add('is-loading');
+        }
+
+        pendingArtistGuess = artist;
+
+        try {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'artist_guess',
+                    artist: artist
+                }));
+            }
+        } catch (e) {
+            console.error('Artist guess send failed:', e);
+            if (btn) {
+                btn.classList.remove('is-loading');
+            }
+            pendingArtistGuess = null;
+        }
+    }
+
+    /**
+     * Handle artist_guess_ack from server (Story 20.3 protocol)
+     * @param {Object} data - Ack response from server
+     */
+    function handleArtistGuessAck(data) {
+        var btn = pendingArtistGuess
+            ? document.querySelector('.artist-option-btn[data-artist="' + CSS.escape(pendingArtistGuess) + '"]')
+            : null;
+
+        if (data.correct && data.first) {
+            // We won!
+            winningArtist = pendingArtistGuess;  // Track locally
+            if (btn) {
+                btn.classList.remove('is-loading');
+                btn.classList.add('is-correct');
+                var badge = document.createElement('span');
+                badge.className = 'artist-points-badge';
+                badge.textContent = '+10';
+                btn.appendChild(badge);
+            }
+            disableAllArtistButtons();
+            showArtistResult(t('artistChallenge.youGotIt') || 'You got it! +10 points', true);
+            artistChallengeComplete = true;
+
+        } else if (data.correct && !data.first) {
+            // Correct but late
+            winningArtist = pendingArtistGuess;  // Track correct artist
+            if (btn) {
+                btn.classList.remove('is-loading');
+                btn.classList.add('is-correct');
+            }
+            disableAllArtistButtons();
+            var msg = (t('artistChallenge.someoneBeatYou') || '{winner} got it first!')
+                .replace('{winner}', data.winner || 'Someone');
+            showArtistResult(msg, false);
+            artistChallengeComplete = true;
+
+        } else {
+            // Wrong guess
+            if (btn) {
+                btn.classList.remove('is-loading');
+                btn.classList.add('is-wrong');
+                setTimeout(function() {
+                    btn.classList.remove('is-wrong');
+                }, 500);
+            }
+        }
+
+        pendingArtistGuess = null;
+    }
+
+    /**
+     * Disable all artist option buttons
+     */
+    function disableAllArtistButtons() {
+        document.querySelectorAll('.artist-option-btn').forEach(function(btn) {
+            btn.classList.add('is-disabled');
+            btn.classList.remove('is-loading');
+        });
+    }
+
+    /**
+     * Show artist challenge result message
+     * @param {string} message - Result message to display
+     * @param {boolean} isWinner - Whether current player won
+     */
+    function showArtistResult(message, isWinner) {
+        var resultEl = document.getElementById('artist-result');
+        if (resultEl) {
+            resultEl.textContent = message;
+            resultEl.className = 'artist-result ' + (isWinner ? 'is-winner' : 'is-late');
+            resultEl.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Reset artist challenge state for new round
+     */
+    function resetArtistChallengeState() {
+        artistChallengeComplete = false;
+        pendingArtistGuess = null;
+        winningArtist = null;
+
+        var container = document.getElementById('artist-challenge-container');
+        if (container) container.classList.add('hidden');
+
+        var optionsEl = document.getElementById('artist-options');
+        if (optionsEl) optionsEl.innerHTML = '';
+
+        var resultEl = document.getElementById('artist-result');
+        if (resultEl) {
+            resultEl.classList.add('hidden');
+            resultEl.className = 'artist-result hidden';
+        }
+    }
+
+    /**
+     * Render artist challenge reveal section (Story 20.6)
+     * @param {Object} artistChallenge - Artist challenge data with correct_artist and winner
+     * @param {string} currentPlayerName - Current player's name for comparison
+     */
+    function renderArtistReveal(artistChallenge, currentPlayerName) {
+        var section = document.getElementById('artist-reveal-section');
+        if (!section) return;
+
+        // Hide if no artist challenge data
+        if (!artistChallenge || !artistChallenge.correct_artist) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        // Show section
+        section.classList.remove('hidden');
+
+        // Display correct artist
+        var nameEl = document.getElementById('artist-reveal-name');
+        if (nameEl) {
+            nameEl.textContent = artistChallenge.correct_artist;
+        }
+
+        // Display winner info
+        var winnerEl = document.getElementById('artist-reveal-winner');
+        if (winnerEl) {
+            if (artistChallenge.winner) {
+                winnerEl.classList.remove('hidden');
+                if (artistChallenge.winner === currentPlayerName) {
+                    // Current player won
+                    winnerEl.textContent = t('artistChallenge.youGotIt') || 'You got it! +10 points';
+                    winnerEl.className = 'artist-reveal-winner is-you';
+                } else {
+                    // Someone else won
+                    var msg = (t('artistChallenge.winnerWas') || '{winner} got it first!')
+                        .replace('{winner}', artistChallenge.winner);
+                    winnerEl.textContent = msg;
+                    winnerEl.className = 'artist-reveal-winner is-other';
+                }
+            } else {
+                // No winner
+                winnerEl.textContent = t('artistChallenge.noWinner') || 'No one guessed the artist';
+                winnerEl.className = 'artist-reveal-winner artist-reveal-no-winner';
+                winnerEl.classList.remove('hidden');
+            }
+        }
     }
 
     // ============================================
@@ -2712,6 +2982,11 @@
         // Show celebration-first reveal (Story 9.4)
         showRevealEmotion(currentPlayer, song.year);
         renderPersonalResult(currentPlayer, song.year);
+
+        // Story 20.6: Render artist challenge reveal
+        if (data.artist_challenge) {
+            renderArtistReveal(data.artist_challenge, playerName);
+        }
 
         // Story 14.5: Check for new record and trigger rainbow confetti (AC2)
         if (data.game_performance && data.game_performance.is_new_record) {
@@ -3341,6 +3616,9 @@
         // Streak bonus display (Story 5.2)
         var streakBonus = player.streak_bonus || 0;
 
+        // Artist bonus display (Story 20.6)
+        var artistBonus = player.artist_bonus || 0;
+
         var scoreBreakdown = '';
         if (hasSpeedBonus && baseScore > 0) {
             scoreBreakdown =
@@ -3380,8 +3658,19 @@
                 '</div>';
         }
 
-        // Calculate total (round_score already includes bet + speed bonus, add streak separately)
-        var totalScore = player.round_score + streakBonus;
+        // Artist bonus row (Story 20.6)
+        var artistBonusHtml = '';
+        if (artistBonus > 0) {
+            artistBonusHtml =
+                '<div class="result-row artist-bonus-row">' +
+                    '<span class="result-label">🎤 ' + (t('artistChallenge.artistBonus') || 'Artist Bonus') + '</span>' +
+                    '<span class="result-value">+' + artistBonus + ' pts</span>' +
+                '</div>';
+        }
+
+        // Calculate total (round_score already includes bet + speed bonus, add streak + artist separately)
+        var totalScore = player.round_score + streakBonus + artistBonus;
+        var hasBonuses = streakBonus > 0 || artistBonus > 0;
 
         // Story 13.2: Determine animation effects
         var isBigScore = player.round_score >= 20;
@@ -3407,7 +3696,8 @@
             betOutcomeHtml +
             '<div class="result-score" id="personal-result-score">+<span class="score-value">0</span> pts</div>' +
             streakBonusHtml +
-            (streakBonus > 0 ? '<div class="result-total">' + t('reveal.total') + ': +<span class="total-value">0</span> pts</div>' : '');
+            artistBonusHtml +
+            (hasBonuses ? '<div class="result-total">' + t('reveal.total') + ': +<span class="total-value">0</span> pts</div>' : '');
 
         // Story 13.2: Animate personal score with visual effects
         var scoreValueEl = resultContent.querySelector('.score-value');
@@ -3432,7 +3722,7 @@
 
         // Story 13.2: Animate total score and show streak popup
         var totalValueEl = resultContent.querySelector('.total-value');
-        if (totalValueEl && streakBonus > 0) {
+        if (totalValueEl && hasBonuses) {
             // Slight delay for total to start after round score
             setTimeout(function() {
                 animateValue(totalValueEl, 0, totalScore, 600);
@@ -3496,6 +3786,12 @@
             // Bet indicator
             var betIndicator = player.bet ? '<span class="card-bet">🎲</span>' : '';
 
+            // Artist bonus badge (Story 20.6)
+            var artistBadge = '';
+            if (player.artist_bonus && player.artist_bonus > 0) {
+                artistBadge = '<span class="player-card-artist-badge">🎤 +' + player.artist_bonus + '</span>';
+            }
+
             // Steal indicator (Story 15.3 AC4)
             var stealIndicator = '';
             if (player.stole_from) {
@@ -3512,7 +3808,7 @@
                 '<div class="card-guess">' + guessDisplay + '</div>' +
                 '<div class="card-accuracy">' + yearsOffDisplay + '</div>' +
                 stealIndicator +
-                '<div class="card-score">+' + roundScore + '</div>' +
+                '<div class="card-score">+' + roundScore + artistBadge + '</div>' +
             '</div>';
         });
 
@@ -4660,6 +4956,9 @@
         } else if (data.type === 'steal_ack') {
             // Story 15.3 - handle steal acknowledgment
             handleStealAck(data);
+        } else if (data.type === 'artist_guess_ack') {
+            // Story 20.5 - handle artist guess acknowledgment
+            handleArtistGuessAck(data);
         } else if (data.type === 'player_reaction') {
             // Story 18.9 - show floating reaction from other players
             showFloatingReaction(data.player_name, data.emoji);

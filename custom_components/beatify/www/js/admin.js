@@ -28,12 +28,15 @@ let selectedDifficulty = 'normal';
 let selectedProvider = 'spotify';
 let hasMusicAssistant = false;
 
+// Artist Challenge state (Story 20.7)
+let artistChallengeEnabled = true;
+
 // Lobby state (Story 16.8)
 let previousLobbyPlayers = [];
 let lobbyPollingInterval = null;
 
 // Setup sections to hide/show as a group (Story 9.10: game-controls removed, button is standalone)
-const setupSections = ['media-players', 'playlists', 'provider-section', 'language-section', 'timer-section', 'difficulty-section'];
+const setupSections = ['media-players', 'playlists', 'provider-section', 'language-section', 'timer-section', 'difficulty-section', 'artist-challenge-section'];
 
 /**
  * Wait for BeatifyI18n to be available (handles fallback script race condition)
@@ -97,6 +100,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Provider selector setup (Story 17.2)
     setupProviderSelector();
+
+    // Artist Challenge toggle setup (Story 20.7)
+    setupArtistChallengeToggle();
 
     await loadStatus();
 });
@@ -590,7 +596,8 @@ async function startGame() {
                 language: selectedLanguage,
                 round_duration: selectedDuration,  // Story 13.1
                 difficulty: selectedDifficulty,  // Story 14.1
-                provider: selectedProvider  // Story 17.2
+                provider: selectedProvider,  // Story 17.2
+                artist_challenge_enabled: artistChallengeEnabled  // Story 20.7
             })
         });
 
@@ -997,6 +1004,31 @@ function setDifficulty(difficulty) {
             descriptionEl.textContent = BeatifyI18n.t(descKey);
         }
     }
+}
+
+// ==========================================
+// Artist Challenge Toggle Functions (Story 20.7)
+// ==========================================
+
+/**
+ * Setup artist challenge toggle
+ */
+function setupArtistChallengeToggle() {
+    var toggle = document.getElementById('artist-challenge-toggle');
+    if (!toggle) return;
+
+    // Load saved preference
+    var saved = localStorage.getItem('beatify_artist_challenge');
+    if (saved !== null) {
+        artistChallengeEnabled = saved === 'true';
+        toggle.checked = artistChallengeEnabled;
+    }
+
+    toggle.addEventListener('change', function() {
+        artistChallengeEnabled = toggle.checked;
+        // Save preference
+        localStorage.setItem('beatify_artist_challenge', artistChallengeEnabled.toString());
+    });
 }
 
 // ==========================================

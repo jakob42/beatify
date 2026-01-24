@@ -220,7 +220,10 @@
     "difficultyHardDesc": "Puntuacion desafiante: Solo cuentan las respuestas cercanas. Exacto = 10 pts, dentro de 2 anos = 3 pts, sino no hay puntos.",
     "selectProvider": "Proveedor de musica",
     "providerSpotify": "Spotify",
-    "viewAnalytics": "Estadisticas"
+    "viewAnalytics": "Estadisticas",
+    "artistChallenge": "Desafío de Artista",
+    "enableArtistChallenge": "Activar Desafío de Artista",
+    "artistChallengeDesc": "Primera respuesta correcta: +10 pts"
   },
   "analyticsDashboard": {
     "title": "Estadisticas de Beatify",
@@ -333,6 +336,17 @@
     "noSubmissions": "Sin respuestas en esta ronda",
     "noGuesses": "Sin respuestas",
     "histogram": "Distribucion de respuestas"
+  },
+  "artistChallenge": {
+    "whoSings": "¿Quién canta esta canción?",
+    "youGotIt": "¡Lo adivinaste! +10 puntos",
+    "someoneBeatYou": "¡{winner} lo adivinó primero!",
+    "wrongGuess": "Casi...",
+    "artistBonus": "Bonus de Artista",
+    "noWinner": "Nadie adivinó al artista",
+    "theArtistWas": "El artista era",
+    "winnerWas": "¡{winner} lo adivinó primero!",
+    "loading": "Verificando..."
   },
   "difficulty": {
     "easy": "Cancion facil",

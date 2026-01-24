@@ -24,6 +24,9 @@ VOLUME_STEP = 0.1
 # Key = streak count, Value = bonus points
 STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100}
 
+# Artist challenge bonus (Story 20.1)
+ARTIST_BONUS_POINTS = 10
+
 # Steal power-up constants (Story 15.3)
 STEAL_UNLOCK_STREAK = 3  # Consecutive correct answers to unlock steal
 MAX_STEALS_PER_GAME = 1  # Maximum number of steals allowed per game
@@ -65,6 +68,7 @@ ERR_ADMIN_CANNOT_LEAVE = "ADMIN_CANNOT_LEAVE"  # Story 11.5
 ERR_NO_STEAL_AVAILABLE = "NO_STEAL_AVAILABLE"  # Story 15.3 - player has no steal
 ERR_TARGET_NOT_SUBMITTED = "TARGET_NOT_SUBMITTED"  # Story 15.3 - target hasn't submitted
 ERR_CANNOT_STEAL_SELF = "CANNOT_STEAL_SELF"  # Story 15.3 - cannot target self
+ERR_NO_ARTIST_CHALLENGE = "NO_ARTIST_CHALLENGE"  # Story 20.3 - no artist challenge
 
 # Song difficulty rating constants (Story 15.1)
 MIN_PLAYS_FOR_DIFFICULTY = 3  # Minimum plays before showing difficulty rating

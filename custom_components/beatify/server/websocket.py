@@ -21,6 +21,7 @@ from custom_components.beatify.const import (
     ERR_MEDIA_PLAYER_UNAVAILABLE,
     ERR_NAME_INVALID,
     ERR_NAME_TAKEN,
+    ERR_NO_ARTIST_CHALLENGE,
     ERR_NO_SONGS_REMAINING,
     ERR_NOT_ADMIN,
     ERR_NOT_IN_GAME,
@@ -516,6 +517,10 @@ class BeatifyWebSocketHandler:
                     "emoji": emoji
                 })
 
+        elif msg_type == "artist_guess":
+            # Artist challenge guess submission (Story 20.3)
+            await self._handle_artist_guess(ws, data, game_state)
+
         else:
             _LOGGER.warning("Unknown message type: %s", msg_type)
 
@@ -855,6 +860,82 @@ class BeatifyWebSocketHandler:
             "CANNOT_STEAL_SELF": "Cannot steal from yourself",
         }
         return messages.get(error_code, "Steal failed")
+
+    async def _handle_artist_guess(
+        self, ws: web.WebSocketResponse, data: dict, game_state: GameState
+    ) -> None:
+        """
+        Handle artist guess submission (Story 20.3).
+
+        Args:
+            ws: WebSocket connection
+            data: Message data containing artist guess
+            game_state: Current game state
+
+        """
+        # Validate phase
+        if game_state.phase != GamePhase.PLAYING:
+            await ws.send_json({
+                "type": "error",
+                "code": ERR_INVALID_ACTION,
+                "message": "Can only guess during PLAYING phase",
+            })
+            return
+
+        # Get player from connection
+        player = game_state.get_player_by_ws(ws)
+        if not player:
+            await ws.send_json({
+                "type": "error",
+                "code": ERR_NOT_IN_GAME,
+                "message": "Not in game",
+            })
+            return
+
+        # Validate artist challenge exists
+        if not game_state.artist_challenge:
+            await ws.send_json({
+                "type": "error",
+                "code": ERR_NO_ARTIST_CHALLENGE,
+                "message": "No artist challenge this round",
+            })
+            return
+
+        # Get and validate artist guess
+        artist = data.get("artist", "").strip()
+        if not artist:
+            await ws.send_json({
+                "type": "error",
+                "code": ERR_INVALID_ACTION,
+                "message": "Artist cannot be empty",
+            })
+            return
+
+        # Submit guess
+        guess_time = time.time()
+        result = game_state.submit_artist_guess(player.name, artist, guess_time)
+
+        # Send acknowledgment
+        response: dict = {
+            "type": "artist_guess_ack",
+            "correct": result["correct"],
+        }
+
+        if result["correct"]:
+            response["first"] = result["first"]
+            if not result["first"]:
+                response["winner"] = result["winner"]
+
+        await ws.send_json(response)
+
+        # Broadcast state if winner changed (so all players see winner)
+        if result.get("first"):
+            await self.broadcast_state()
+
+        _LOGGER.debug(
+            "Artist guess from %s: '%s' -> correct=%s, first=%s",
+            player.name, artist, result["correct"], result.get("first", False)
+        )
 
     async def broadcast(self, message: dict) -> None:
         """

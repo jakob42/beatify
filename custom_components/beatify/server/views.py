@@ -181,6 +181,7 @@ class StartGameView(HomeAssistantView):
         round_duration = body.get("round_duration")  # Story 13.1
         difficulty = body.get("difficulty", DIFFICULTY_DEFAULT)  # Story 14.1
         provider = body.get("provider", PROVIDER_DEFAULT)  # Story 17.2
+        artist_challenge_enabled = body.get("artist_challenge_enabled", True)  # Story 20.7
 
         # Validate difficulty (Story 14.1)
         valid_difficulties = (DIFFICULTY_EASY, DIFFICULTY_NORMAL, DIFFICULTY_HARD)
@@ -304,7 +305,7 @@ class StartGameView(HomeAssistantView):
             entity_entry is not None and entity_entry.platform == "music_assistant"
         )
 
-        # Build create_game kwargs with optional round_duration (Story 13.1), difficulty (Story 14.1), and provider (Story 17.2)
+        # Build create_game kwargs with optional round_duration (Story 13.1), difficulty (Story 14.1), provider (Story 17.2), and artist_challenge_enabled (Story 20.7)
         create_kwargs: dict[str, Any] = {
             "playlists": playlist_paths,
             "songs": songs,
@@ -313,6 +314,7 @@ class StartGameView(HomeAssistantView):
             "difficulty": difficulty,
             "provider": provider,
             "is_mass": is_mass,
+            "artist_challenge_enabled": artist_challenge_enabled,  # Story 20.7
         }
         if round_duration is not None:
             create_kwargs["round_duration"] = round_duration

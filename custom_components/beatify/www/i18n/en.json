@@ -220,7 +220,10 @@
     "difficultyHardDesc": "Challenging scoring: Only close guesses count. Exact match = 10 pts, within 2 years = 3 pts, otherwise no points.",
     "selectProvider": "Music Provider",
     "providerSpotify": "Spotify",
-    "viewAnalytics": "Analytics"
+    "viewAnalytics": "Analytics",
+    "artistChallenge": "Artist Challenge",
+    "enableArtistChallenge": "Enable Artist Challenge",
+    "artistChallengeDesc": "First correct guess: +10 pts"
   },
   "analyticsDashboard": {
     "title": "Beatify Analytics",
@@ -333,6 +336,17 @@
     "noSubmissions": "No submissions this round",
     "noGuesses": "No guesses",
     "histogram": "Guess distribution"
+  },
+  "artistChallenge": {
+    "whoSings": "Who sings this song?",
+    "youGotIt": "You got it! +10 points",
+    "someoneBeatYou": "{winner} got it first!",
+    "wrongGuess": "Not quite...",
+    "artistBonus": "Artist Bonus",
+    "noWinner": "No one guessed the artist",
+    "theArtistWas": "The artist was",
+    "winnerWas": "{winner} got it first!",
+    "loading": "Checking..."
   },
   "difficulty": {
     "easy": "Easy Song",

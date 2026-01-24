@@ -220,7 +220,10 @@
     "difficultyHardDesc": "Anspruchsvolle Wertung: Nur knappe Tipps zählen. Volltreffer = 10 Pkt, bis 2 Jahre = 3 Pkt, sonst keine Punkte.",
     "selectProvider": "Musikdienst",
     "providerSpotify": "Spotify",
-    "viewAnalytics": "Statistik"
+    "viewAnalytics": "Statistik",
+    "artistChallenge": "Künstler-Challenge",
+    "enableArtistChallenge": "Künstler-Challenge aktivieren",
+    "artistChallengeDesc": "Erster richtiger Tipp: +10 Pkt"
   },
   "analyticsDashboard": {
     "title": "Beatify Statistik",
@@ -333,6 +336,17 @@
     "noSubmissions": "Keine Antworten in dieser Runde",
     "noGuesses": "Keine Tipps",
     "histogram": "Antwort-Verteilung"
+  },
+  "artistChallenge": {
+    "whoSings": "Wer singt diesen Song?",
+    "youGotIt": "Richtig! +10 Punkte",
+    "someoneBeatYou": "{winner} war schneller!",
+    "wrongGuess": "Leider falsch...",
+    "artistBonus": "Künstler-Bonus",
+    "noWinner": "Niemand hat den Künstler erraten",
+    "theArtistWas": "Der Künstler war",
+    "winnerWas": "{winner} war schneller!",
+    "loading": "Prüfe..."
   },
   "difficulty": {
     "easy": "Leichter Song",

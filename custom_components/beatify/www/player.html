@@ -193,6 +193,18 @@
                     </div>
                 </div>
 
+                <!-- Artist Challenge (Story 20.5) -->
+                <div id="artist-challenge-container" class="artist-challenge hidden">
+                    <div class="artist-challenge-header">
+                        <span class="artist-challenge-title" data-i18n="artistChallenge.whoSings">Who sings this song?</span>
+                        <span class="artist-challenge-bonus">+10</span>
+                    </div>
+                    <div id="artist-options" class="artist-options">
+                        <!-- Dynamically populated -->
+                    </div>
+                    <div id="artist-result" class="artist-result hidden"></div>
+                </div>
+
                 <!-- Year Selector (Story 4.3) -->
                 <div id="year-selector-container" class="year-selector-container">
                     <div id="year-selector" class="year-selector">
@@ -304,6 +316,13 @@
 
                 <!-- Confetti Canvas (Story 9.4) -->
                 <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+                <!-- Artist Challenge Reveal (Story 20.6) -->
+                <div id="artist-reveal-section" class="artist-reveal-section hidden">
+                    <div class="artist-reveal-label" data-i18n="artistChallenge.theArtistWas">The artist was</div>
+                    <div id="artist-reveal-name" class="artist-reveal-name"></div>
+                    <div id="artist-reveal-winner" class="artist-reveal-winner hidden"></div>
+                </div>
 
                 <!-- Personal Result -->
                 <div id="personal-result" class="personal-result">

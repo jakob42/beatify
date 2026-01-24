@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import random
 import secrets
 import time
 from dataclasses import dataclass, field
@@ -12,6 +13,7 @@ from statistics import mean, median
 from typing import TYPE_CHECKING, Any
 
 from custom_components.beatify.const import (
+    ARTIST_BONUS_POINTS,
     DEFAULT_ROUND_DURATION,
     DIFFICULTY_DEFAULT,
     ERR_CANNOT_STEAL_SELF,
@@ -115,6 +117,72 @@ class RoundAnalytics:
         }
 
 
+@dataclass
+class ArtistChallenge:
+    """Artist challenge state for bonus points feature (Epic 20)."""
+
+    correct_artist: str
+    options: list[str]  # Shuffled: correct + decoys
+    winner: str | None = None
+    winner_time: float | None = None
+
+    def to_dict(self, include_answer: bool = False) -> dict[str, Any]:
+        """Convert to JSON-serializable dictionary.
+
+        Args:
+            include_answer: If True, include correct_artist (for REVEAL phase).
+                           If False, hide answer (for PLAYING phase).
+        """
+        result: dict[str, Any] = {
+            "options": self.options,
+            "winner": self.winner,
+        }
+        if self.winner_time is not None:
+            result["winner_time"] = self.winner_time
+        if include_answer:
+            result["correct_artist"] = self.correct_artist
+        return result
+
+
+def build_artist_options(song: dict[str, Any]) -> list[str] | None:
+    """
+    Build shuffled artist options from song data (Story 20.2).
+
+    Args:
+        song: Song dictionary with 'artist' and optional 'alt_artists'
+
+    Returns:
+        Shuffled list of artist options, or None if insufficient data
+
+    """
+    artist = song.get("artist", "")
+    if isinstance(artist, str):
+        artist = artist.strip()
+    else:
+        artist = ""
+
+    alt_artists = song.get("alt_artists", [])
+
+    # Validate required data
+    if not artist:
+        return None
+
+    if not alt_artists or not isinstance(alt_artists, list):
+        return None
+
+    # Filter valid alternatives
+    valid_alts = [a.strip() for a in alt_artists if isinstance(a, str) and a.strip()]
+
+    if not valid_alts:
+        return None
+
+    # Build and shuffle options
+    options = [artist] + valid_alts
+    random.shuffle(options)
+
+    return options
+
+
 class GameState:
     """Manages game state and phase transitions."""
 
@@ -205,6 +273,10 @@ class GameState:
         # Story 18.9: Reaction rate limiting per reveal phase
         self._reactions_this_phase: set[str] = set()
 
+        # Story 20.1: Artist challenge state
+        self.artist_challenge: ArtistChallenge | None = None
+        self.artist_challenge_enabled: bool = False
+
     def create_game(
         self,
         playlists: list[str],
@@ -215,6 +287,7 @@ class GameState:
         difficulty: str = DIFFICULTY_DEFAULT,
         provider: str = PROVIDER_DEFAULT,
         is_mass: bool = False,
+        artist_challenge_enabled: bool = True,
     ) -> dict[str, Any]:
         """
         Create a new game session.
@@ -228,6 +301,7 @@ class GameState:
             difficulty: Difficulty level (easy/normal/hard, default normal)
             provider: Music provider (spotify/apple_music, default spotify)
             is_mass: Whether the media player is a Music Assistant player
+            artist_challenge_enabled: Whether to enable artist guessing (default True)
 
         Returns:
             dict with game_id, join_url, song_count, phase
@@ -294,6 +368,10 @@ class GameState:
         # Story 19.12: Reset bet tracking for new game
         self.bet_tracking = {"total_bets": 0, "bets_won": 0}
 
+        # Story 20.1: Set artist challenge configuration
+        self.artist_challenge_enabled = artist_challenge_enabled
+        self.artist_challenge = None
+
         # Reset timer task for new game
         self.cancel_timer()
 
@@ -359,6 +437,11 @@ class GameState:
                 }
             # Leaderboard (Story 5.5)
             state["leaderboard"] = self.get_leaderboard()
+            # Story 20.1: Artist challenge (hide answer during PLAYING)
+            if self.artist_challenge_enabled and self.artist_challenge:
+                state["artist_challenge"] = self.artist_challenge.to_dict(
+                    include_answer=False
+                )
 
         elif self.phase == GamePhase.REVEAL:
             state["join_url"] = self.join_url
@@ -386,6 +469,11 @@ class GameState:
                     difficulty = self._stats_service.get_song_difficulty(song_uri)
                     if difficulty:
                         state["song_difficulty"] = difficulty
+            # Story 20.1: Artist challenge (reveal answer during REVEAL)
+            if self.artist_challenge_enabled and self.artist_challenge:
+                state["artist_challenge"] = self.artist_challenge.to_dict(
+                    include_answer=True
+                )
 
         elif self.phase == GamePhase.PAUSED:
             state["pause_reason"] = self.pause_reason
@@ -520,6 +608,10 @@ class GameState:
 
         # Story 19.12: Reset bet tracking
         self.bet_tracking = {"total_bets": 0, "bets_won": 0}
+
+        # Story 20.1: Reset artist challenge
+        self.artist_challenge = None
+        self.artist_challenge_enabled = True  # Reset to default (Story 20.7)
 
     async def pause_game(self, reason: str) -> bool:
         """
@@ -1137,6 +1229,9 @@ class GameState:
             **metadata,
         }
 
+        # Story 20.1: Initialize artist challenge for this round
+        self.artist_challenge = self._init_artist_challenge(song)
+
         # Update round tracking
         self.round += 1
         self.total_rounds = self._playlist_manager.get_total_count()
@@ -1281,9 +1376,18 @@ class GameState:
                     player.streak = 0
                     player.streak_bonus = 0
 
-                # Add to total score (round_score + streak_bonus are separate)
-                # Streak bonus NOT doubled by bet
-                player.score += player.round_score + player.streak_bonus
+                # Story 20.4: Award artist bonus to challenge winner
+                if (
+                    self.artist_challenge
+                    and self.artist_challenge.winner == player.name
+                ):
+                    player.artist_bonus = ARTIST_BONUS_POINTS
+                else:
+                    player.artist_bonus = 0
+
+                # Add to total score (round_score + streak_bonus + artist_bonus are separate)
+                # Streak bonus and artist bonus NOT doubled by bet
+                player.score += player.round_score + player.streak_bonus + player.artist_bonus
 
                 # Track cumulative stats (Story 5.6) - AFTER all scoring
                 player.rounds_played += 1
@@ -1325,6 +1429,16 @@ class GameState:
                 player.streak = 0  # Break streak
                 player.streak_bonus = 0
                 player.bet_outcome = None
+                # Story 20.4: Non-submitters don't get artist bonus
+                # (Note: They can still win if they guessed artist correctly during PLAYING)
+                if (
+                    self.artist_challenge
+                    and self.artist_challenge.winner == player.name
+                ):
+                    player.artist_bonus = ARTIST_BONUS_POINTS
+                    player.score += player.artist_bonus
+                else:
+                    player.artist_bonus = 0
 
         # Calculate round analytics after scoring (Story 13.3)
         self.round_analytics = self.calculate_round_analytics()
@@ -1408,12 +1522,13 @@ class GameState:
 
         Returns:
             List of player dicts including guess, round_score, years_off,
-            speed bonus data (Story 5.1), and streak bonus (Story 5.2),
-            sorted by total score descending.
+            speed bonus data (Story 5.1), streak bonus (Story 5.2),
+            and artist bonus (Story 20.4), sorted by total score descending.
 
         """
-        players = [
-            {
+        players = []
+        for p in self.players.values():
+            player_data = {
                 "name": p.name,
                 "score": p.score,
                 "streak": p.streak,
@@ -1438,8 +1553,10 @@ class GameState:
                 "was_stolen_by": p.was_stolen_by.copy() if p.was_stolen_by else [],
                 "steal_available": p.steal_available,
             }
-            for p in self.players.values()
-        ]
+            # Story 20.4: Add artist bonus if challenge is enabled
+            if self.artist_challenge_enabled:
+                player_data["artist_bonus"] = p.artist_bonus
+            players.append(player_data)
         # Sort by score descending for leaderboard preview
         players.sort(key=lambda p: p["score"], reverse=True)
         return players
@@ -1790,3 +1907,81 @@ class GameState:
 
         # Limit to MAX_SUPERLATIVES awards (AC1)
         return awards[:MAX_SUPERLATIVES]
+
+    def _init_artist_challenge(
+        self, song: dict[str, Any]
+    ) -> ArtistChallenge | None:
+        """
+        Initialize artist challenge for a round (Story 20.2).
+
+        Args:
+            song: Song dict with artist info from playlist
+
+        Returns:
+            ArtistChallenge instance or None if artist challenge disabled
+            or song lacks alt_artists data.
+
+        """
+        if not self.artist_challenge_enabled:
+            return None
+
+        options = build_artist_options(song)
+
+        if not options or len(options) < 2:
+            _LOGGER.debug("Skipping artist challenge: insufficient options")
+            return None
+
+        artist = song.get("artist", "")
+        if isinstance(artist, str):
+            artist = artist.strip()
+        else:
+            artist = ""
+
+        return ArtistChallenge(
+            correct_artist=artist,
+            options=options,
+            winner=None,
+            winner_time=None,
+        )
+
+    def submit_artist_guess(
+        self, player_name: str, artist: str, guess_time: float
+    ) -> dict[str, Any]:
+        """
+        Submit artist guess for bonus points (Story 20.3).
+
+        Args:
+            player_name: Name of player guessing
+            artist: Artist name guessed
+            guess_time: Timestamp of guess
+
+        Returns:
+            Dict with keys: correct (bool), first (bool), winner (str|None)
+
+        Raises:
+            ValueError: If no artist challenge active
+
+        """
+        if not self.artist_challenge:
+            raise ValueError("No artist challenge active")
+
+        # Case-insensitive comparison
+        correct = (
+            artist.strip().lower() == self.artist_challenge.correct_artist.lower()
+        )
+
+        result: dict[str, Any] = {
+            "correct": correct,
+            "first": False,
+            "winner": self.artist_challenge.winner,
+        }
+
+        if correct and not self.artist_challenge.winner:
+            # First correct guess!
+            self.artist_challenge.winner = player_name
+            self.artist_challenge.winner_time = guess_time
+            result["first"] = True
+            result["winner"] = player_name
+            _LOGGER.info("Artist challenge won by %s", player_name)
+
+        return result
