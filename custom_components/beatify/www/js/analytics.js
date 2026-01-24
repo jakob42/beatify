@@ -91,16 +91,19 @@
         }
     }
 
+    // Cache for updating combined achievements summary
+    var cachedStreakTotal = 0;
+    var cachedBetRate = null;
+
     /**
      * Render streak achievements section (Story 19.11)
      * @param {Object} streakStats - Streak statistics from API
      */
     function renderStreakStats(streakStats) {
-        var summaryEl = document.getElementById('streak-summary');
-
         // Check for data
         if (!streakStats || !streakStats.has_data) {
-            if (summaryEl) summaryEl.textContent = 'None';
+            cachedStreakTotal = 0;
+            updateAchievementsSummary();
             return;
         }
 
@@ -109,11 +112,9 @@
         updateStreakCard('streak-5-value', streakStats.streak_5_count);
         updateStreakCard('streak-7-value', streakStats.streak_7_count);
 
-        // Update summary badge
-        var total = (streakStats.streak_3_count || 0) + (streakStats.streak_5_count || 0) + (streakStats.streak_7_count || 0);
-        if (summaryEl) {
-            summaryEl.textContent = total > 0 ? total + ' total' : 'None';
-        }
+        // Cache total for combined summary
+        cachedStreakTotal = (streakStats.streak_3_count || 0) + (streakStats.streak_5_count || 0) + (streakStats.streak_7_count || 0);
+        updateAchievementsSummary();
     }
 
     /**
@@ -133,11 +134,10 @@
      * @param {Object} betStats - Betting statistics from API
      */
     function renderBetStats(betStats) {
-        var summaryEl = document.getElementById('betting-summary');
-
         // Check for data
         if (!betStats || !betStats.has_data) {
-            if (summaryEl) summaryEl.textContent = 'None';
+            cachedBetRate = null;
+            updateAchievementsSummary();
             return;
         }
 
@@ -146,11 +146,27 @@
         updateBettingCard('betting-won-value', betStats.bets_won);
         updateBettingCardWithRate('betting-rate-value', betStats.win_rate);
 
-        // Update summary badge
-        if (summaryEl) {
-            var rate = betStats.win_rate || 0;
-            summaryEl.textContent = betStats.total_bets > 0 ? rate.toFixed(0) + '% win' : 'None';
+        // Cache bet rate for combined summary
+        cachedBetRate = betStats.total_bets > 0 ? betStats.win_rate : null;
+        updateAchievementsSummary();
+    }
+
+    /**
+     * Update combined achievements summary badge
+     */
+    function updateAchievementsSummary() {
+        var summaryEl = document.getElementById('achievements-summary');
+        if (!summaryEl) return;
+
+        var parts = [];
+        if (cachedStreakTotal > 0) {
+            parts.push('🔥' + cachedStreakTotal);
         }
+        if (cachedBetRate !== null) {
+            parts.push(cachedBetRate.toFixed(0) + '%');
+        }
+
+        summaryEl.textContent = parts.length > 0 ? parts.join(' • ') : '--';
     }
 
     /**
@@ -391,22 +407,15 @@
         var emptyEl = document.getElementById('song-stats-empty');
         var summaryEl = document.getElementById('song-summary-cards');
         var playlistEl = document.getElementById('playlist-song-stats');
-        var headerSummary = document.getElementById('song-summary');
 
         // Check if we have any data
         if (!data || (!data.most_played && !data.by_playlist.length)) {
             showSongStatsEmpty();
-            if (headerSummary) headerSummary.textContent = 'No data';
             return;
         }
 
         if (emptyEl) emptyEl.classList.add('hidden');
         if (summaryEl) summaryEl.classList.remove('hidden');
-
-        // Update header summary with most played song
-        if (headerSummary && data.most_played) {
-            headerSummary.textContent = data.most_played.title || 'Songs';
-        }
 
         // Render summary cards (AC1)
         renderSongSummaryCard('song-most-played', data.most_played, 'play_count');
@@ -1026,10 +1035,9 @@
         var viewAllSongsBtn = document.getElementById('view-all-songs-btn');
         if (viewAllSongsBtn) {
             viewAllSongsBtn.addEventListener('click', function() {
-                // Open modal with first playlist that has data
-                var firstPlaylist = document.querySelector('[data-playlist-id]');
-                if (firstPlaylist) {
-                    openPlaylistModal(firstPlaylist.dataset.playlistId);
+                // Open modal with first playlist that has data (use songStatsData directly)
+                if (songStatsData && songStatsData.by_playlist && songStatsData.by_playlist.length > 0) {
+                    openPlaylistModal(songStatsData.by_playlist[0].playlist_id);
                 }
             });
         }

@@ -151,6 +151,17 @@ function setupCollapsibleSections() {
             this.setAttribute('aria-expanded', !section.classList.contains('collapsed'));
         }
     });
+
+    // Lobby section toggles (new compact layout)
+    document.querySelectorAll('.lobby-container--compact .section-header-collapsible').forEach(function(header) {
+        header.addEventListener('click', function() {
+            const section = header.closest('.section-collapsible');
+            if (section) {
+                section.classList.toggle('collapsed');
+                header.setAttribute('aria-expanded', !section.classList.contains('collapsed'));
+            }
+        });
+    });
 }
 
 /**
@@ -387,8 +398,9 @@ function renderMediaPlayers(players) {
     // Make entire row clickable (for hidden input UX)
     container.querySelectorAll('.media-player-item').forEach(item => {
         item.addEventListener('click', function(e) {
-            // Don't double-trigger if clicking on the radio itself
-            if (e.target.classList.contains('media-player-radio')) return;
+            // Don't double-trigger if clicking on the radio or within the label
+            // (label clicks already toggle the radio via native browser behavior)
+            if (e.target.classList.contains('media-player-radio') || e.target.closest('.radio-label')) return;
             const radio = item.querySelector('.media-player-radio');
             if (radio && !radio.checked) {
                 radio.checked = true;
@@ -534,8 +546,9 @@ function renderPlaylists(playlists, playlistDir) {
     // Make entire row clickable (for hidden input UX)
     container.querySelectorAll('.playlist-item.is-selectable').forEach(item => {
         item.addEventListener('click', function(e) {
-            // Don't double-trigger if clicking on the checkbox itself
-            if (e.target.classList.contains('playlist-checkbox')) return;
+            // Don't double-trigger if clicking on the checkbox or within the label
+            // (label clicks already toggle the checkbox via native browser behavior)
+            if (e.target.classList.contains('playlist-checkbox') || e.target.closest('.checkbox-label')) return;
             const checkbox = item.querySelector('.playlist-checkbox');
             if (checkbox) {
                 checkbox.checked = !checkbox.checked;
@@ -1300,6 +1313,7 @@ function setProvider(provider) {
 function renderLobbyPlayers(players) {
     var listEl = document.getElementById('lobby-players');
     var countEl = document.getElementById('lobby-player-count');
+    var summaryEl = document.getElementById('admin-players-summary');
     var emptyEl = document.getElementById('lobby-players-empty');
     var statusEl = document.getElementById('lobby-status-value');
     if (!listEl) return;
@@ -1309,6 +1323,11 @@ function renderLobbyPlayers(players) {
     // Update player count (stat card value - just the number)
     if (countEl) {
         countEl.textContent = players.length;
+    }
+
+    // Update players section summary badge
+    if (summaryEl) {
+        summaryEl.textContent = players.length;
     }
 
     // Update status based on player count

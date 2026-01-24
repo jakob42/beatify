@@ -114,63 +114,82 @@
         </div>
 
         <!-- Lobby view (Story 2.3, mobile-optimized compact layout) -->
-        <section id="lobby-section" class="card-section hidden">
-            <!-- Header with inline stat badges -->
-            <div class="lobby-header-compact">
-                <h2 class="section-header section-header--inline">
-                    <span class="section-icon" aria-hidden="true">🎮</span>
-                    <span data-i18n="lobby.gameLobby">Game Lobby</span>
-                </h2>
-                <div class="stat-badge-bar" aria-live="polite">
-                    <span class="stat-badge">
-                        <span class="stat-badge-icon" aria-hidden="true">👥</span>
-                        <span id="lobby-player-count" class="stat-badge-value">0</span>
-                    </span>
-                    <span class="stat-badge stat-badge--status">
-                        <span class="stat-badge-icon" aria-hidden="true">⏳</span>
-                        <span id="lobby-status-value" class="stat-badge-value">Waiting</span>
-                    </span>
+        <div id="lobby-section" class="lobby-view-wrapper hidden">
+            <!-- Beatify Wordmark Header (no analytics icon) -->
+            <header class="lobby-wordmark-header">
+                <h1 class="wordmark"><span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span></h1>
+            </header>
+
+            <div class="lobby-container lobby-container--compact">
+                <!-- Header with inline stat badges -->
+                <div class="lobby-header-compact">
+                    <h2 class="section-header section-header--inline">
+                        <span class="section-icon" aria-hidden="true">🎮</span>
+                        <span data-i18n="lobby.gameLobby">Game Lobby</span>
+                    </h2>
+                    <div class="stat-badge-bar" aria-live="polite">
+                        <span class="stat-badge">
+                            <span class="stat-badge-icon" aria-hidden="true">👥</span>
+                            <span id="lobby-player-count" class="stat-badge-value">0</span>
+                        </span>
+                        <span class="stat-badge stat-badge--status">
+                            <span class="stat-badge-icon" aria-hidden="true">⏳</span>
+                            <span id="lobby-status-value" class="stat-badge-value">Waiting</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Compact QR Section -->
+                <section class="section-collapsible qr-print-area" id="qr-section">
+                    <button type="button" class="section-header-collapsible" aria-expanded="true" aria-controls="qr-content">
+                        <span class="section-icon" aria-hidden="true">📲</span>
+                        <span data-i18n="admin.scanToPlay">Scan to Play</span>
+                        <span class="section-toggle" aria-hidden="true">▼</span>
+                    </button>
+                    <div class="section-content" id="qr-content">
+                        <div class="qr-section qr-section--compact">
+                            <div class="qr-container">
+                                <div id="qr-code" aria-label="QR code to join Beatify game"></div>
+                            </div>
+                            <p id="join-url" class="qr-url-display qr-url-display--compact"></p>
+                            <!-- Inline dashboard link -->
+                            <a href="#" id="admin-dashboard-url" class="dashboard-link no-print" target="_blank">
+                                <span aria-hidden="true">📺</span>
+                                <span data-i18n="dashboard.castToTv">Cast to TV</span>
+                                <span class="dashboard-link-arrow" aria-hidden="true">→</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Players Section - Collapsible -->
+                <section class="section-collapsible" id="admin-players-section">
+                    <button type="button" class="section-header-collapsible" aria-expanded="true" aria-controls="admin-players-content">
+                        <span class="section-icon" aria-hidden="true">👥</span>
+                        <span data-i18n="lobby.playersInLobby">Players in Lobby</span>
+                        <span class="section-summary" id="admin-players-summary">0</span>
+                        <span class="section-toggle" aria-hidden="true">▼</span>
+                    </button>
+                    <div class="section-content" id="admin-players-content">
+                        <div id="lobby-players" class="player-cards-grid" aria-live="polite" aria-label="Player list">
+                            <!-- Rendered dynamically by renderLobbyPlayers() -->
+                        </div>
+                        <p id="lobby-players-empty" class="empty-state-inline">
+                            <span aria-hidden="true">👥</span>
+                            <span data-i18n="lobby.waitingForPlayers">Waiting for players to join...</span>
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Sticky Lobby Actions -->
+                <div class="lobby-actions lobby-actions--sticky no-print">
+                    <button id="participate-btn" class="btn btn-primary btn-large btn-full-width">
+                        <span class="btn-icon" aria-hidden="true">🎮</span>
+                        <span data-i18n="admin.joinAsPlayer">Join as Player</span>
+                    </button>
                 </div>
             </div>
-
-            <!-- Compact QR Section -->
-            <div class="qr-section qr-section--compact qr-print-area">
-                <div class="qr-container">
-                    <div id="qr-code" aria-label="QR code to join Beatify game"></div>
-                </div>
-                <p class="qr-hint" data-i18n="admin.scanToPlay">Scan to Play Beatify!</p>
-                <p id="join-url" class="qr-url-display qr-url-display--compact"></p>
-                <!-- Inline dashboard link -->
-                <a href="#" id="admin-dashboard-url" class="dashboard-link no-print" target="_blank">
-                    <span aria-hidden="true">📺</span>
-                    <span data-i18n="dashboard.castToTv">Cast to TV</span>
-                    <span class="dashboard-link-arrow" aria-hidden="true">→</span>
-                </a>
-            </div>
-
-            <!-- Compact Player List Section -->
-            <div class="player-list-section player-list-section--compact">
-                <h3 class="section-subheader section-subheader--compact">
-                    <span class="section-icon" aria-hidden="true">🎯</span>
-                    <span data-i18n="lobby.playersInLobby">Players in Lobby</span>
-                </h3>
-                <div id="lobby-players" class="player-cards-grid" aria-live="polite" aria-label="Player list">
-                    <!-- Rendered dynamically by renderLobbyPlayers() -->
-                </div>
-                <p id="lobby-players-empty" class="empty-state-inline">
-                    <span aria-hidden="true">👥</span>
-                    <span data-i18n="lobby.waitingForPlayers">Waiting for players to join...</span>
-                </p>
-            </div>
-
-            <!-- Sticky Lobby Actions -->
-            <div class="lobby-actions lobby-actions--sticky no-print">
-                <button id="participate-btn" class="btn btn-primary btn-large btn-full-width">
-                    <span class="btn-icon" aria-hidden="true">🎮</span>
-                    <span data-i18n="admin.joinAsPlayer">Join as Player</span>
-                </button>
-            </div>
-        </section>
+        </div>
 
         <!-- Existing game view (Story 2.3) -->
         <section id="existing-game-section" class="card-section hidden">

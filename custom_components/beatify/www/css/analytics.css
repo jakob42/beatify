@@ -1180,6 +1180,33 @@
     color: var(--color-accent-secondary);
 }
 
+/* Achievement Groups (combined Streaks & Betting) */
+.achievement-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.achievement-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.achievement-group:first-child {
+    padding-top: 0;
+}
+
+.achievement-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-neon-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
 /* Compact Song Summary */
 .song-summary-compact {
     display: flex;

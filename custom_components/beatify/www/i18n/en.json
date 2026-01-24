@@ -233,7 +233,14 @@
     "viewAnalytics": "Analytics",
     "artistChallenge": "Artist Challenge",
     "enableArtistChallenge": "Enable Artist Challenge",
-    "artistChallengeDesc": "First correct guess: +5 pts"
+    "artistChallengeDesc": "First correct guess: +5 pts",
+    "gameSettings": "Game Settings",
+    "language": "Language",
+    "timer": "Timer",
+    "difficulty": "Difficulty",
+    "easy": "Easy",
+    "normal": "Normal",
+    "hard": "Hard"
   },
   "analyticsDashboard": {
     "title": "Beatify Analytics",
@@ -304,7 +311,21 @@
     "winRate": "Win Rate",
     "winRateDesc": "Success percentage",
     "noBettingData": "No betting data yet",
-    "bettingHint": "Players can bet to double their points on confident guesses"
+    "bettingHint": "Players can bet to double their points on confident guesses",
+    "overview": "Overview",
+    "games": "Games",
+    "avgPlayersShort": "Avg Plrs",
+    "score": "Score",
+    "peak": "Peak",
+    "rounds": "Rounds",
+    "songs": "Songs",
+    "hardest": "Hardest",
+    "easiest": "Easiest",
+    "viewAllSongs": "View All Songs",
+    "achievements": "Achievements",
+    "streaks": "Streaks",
+    "betting": "Betting",
+    "chart": "Chart"
   },
   "dashboard": {
     "title": "Beatify - Dashboard",

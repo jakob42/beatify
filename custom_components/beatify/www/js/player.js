@@ -996,6 +996,30 @@
     }
 
     // ============================================
+    // Lobby Collapsible Sections (New Compact Layout)
+    // ============================================
+
+    /**
+     * Setup collapsible sections in the new compact lobby layout
+     * Uses button-based toggle instead of <details> element
+     */
+    function setupLobbyCollapsible() {
+        // Find all collapsible section headers in lobby
+        var collapsibleHeaders = document.querySelectorAll('.lobby-container--compact .section-header-collapsible');
+
+        collapsibleHeaders.forEach(function(header) {
+            header.addEventListener('click', function() {
+                var section = header.closest('.section-collapsible');
+                if (!section) return;
+
+                var isCollapsed = section.classList.contains('collapsed');
+                section.classList.toggle('collapsed');
+                header.setAttribute('aria-expanded', isCollapsed ? 'true' : 'false');
+            });
+        });
+    }
+
+    // ============================================
     // Virtual List for Player Lists (Story 18.2)
     // ============================================
 
@@ -1400,18 +1424,37 @@
     function renderPlayerList(players) {
         const listEl = document.getElementById('player-list');
         const countEl = document.getElementById('player-count');
+        const countBadgeEl = document.getElementById('player-count-badge');
+        const playersSummaryEl = document.getElementById('players-summary');
+        const playersEmptyEl = document.getElementById('players-empty');
         if (!listEl) return;
         // Guard: ensure players is an array
         if (!players || !Array.isArray(players)) {
             players = [];
         }
 
-        // Update player count (Story 16.3 - i18n)
+        const count = players.length;
+
+        // Update player count (Story 16.3 - i18n) - old format
         if (countEl) {
-            const count = players.length;
             countEl.textContent = count === 1
                 ? utils.t('lobby.playerJoined')
                 : t('lobby.playersJoined', { count: count });
+        }
+
+        // Update compact count badge (new layout)
+        if (countBadgeEl) {
+            countBadgeEl.textContent = count;
+        }
+
+        // Update players section summary
+        if (playersSummaryEl) {
+            playersSummaryEl.textContent = count;
+        }
+
+        // Show/hide empty state
+        if (playersEmptyEl) {
+            playersEmptyEl.classList.toggle('hidden', count > 0);
         }
 
         // Story 11.4: Sort players - connected first, then disconnected
@@ -5366,6 +5409,12 @@
             dashboardHintEl.textContent = window.location.origin + '/beatify/dashboard';
         }
 
+        // Set dashboard URL for new compact lobby layout
+        var playerDashboardUrl = document.getElementById('player-dashboard-url');
+        if (playerDashboardUrl) {
+            playerDashboardUrl.href = window.location.origin + '/beatify/dashboard';
+        }
+
         setupJoinForm();
         setupQRModal();
         setupInviteModal();  // Story 16.5
@@ -5375,6 +5424,7 @@
         setupRetryConnection();  // Story 7-4
         setupLeaderboardResizeHandler();  // Story 18.1
         initQrCollapsible();  // Story 18.8
+        setupLobbyCollapsible();  // New compact lobby sections
         // Note: canvas-confetti library (Story 14.5) needs no initialization
 
         // Check if this is an admin redirect

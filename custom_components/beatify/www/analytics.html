@@ -75,36 +75,32 @@
             </div>
         </section>
 
-        <!-- Story 19.11: Streak Achievements Section - Collapsible -->
-        <section class="section-collapsible collapsed" id="streak-section" aria-labelledby="streak-stats-heading">
-            <button type="button" class="section-header-collapsible" aria-expanded="false" aria-controls="streak-content">
-                <span class="section-icon" aria-hidden="true">🔥</span>
-                <span data-i18n="analyticsDashboard.streaks">Streaks</span>
-                <span class="section-summary" id="streak-summary">None</span>
+        <!-- Achievements Section - Combined Streaks & Betting (Story 19.11, 19.12) -->
+        <section class="section-collapsible collapsed" id="achievements-section" aria-labelledby="achievements-heading">
+            <button type="button" class="section-header-collapsible" aria-expanded="false" aria-controls="achievements-content">
+                <span class="section-icon" aria-hidden="true">🏆</span>
+                <span data-i18n="analyticsDashboard.achievements">Achievements</span>
+                <span class="section-summary" id="achievements-summary">--</span>
                 <span class="section-toggle" aria-hidden="true">▼</span>
             </button>
-            <div class="section-content" id="streak-content">
-                <div class="streak-badges" id="streak-badges">
-                    <span class="mini-badge" id="streak-3-badge">🔥 <span id="streak-3-value">0</span></span>
-                    <span class="mini-badge" id="streak-5-badge">🔥🔥 <span id="streak-5-value">0</span></span>
-                    <span class="mini-badge mini-badge--legendary" id="streak-7-badge">🔥🔥🔥 <span id="streak-7-value">0</span></span>
+            <div class="section-content" id="achievements-content">
+                <!-- Streaks subsection -->
+                <div class="achievement-group" id="streak-section">
+                    <span class="achievement-label">🔥 <span data-i18n="analyticsDashboard.streaks">Streaks</span></span>
+                    <div class="streak-badges" id="streak-badges">
+                        <span class="mini-badge" id="streak-3-badge">🔥 <span id="streak-3-value">0</span></span>
+                        <span class="mini-badge" id="streak-5-badge">🔥🔥 <span id="streak-5-value">0</span></span>
+                        <span class="mini-badge mini-badge--legendary" id="streak-7-badge">🔥🔥🔥 <span id="streak-7-value">0</span></span>
+                    </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- Story 19.12: Bet Win/Loss Tracking Section - Collapsible -->
-        <section class="section-collapsible collapsed" id="betting-section" aria-labelledby="betting-stats-heading">
-            <button type="button" class="section-header-collapsible" aria-expanded="false" aria-controls="betting-content">
-                <span class="section-icon" aria-hidden="true">🎲</span>
-                <span data-i18n="analyticsDashboard.betting">Betting</span>
-                <span class="section-summary" id="betting-summary">None</span>
-                <span class="section-toggle" aria-hidden="true">▼</span>
-            </button>
-            <div class="section-content" id="betting-content">
-                <div class="betting-badges" id="betting-badges">
-                    <span class="mini-badge"><span id="betting-total-value">0</span> bets</span>
-                    <span class="mini-badge mini-badge--success"><span id="betting-won-value">0</span> won</span>
-                    <span class="mini-badge mini-badge--highlight"><span id="betting-rate-value">0%</span> rate</span>
+                <!-- Betting subsection -->
+                <div class="achievement-group" id="betting-section">
+                    <span class="achievement-label">🎲 <span data-i18n="analyticsDashboard.betting">Betting</span></span>
+                    <div class="betting-badges" id="betting-badges">
+                        <span class="mini-badge"><span id="betting-total-value">0</span> bets</span>
+                        <span class="mini-badge mini-badge--success"><span id="betting-won-value">0</span> won</span>
+                        <span class="mini-badge mini-badge--highlight"><span id="betting-rate-value">0%</span> rate</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -127,7 +123,6 @@
             <button type="button" class="section-header-collapsible" aria-expanded="true" aria-controls="song-content">
                 <span class="section-icon" aria-hidden="true">🎤</span>
                 <span data-i18n="analyticsDashboard.songs">Songs</span>
-                <span class="section-summary" id="song-summary">No data</span>
                 <span class="section-toggle" aria-hidden="true">▼</span>
             </button>
             <div class="section-content" id="song-content">

@@ -233,7 +233,14 @@
     "viewAnalytics": "Statistik",
     "artistChallenge": "Künstler-Challenge",
     "enableArtistChallenge": "Künstler-Challenge aktivieren",
-    "artistChallengeDesc": "Erster richtiger Tipp: +5 Pkt"
+    "artistChallengeDesc": "Erster richtiger Tipp: +5 Pkt",
+    "gameSettings": "Spieleinstellungen",
+    "language": "Sprache",
+    "timer": "Timer",
+    "difficulty": "Schwierigkeit",
+    "easy": "Leicht",
+    "normal": "Normal",
+    "hard": "Schwer"
   },
   "analyticsDashboard": {
     "title": "Beatify Statistik",
@@ -304,7 +311,21 @@
     "winRate": "Gewinnrate",
     "winRateDesc": "Erfolgsprozentsatz",
     "noBettingData": "Noch keine Wettdaten",
-    "bettingHint": "Spieler koennen wetten, um ihre Punkte bei sicheren Schaetzungen zu verdoppeln"
+    "bettingHint": "Spieler koennen wetten, um ihre Punkte bei sicheren Schaetzungen zu verdoppeln",
+    "overview": "Übersicht",
+    "games": "Spiele",
+    "avgPlayersShort": "Ø Spieler",
+    "score": "Punkte",
+    "peak": "Max",
+    "rounds": "Runden",
+    "songs": "Songs",
+    "hardest": "Schwierigster",
+    "easiest": "Einfachster",
+    "viewAllSongs": "Alle Songs anzeigen",
+    "achievements": "Erfolge",
+    "streaks": "Serien",
+    "betting": "Wetten",
+    "chart": "Diagramm"
   },
   "dashboard": {
     "title": "Beatify - Dashboard",

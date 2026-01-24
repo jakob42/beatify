@@ -578,8 +578,13 @@ body.theme-dark .player-container {
 /* Admin page cards in dark mode - neon styling (Story 19.13) */
 body.theme-dark .card-section {
     background: var(--color-surface-dark);
-    border-color: var(--color-neon-purple);
+    border: 1px solid var(--color-border-neon);
     color: var(--color-text-white);
+}
+
+/* Consistent spacing for admin content sections */
+.admin-content .card-section {
+    margin-bottom: var(--space-md);
 }
 
 body.theme-dark .card-section:hover {
@@ -1005,23 +1010,31 @@ body.theme-dark .toggle-switch {
     border: 1px solid var(--color-error);
 }
 
-/* Music Assistant Badge (for Apple Music support) */
+/* Music Assistant Badge - subtle grey styling with red indicator line */
 .mass-badge {
     display: inline-block;
     padding: 0.125rem 0.375rem;
     border-radius: var(--radius-sm);
     font-size: 0.625rem;
-    font-weight: 700;
+    font-weight: 600;
     margin-left: var(--space-xs);
-    background: linear-gradient(135deg, #fc3c44 0%, #f94c57 100%);
-    color: white;
+    background: rgba(128, 128, 128, 0.2);
+    color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.025em;
     vertical-align: middle;
+    border: 1px solid rgba(128, 128, 128, 0.3);
 }
 
+body.theme-dark .mass-badge {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text-neon-muted);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Red indicator line for Music Assistant players */
 .is-mass-player {
-    border-left: 3px solid #fc3c44;
+    border-left: 3px solid #fc3c44 !important;
 }
 
 /* Modal content in dark mode needs dark text on light backgrounds */
@@ -2928,6 +2941,127 @@ body.theme-dark .admin-controls {
 }
 
 /* =====================================================
+   Lobby View - Shared Styles (Admin & Player)
+   ===================================================== */
+
+/* Lobby Wordmark Header (without analytics icon) */
+.lobby-wordmark-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-md) var(--space-md) var(--space-sm);
+    padding-top: env(safe-area-inset-top, 16px);
+}
+
+.lobby-wordmark-header .wordmark {
+    font-size: 2rem;
+}
+
+/* Lobby View Wrapper */
+.lobby-view-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Compact Lobby Container */
+.lobby-container--compact {
+    flex: 1;
+    padding: 0 var(--space-sm) var(--space-2xl);
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Lobby sections use the same collapsible pattern */
+.lobby-container--compact .section-collapsible {
+    background: var(--color-surface-dark);
+    border: 1px solid var(--color-border-neon);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+    overflow: hidden;
+}
+
+.lobby-container--compact .section-header-collapsible {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: transparent;
+    border: none;
+    color: var(--color-text-white);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.lobby-container--compact .section-header-collapsible .section-icon {
+    font-size: 1rem;
+}
+
+.lobby-container--compact .section-summary {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-text-neon-muted);
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+}
+
+.lobby-container--compact .section-toggle {
+    font-size: 0.625rem;
+    color: var(--color-text-neon-muted);
+    transition: transform 0.2s ease;
+}
+
+.lobby-container--compact .section-collapsible:not(.collapsed) .section-toggle {
+    transform: rotate(180deg);
+}
+
+.lobby-container--compact .section-content {
+    padding: 0 var(--space-md) var(--space-md);
+}
+
+.lobby-container--compact .section-collapsible.collapsed .section-content {
+    display: none;
+}
+
+/* Compact Status (for non-admin players) */
+.lobby-status-compact {
+    text-align: center;
+    padding: var(--space-md);
+    color: var(--color-text-neon-muted);
+    font-size: 0.875rem;
+}
+
+/* Compact How to Play Steps */
+.how-to-play-steps-compact {
+    list-style: decimal;
+    padding-left: var(--space-lg);
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-text-neon-muted);
+}
+
+.how-to-play-steps-compact li {
+    padding: var(--space-xs) 0;
+}
+
+/* Stat Badge for Difficulty */
+.stat-badge--difficulty {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.stat-badge--difficulty:empty {
+    display: none;
+}
+
+/* =====================================================
    Admin Page - Collapsible Sections & Compact Controls
    ===================================================== */
 
@@ -2936,7 +3070,7 @@ body.theme-dark .admin-controls {
     background: var(--color-surface-dark);
     border: 1px solid var(--color-border-neon);
     border-radius: var(--radius-md);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
     overflow: hidden;
 }
 

@@ -233,7 +233,14 @@
     "viewAnalytics": "Estadisticas",
     "artistChallenge": "Desafío de Artista",
     "enableArtistChallenge": "Activar Desafío de Artista",
-    "artistChallengeDesc": "Primera respuesta correcta: +5 pts"
+    "artistChallengeDesc": "Primera respuesta correcta: +5 pts",
+    "gameSettings": "Configuracion del Juego",
+    "language": "Idioma",
+    "timer": "Temporizador",
+    "difficulty": "Dificultad",
+    "easy": "Facil",
+    "normal": "Normal",
+    "hard": "Dificil"
   },
   "analyticsDashboard": {
     "title": "Estadisticas de Beatify",
@@ -304,7 +311,21 @@
     "winRate": "Tasa de Victoria",
     "winRateDesc": "Porcentaje de exito",
     "noBettingData": "Sin datos de apuestas todavia",
-    "bettingHint": "Los jugadores pueden apostar para duplicar sus puntos en adivinanzas seguras"
+    "bettingHint": "Los jugadores pueden apostar para duplicar sus puntos en adivinanzas seguras",
+    "overview": "Resumen",
+    "games": "Juegos",
+    "avgPlayersShort": "Prom Jug",
+    "score": "Puntos",
+    "peak": "Max",
+    "rounds": "Rondas",
+    "songs": "Canciones",
+    "hardest": "Mas dificil",
+    "easiest": "Mas facil",
+    "viewAllSongs": "Ver todas las canciones",
+    "achievements": "Logros",
+    "streaks": "Rachas",
+    "betting": "Apuestas",
+    "chart": "Grafico"
   },
   "dashboard": {
     "title": "Beatify - Panel",
