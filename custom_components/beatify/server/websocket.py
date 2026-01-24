@@ -143,11 +143,13 @@ class BeatifyWebSocketHandler:
         game_state = self.hass.data.get(DOMAIN, {}).get("game")
 
         if not game_state or not game_state.game_id:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_GAME_NOT_STARTED,
-                "message": "No active game",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_GAME_NOT_STARTED,
+                    "message": "No active game",
+                }
+            )
             return
 
         if msg_type == "join":
@@ -183,26 +185,31 @@ class BeatifyWebSocketHandler:
                         else:
                             # Different person trying to claim admin
                             game_state.remove_player(name)
-                            await ws.send_json({
-                                "type": "error",
-                                "code": ERR_ADMIN_EXISTS,
-                                "message": "Only the original host can reconnect",
-                            })
+                            await ws.send_json(
+                                {
+                                    "type": "error",
+                                    "code": ERR_ADMIN_EXISTS,
+                                    "message": "Only the original host can reconnect",
+                                }
+                            )
                             return
                     else:
                         # No disconnected admin - check for existing admin
                         existing_admin = any(
-                            p.is_admin for p in game_state.players.values()
+                            p.is_admin
+                            for p in game_state.players.values()
                             if p.name != name
                         )
                         if existing_admin:
                             # Remove the just-added player and return error
                             game_state.remove_player(name)
-                            await ws.send_json({
-                                "type": "error",
-                                "code": ERR_ADMIN_EXISTS,
-                                "message": "Game already has an admin",
-                            })
+                            await ws.send_json(
+                                {
+                                    "type": "error",
+                                    "code": ERR_ADMIN_EXISTS,
+                                    "message": "Game already has an admin",
+                                }
+                            )
                             return
                         game_state.set_admin(name)
                 else:
@@ -212,11 +219,13 @@ class BeatifyWebSocketHandler:
                 # Send join acknowledgment with session_id (Story 11.1)
                 # Only the joining player receives their session_id (security)
                 if player:
-                    await ws.send_json({
-                        "type": "join_ack",
-                        "session_id": player.session_id,
-                        "game_id": game_state.game_id,
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "join_ack",
+                            "session_id": player.session_id,
+                            "game_id": game_state.game_id,
+                        }
+                    )
 
                 # Send full state to newly joined player
                 state_msg = {"type": "state", **game_state.get_state()}
@@ -239,11 +248,13 @@ class BeatifyWebSocketHandler:
                     ERR_GAME_FULL: "Game is full",
                     ERR_GAME_ENDED: "This game has ended",
                 }
-                await ws.send_json({
-                    "type": "error",
-                    "code": error_code,
-                    "message": error_messages.get(error_code, "Join failed"),
-                })
+                await ws.send_json(
+                    {
+                        "type": "error",
+                        "code": error_code,
+                        "message": error_messages.get(error_code, "Join failed"),
+                    }
+                )
 
         elif msg_type == "submit":
             await self._handle_submit(ws, data, game_state)
@@ -259,20 +270,24 @@ class BeatifyWebSocketHandler:
                     break
 
             if not sender or not sender.is_admin:
-                await ws.send_json({
-                    "type": "error",
-                    "code": ERR_NOT_ADMIN,
-                    "message": "Only admin can perform this action",
-                })
+                await ws.send_json(
+                    {
+                        "type": "error",
+                        "code": ERR_NOT_ADMIN,
+                        "message": "Only admin can perform this action",
+                    }
+                )
                 return
 
             if action == "start_game":
                 if game_state.phase != GamePhase.LOBBY:
-                    await ws.send_json({
-                        "type": "error",
-                        "code": ERR_INVALID_ACTION,
-                        "message": "Game already started",
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "error",
+                            "code": ERR_INVALID_ACTION,
+                            "message": "Game already started",
+                        }
+                    )
                     return
 
                 # Start the first round (plays song, sets timer)
@@ -302,11 +317,13 @@ class BeatifyWebSocketHandler:
                         error_code = ERR_NO_SONGS_REMAINING
                         error_message = "No songs available in playlist"
 
-                    await ws.send_json({
-                        "type": "error",
-                        "code": error_code,
-                        "message": error_message,
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "error",
+                            "code": error_code,
+                            "message": error_message,
+                        }
+                    )
 
             elif action == "next_round":
                 if game_state.phase == GamePhase.PLAYING:
@@ -341,25 +358,31 @@ class BeatifyWebSocketHandler:
                                 await stats_service.record_game(
                                     game_summary, difficulty=game_state.difficulty
                                 )
-                                _LOGGER.debug("Game stats recorded (no songs remaining)")
+                                _LOGGER.debug(
+                                    "Game stats recorded (no songs remaining)"
+                                )
 
                             # No more songs
                             game_state.phase = GamePhase.END
                             await self.broadcast_state()
                 else:
-                    await ws.send_json({
-                        "type": "error",
-                        "code": ERR_INVALID_ACTION,
-                        "message": "Cannot advance round in current phase",
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "error",
+                            "code": ERR_INVALID_ACTION,
+                            "message": "Cannot advance round in current phase",
+                        }
+                    )
 
             elif action == "stop_song":
                 if game_state.phase != GamePhase.PLAYING:
-                    await ws.send_json({
-                        "type": "error",
-                        "code": ERR_INVALID_ACTION,
-                        "message": "No song playing",
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "error",
+                            "code": ERR_INVALID_ACTION,
+                            "message": "No song playing",
+                        }
+                    )
                     return
 
                 if game_state.song_stopped:
@@ -379,11 +402,13 @@ class BeatifyWebSocketHandler:
             elif action == "set_volume":
                 direction = data.get("direction")  # "up" or "down"
                 if direction not in ("up", "down"):
-                    await ws.send_json({
-                        "type": "error",
-                        "code": ERR_INVALID_ACTION,
-                        "message": "Invalid volume direction",
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "error",
+                            "code": ERR_INVALID_ACTION,
+                            "message": "Invalid volume direction",
+                        }
+                    )
                     return
 
                 # Calculate new volume
@@ -399,23 +424,25 @@ class BeatifyWebSocketHandler:
                             "Failed to set volume to %.0f%%", new_level * 100
                         )
 
-                _LOGGER.info(
-                    "Volume adjusted %s to %.0f%%", direction, new_level * 100
-                )
+                _LOGGER.info("Volume adjusted %s to %.0f%%", direction, new_level * 100)
 
                 # Send feedback to requester only (not broadcast)
-                await ws.send_json({
-                    "type": "volume_changed",
-                    "level": new_level,
-                })
+                await ws.send_json(
+                    {
+                        "type": "volume_changed",
+                        "level": new_level,
+                    }
+                )
 
             elif action == "end_game":
                 if game_state.phase not in (GamePhase.PLAYING, GamePhase.REVEAL):
-                    await ws.send_json({
-                        "type": "error",
-                        "code": ERR_INVALID_ACTION,
-                        "message": "Cannot end game in current phase",
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "error",
+                            "code": ERR_INVALID_ACTION,
+                            "message": "Cannot end game in current phase",
+                        }
+                    )
                     return
 
                 # Cancel timer if running
@@ -436,9 +463,7 @@ class BeatifyWebSocketHandler:
 
                 # Transition to END
                 game_state.phase = GamePhase.END
-                _LOGGER.info(
-                    "Admin ended game early at round %d", game_state.round
-                )
+                _LOGGER.info("Admin ended game early at round %d", game_state.round)
 
                 # Broadcast final state to all players FIRST (Story 7-5)
                 await self.broadcast_state()
@@ -456,11 +481,13 @@ class BeatifyWebSocketHandler:
             elif action == "set_language":
                 # Language selection (Story 12.4) - only in LOBBY phase
                 if game_state.phase != GamePhase.LOBBY:
-                    await ws.send_json({
-                        "type": "error",
-                        "code": ERR_INVALID_ACTION,
-                        "message": "Can only change language in lobby",
-                    })
+                    await ws.send_json(
+                        {
+                            "type": "error",
+                            "code": ERR_INVALID_ACTION,
+                            "message": "Can only change language in lobby",
+                        }
+                    )
                     return
 
                 language = data.get("language", "en")
@@ -512,11 +539,13 @@ class BeatifyWebSocketHandler:
                 return  # Invalid emoji
 
             if game_state.record_reaction(player.name, emoji):
-                await self.broadcast({
-                    "type": "player_reaction",
-                    "player_name": player.name,
-                    "emoji": emoji
-                })
+                await self.broadcast(
+                    {
+                        "type": "player_reaction",
+                        "player_name": player.name,
+                        "emoji": emoji,
+                    }
+                )
 
         elif msg_type == "artist_guess":
             # Artist challenge guess submission (Story 20.3)
@@ -545,48 +574,58 @@ class BeatifyWebSocketHandler:
                 break
 
         if not player:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_NOT_IN_GAME,
-                "message": "Not in game",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_NOT_IN_GAME,
+                    "message": "Not in game",
+                }
+            )
             return
 
         # Check phase
         if game_state.phase != GamePhase.PLAYING:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_INVALID_ACTION,
-                "message": "Not in playing phase",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_INVALID_ACTION,
+                    "message": "Not in playing phase",
+                }
+            )
             return
 
         # Check if already submitted
         if player.submitted:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_ALREADY_SUBMITTED,
-                "message": "Already submitted",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_ALREADY_SUBMITTED,
+                    "message": "Already submitted",
+                }
+            )
             return
 
         # Check deadline (uses game_state's time function for testability)
         if game_state.is_deadline_passed():
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_ROUND_EXPIRED,
-                "message": "Time's up!",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_ROUND_EXPIRED,
+                    "message": "Time's up!",
+                }
+            )
             return
 
         # Validate year
         year = data.get("year")
         if not isinstance(year, int) or year < YEAR_MIN or year > YEAR_MAX:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_INVALID_ACTION,
-                "message": "Invalid year",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_INVALID_ACTION,
+                    "message": "Invalid year",
+                }
+            )
             return
 
         # Parse bet flag (Story 5.3)
@@ -598,22 +637,26 @@ class BeatifyWebSocketHandler:
         player.submit_guess(year, submission_time)
 
         # Send acknowledgment
-        await ws.send_json({
-            "type": "submit_ack",
-            "year": year,
-        })
+        await ws.send_json(
+            {
+                "type": "submit_ack",
+                "year": year,
+            }
+        )
 
         # Broadcast updated state (player.submitted now True)
         await self.broadcast_state()
 
         # Story 20.9: Check for early reveal when all guesses are complete
         # Note: _trigger_early_reveal() calls end_round() which broadcasts via callback
-        if game_state.phase == GamePhase.PLAYING and game_state.check_all_guesses_complete():
+        if (
+            game_state.phase == GamePhase.PLAYING
+            and game_state.check_all_guesses_complete()
+        ):
             await game_state._trigger_early_reveal()
 
         _LOGGER.info(
-            "Player %s submitted guess: %d at %.2f",
-            player.name, year, submission_time
+            "Player %s submitted guess: %d at %.2f", player.name, year, submission_time
         )
 
     async def _handle_reconnect(
@@ -630,46 +673,52 @@ class BeatifyWebSocketHandler:
         """
         session_id = data.get("session_id")
         if not session_id:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_SESSION_NOT_FOUND,
-                "message": "Session ID required",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_SESSION_NOT_FOUND,
+                    "message": "Session ID required",
+                }
+            )
             return
 
         # Find player by session ID
         player = game_state.get_player_by_session_id(session_id)
         if not player:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_SESSION_NOT_FOUND,
-                "message": "Session not found or game was reset",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_SESSION_NOT_FOUND,
+                    "message": "Session not found or game was reset",
+                }
+            )
             return
 
         # Check game phase - cannot reconnect to ended game
         if game_state.phase == GamePhase.END:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_GAME_ENDED,
-                "message": "Game has ended",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_GAME_ENDED,
+                    "message": "Game has ended",
+                }
+            )
             return
 
         # Handle dual-tab scenario: close old connection if still active
         if player.connected and player.ws and not player.ws.closed:
             try:
-                await player.ws.send_json({
-                    "type": "error",
-                    "code": ERR_SESSION_TAKEOVER,
-                    "message": "Session taken over by another tab",
-                })
+                await player.ws.send_json(
+                    {
+                        "type": "error",
+                        "code": ERR_SESSION_TAKEOVER,
+                        "message": "Session taken over by another tab",
+                    }
+                )
                 await player.ws.close()
             except Exception:  # noqa: BLE001
                 pass  # Old connection may already be dead
-            _LOGGER.info(
-                "Session takeover: %s (old tab disconnected)", player.name
-            )
+            _LOGGER.info("Session takeover: %s (old tab disconnected)", player.name)
 
         # Update connection
         player.ws = ws
@@ -691,11 +740,13 @@ class BeatifyWebSocketHandler:
                     _LOGGER.info("Game resumed by admin session reconnection")
 
         # Send reconnect acknowledgment
-        await ws.send_json({
-            "type": "reconnect_ack",
-            "name": player.name,
-            "success": True,
-        })
+        await ws.send_json(
+            {
+                "type": "reconnect_ack",
+                "name": player.name,
+                "success": True,
+            }
+        )
 
         # Send current state to reconnected player
         state_msg = {"type": "state", **game_state.get_state()}
@@ -705,8 +756,7 @@ class BeatifyWebSocketHandler:
         await self.broadcast_state()
 
         _LOGGER.info(
-            "Player reconnected via session: %s (score: %d)",
-            player.name, player.score
+            "Player reconnected via session: %s (score: %d)", player.name, player.score
         )
 
     async def _handle_leave(
@@ -734,11 +784,13 @@ class BeatifyWebSocketHandler:
 
         # Block admin leave
         if player.is_admin:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_ADMIN_CANNOT_LEAVE,
-                "message": "Host cannot leave. End the game instead.",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_ADMIN_CANNOT_LEAVE,
+                    "message": "Host cannot leave. End the game instead.",
+                }
+            )
             return
 
         # Remove player completely (also clears session mapping via Story 11.1)
@@ -774,29 +826,35 @@ class BeatifyWebSocketHandler:
                 break
 
         if not player:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_NOT_IN_GAME,
-                "message": "Not in game",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_NOT_IN_GAME,
+                    "message": "Not in game",
+                }
+            )
             return
 
         # Check if player has steal available
         if not player.steal_available:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_INVALID_ACTION,
-                "message": "No steal available",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_INVALID_ACTION,
+                    "message": "No steal available",
+                }
+            )
             return
 
         # Get available targets (privacy: only requesting player sees this)
         targets = game_state.get_steal_targets(player.name)
 
-        await ws.send_json({
-            "type": "steal_targets",
-            "targets": targets,
-        })
+        await ws.send_json(
+            {
+                "type": "steal_targets",
+                "targets": targets,
+            }
+        )
 
     async def _handle_steal(
         self, ws: web.WebSocketResponse, data: dict, game_state: GameState
@@ -818,20 +876,24 @@ class BeatifyWebSocketHandler:
                 break
 
         if not player:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_NOT_IN_GAME,
-                "message": "Not in game",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_NOT_IN_GAME,
+                    "message": "Not in game",
+                }
+            )
             return
 
         target_name = data.get("target")
         if not target_name:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_INVALID_ACTION,
-                "message": "Target name required",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_INVALID_ACTION,
+                    "message": "Target name required",
+                }
+            )
             return
 
         # Execute steal via GameState
@@ -839,22 +901,26 @@ class BeatifyWebSocketHandler:
 
         if result["success"]:
             # Send acknowledgment to stealer
-            await ws.send_json({
-                "type": "steal_ack",
-                "success": True,
-                "target": result["target"],
-                "year": result["year"],
-            })
+            await ws.send_json(
+                {
+                    "type": "steal_ack",
+                    "success": True,
+                    "target": result["target"],
+                    "year": result["year"],
+                }
+            )
 
             # Broadcast updated state (stealer now has submitted)
             await self.broadcast_state()
         else:
             # Send error to stealer
-            await ws.send_json({
-                "type": "error",
-                "code": result["error"],
-                "message": self._get_steal_error_message(result["error"]),
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": result["error"],
+                    "message": self._get_steal_error_message(result["error"]),
+                }
+            )
 
     def _get_steal_error_message(self, error_code: str) -> str:
         """Get human-readable message for steal error codes."""
@@ -881,40 +947,48 @@ class BeatifyWebSocketHandler:
         """
         # Validate phase
         if game_state.phase != GamePhase.PLAYING:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_INVALID_ACTION,
-                "message": "Can only guess during PLAYING phase",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_INVALID_ACTION,
+                    "message": "Can only guess during PLAYING phase",
+                }
+            )
             return
 
         # Get player from connection
         player = game_state.get_player_by_ws(ws)
         if not player:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_NOT_IN_GAME,
-                "message": "Not in game",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_NOT_IN_GAME,
+                    "message": "Not in game",
+                }
+            )
             return
 
         # Validate artist challenge exists
         if not game_state.artist_challenge:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_NO_ARTIST_CHALLENGE,
-                "message": "No artist challenge this round",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_NO_ARTIST_CHALLENGE,
+                    "message": "No artist challenge this round",
+                }
+            )
             return
 
         # Get and validate artist guess
         artist = data.get("artist", "").strip()
         if not artist:
-            await ws.send_json({
-                "type": "error",
-                "code": ERR_INVALID_ACTION,
-                "message": "Artist cannot be empty",
-            })
+            await ws.send_json(
+                {
+                    "type": "error",
+                    "code": ERR_INVALID_ACTION,
+                    "message": "Artist cannot be empty",
+                }
+            )
             return
 
         # Submit guess
@@ -945,12 +1019,18 @@ class BeatifyWebSocketHandler:
 
         # Story 20.9: Check for early reveal when all guesses are complete
         # Note: _trigger_early_reveal() calls end_round() which broadcasts via callback
-        if game_state.phase == GamePhase.PLAYING and game_state.check_all_guesses_complete():
+        if (
+            game_state.phase == GamePhase.PLAYING
+            and game_state.check_all_guesses_complete()
+        ):
             await game_state._trigger_early_reveal()
 
         _LOGGER.debug(
             "Artist guess from %s: '%s' -> correct=%s, first=%s",
-            player.name, artist, result["correct"], result.get("first", False)
+            player.name,
+            artist,
+            result["correct"],
+            result.get("first", False),
         )
 
     async def broadcast(self, message: dict) -> None:
@@ -1013,6 +1093,7 @@ class BeatifyWebSocketHandler:
 
         # Admin disconnect: pause game after grace period (Story 7-1)
         if player.is_admin:
+
             async def pause_after_timeout() -> None:
                 await asyncio.sleep(LOBBY_DISCONNECT_GRACE_PERIOD)
                 # Check if admin still disconnected

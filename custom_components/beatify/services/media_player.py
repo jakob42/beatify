@@ -57,6 +57,7 @@ def get_media_content_type(uri: str) -> str:
 
     return MEDIA_CONTENT_TYPE_DEFAULT
 
+
 # Timeout for pre-flight connectivity check (seconds)
 PREFLIGHT_TIMEOUT = 5.0
 
@@ -207,9 +208,7 @@ class MediaPlayerService:
         # Get initial state for comparison
         initial_state = self._hass.states.get(self._entity_id)
         initial_title = (
-            initial_state.attributes.get("media_title")
-            if initial_state
-            else None
+            initial_state.attributes.get("media_title") if initial_state else None
         )
 
         elapsed = 0.0
@@ -377,9 +376,7 @@ class MediaPlayerService:
             return False, msg
         except Exception as err:  # noqa: BLE001
             msg = str(err)
-            _LOGGER.warning(
-                "Media player %s not responsive: %s", self._entity_id, msg
-            )
+            _LOGGER.warning("Media player %s not responsive: %s", self._entity_id, msg)
             return False, msg
 
 
@@ -395,16 +392,17 @@ async def async_get_media_players(hass: HomeAssistant) -> list[dict]:
         # Check if this entity is from Music Assistant integration
         entity_entry = ent_reg.async_get(state.entity_id)
         is_mass = (
-            entity_entry is not None
-            and entity_entry.platform == "music_assistant"
+            entity_entry is not None and entity_entry.platform == "music_assistant"
         )
 
-        media_players.append({
-            "entity_id": state.entity_id,
-            "friendly_name": state.attributes.get("friendly_name", state.entity_id),
-            "state": state.state,
-            "is_mass": is_mass,
-        })
+        media_players.append(
+            {
+                "entity_id": state.entity_id,
+                "friendly_name": state.attributes.get("friendly_name", state.entity_id),
+                "state": state.state,
+                "is_mass": is_mass,
+            }
+        )
 
     _LOGGER.debug("Found %d media players", len(media_players))
     return media_players

@@ -786,12 +786,16 @@ class GameState:
         if joined_late and initial_score > 0:
             _LOGGER.info(
                 "Late joiner %s inherits average score: %d (from %d players)",
-                name, initial_score, len(self.players) - 1
+                name,
+                initial_score,
+                len(self.players) - 1,
             )
         else:
             _LOGGER.info(
                 "Player joined: %s (total: %d, late: %s)",
-                name, len(self.players), joined_late
+                name,
+                len(self.players),
+                joined_late,
             )
         return True, None
 
@@ -1035,9 +1039,7 @@ class GameState:
         self._early_reveal = True
         await self.end_round()
 
-    def set_round_end_callback(
-        self, callback: Callable[[], Awaitable[None]]
-    ) -> None:
+    def set_round_end_callback(self, callback: Callable[[], Awaitable[None]]) -> None:
         """
         Set callback to invoke when round ends (for broadcasting).
 
@@ -1140,9 +1142,7 @@ class GameState:
         _LOGGER.info("Game started: %d players", len(self.players))
         return True, None
 
-    async def start_round(
-        self, hass: HomeAssistant, _retry_count: int = 0
-    ) -> bool:
+    async def start_round(self, hass: HomeAssistant, _retry_count: int = 0) -> bool:
         """
         Start a new round with song playback.
 
@@ -1212,7 +1212,10 @@ class GameState:
             # Skip for MA players since they use music_assistant.play_media service
             # which handles speaker state differently
             if not self.is_mass:
-                responsive, error_detail = await self._media_player_service.verify_responsive()
+                (
+                    responsive,
+                    error_detail,
+                ) = await self._media_player_service.verify_responsive()
                 if not responsive:
                     self.last_error_detail = error_detail
                     _LOGGER.error(
@@ -1226,7 +1229,9 @@ class GameState:
             resolved_uri = song.get("_resolved_uri") or song.get("uri")
             success = await self._media_player_service.play_song(resolved_uri)
             if not success:
-                _LOGGER.warning("Failed to play song: %s", song["uri"])  # Log original for debug
+                _LOGGER.warning(
+                    "Failed to play song: %s", song["uri"]
+                )  # Log original for debug
                 self._playlist_manager.mark_played(resolved_uri)
 
                 # Check retry limit to prevent runaway loop
@@ -1309,9 +1314,7 @@ class GameState:
         delay_seconds = (self.deadline - now_ms) / 1000.0
 
         # Start timer task for round expiry
-        self._timer_task = asyncio.create_task(
-            self._timer_countdown(delay_seconds)
-        )
+        self._timer_task = asyncio.create_task(self._timer_countdown(delay_seconds))
 
         # Transition to PLAYING
         self.phase = GamePhase.PLAYING
@@ -1420,7 +1423,11 @@ class GameState:
                     # Check for steal unlock at 3-streak milestone (Story 15.3)
                     if player.streak == STEAL_UNLOCK_STREAK:
                         if player.unlock_steal():
-                            _LOGGER.info("Player %s unlocked steal at %d streak", player.name, player.streak)
+                            _LOGGER.info(
+                                "Player %s unlocked steal at %d streak",
+                                player.name,
+                                player.streak,
+                            )
                 else:
                     player.previous_streak = player.streak  # Store for display (5.4)
                     player.streak = 0
@@ -1437,7 +1444,9 @@ class GameState:
 
                 # Add to total score (round_score + streak_bonus + artist_bonus are separate)
                 # Streak bonus and artist bonus NOT doubled by bet
-                player.score += player.round_score + player.streak_bonus + player.artist_bonus
+                player.score += (
+                    player.round_score + player.streak_bonus + player.artist_bonus
+                )
 
                 # Track cumulative stats (Story 5.6) - AFTER all scoring
                 player.rounds_played += 1
@@ -1517,9 +1526,7 @@ class GameState:
                 if self.playlists:
                     playlist_path = self.playlists[0]
                     playlist_name = (
-                        playlist_path.replace(".json", "")
-                        .replace("-", " ")
-                        .title()
+                        playlist_path.replace(".json", "").replace("-", " ").title()
                     )
                 await self._stats_service.record_song_result(
                     song_uri,
@@ -1748,15 +1755,14 @@ class GameState:
 
         # Collect submitted player data
         submitted_players = [
-            p for p in self.players.values()
+            p
+            for p in self.players.values()
             if p.submitted and p.current_guess is not None
         ]
 
         # Handle empty submissions (AC11)
         if not submitted_players:
-            return RoundAnalytics(
-                correct_decade=self._get_decade_label(correct_year)
-            )
+            return RoundAnalytics(correct_decade=self._get_decade_label(correct_year))
 
         # Build all_guesses sorted by years_off (AC1)
         all_guesses = sorted(
@@ -1795,16 +1801,17 @@ class GameState:
         # Speed champion - fastest submission (AC3, AC10)
         speed_champion = None
         players_with_time = [
-            p for p in submitted_players
+            p
+            for p in submitted_players
             if p.submission_time is not None and self.round_start_time is not None
         ]
         if players_with_time:
             fastest_time = min(
-                p.submission_time - self.round_start_time
-                for p in players_with_time
+                p.submission_time - self.round_start_time for p in players_with_time
             )
             speed_champs = [
-                p.name for p in players_with_time
+                p.name
+                for p in players_with_time
                 if (p.submission_time - self.round_start_time) == fastest_time
             ]
             speed_champion = {
@@ -1871,50 +1878,52 @@ class GameState:
         ]
         if speed_candidates:
             fastest = min(speed_candidates, key=lambda x: x[1])
-            awards.append({
-                "id": "speed_demon",
-                "emoji": "⚡",
-                "title": "speed_demon",  # i18n key
-                "player_name": fastest[0].name,
-                "value": round(fastest[1], 1),
-                "value_label": "avg_time",  # i18n key
-            })
+            awards.append(
+                {
+                    "id": "speed_demon",
+                    "emoji": "⚡",
+                    "title": "speed_demon",  # i18n key
+                    "player_name": fastest[0].name,
+                    "value": round(fastest[1], 1),
+                    "value_label": "avg_time",  # i18n key
+                }
+            )
 
         # Lucky Streak - longest streak achieved (AC3)
         # Minimum streak of MIN_STREAK_FOR_AWARD
         streak_candidates = [
-            (p, p.best_streak)
-            for p in players
-            if p.best_streak >= MIN_STREAK_FOR_AWARD
+            (p, p.best_streak) for p in players if p.best_streak >= MIN_STREAK_FOR_AWARD
         ]
         if streak_candidates:
             best = max(streak_candidates, key=lambda x: x[1])
-            awards.append({
-                "id": "lucky_streak",
-                "emoji": "🔥",
-                "title": "lucky_streak",
-                "player_name": best[0].name,
-                "value": best[1],
-                "value_label": "streak",
-            })
+            awards.append(
+                {
+                    "id": "lucky_streak",
+                    "emoji": "🔥",
+                    "title": "lucky_streak",
+                    "player_name": best[0].name,
+                    "value": best[1],
+                    "value_label": "streak",
+                }
+            )
 
         # Risk Taker - most bets placed (AC3)
         # Minimum MIN_BETS_FOR_AWARD bets
         bet_candidates = [
-            (p, p.bets_placed)
-            for p in players
-            if p.bets_placed >= MIN_BETS_FOR_AWARD
+            (p, p.bets_placed) for p in players if p.bets_placed >= MIN_BETS_FOR_AWARD
         ]
         if bet_candidates:
             most_bets = max(bet_candidates, key=lambda x: x[1])
-            awards.append({
-                "id": "risk_taker",
-                "emoji": "🎲",
-                "title": "risk_taker",
-                "player_name": most_bets[0].name,
-                "value": most_bets[1],
-                "value_label": "bets",
-            })
+            awards.append(
+                {
+                    "id": "risk_taker",
+                    "emoji": "🎲",
+                    "title": "risk_taker",
+                    "player_name": most_bets[0].name,
+                    "value": most_bets[1],
+                    "value_label": "bets",
+                }
+            )
 
         # Clutch Player - best final 3 rounds (AC3)
         # Only if game has MIN_ROUNDS_FOR_CLUTCH+ rounds
@@ -1928,39 +1937,39 @@ class GameState:
                 clutch = max(clutch_candidates, key=lambda x: x[1])
                 # Only show if they scored something in final 3
                 if clutch[1] > 0:
-                    awards.append({
-                        "id": "clutch_player",
-                        "emoji": "🌟",
-                        "title": "clutch_player",
-                        "player_name": clutch[0].name,
-                        "value": clutch[1],
-                        "value_label": "points",
-                    })
+                    awards.append(
+                        {
+                            "id": "clutch_player",
+                            "emoji": "🌟",
+                            "title": "clutch_player",
+                            "player_name": clutch[0].name,
+                            "value": clutch[1],
+                            "value_label": "points",
+                        }
+                    )
 
         # Close Calls - most +/-1 year guesses (AC3)
         # Minimum MIN_CLOSE_CALLS close guesses
         close_candidates = [
-            (p, p.close_calls)
-            for p in players
-            if p.close_calls >= MIN_CLOSE_CALLS
+            (p, p.close_calls) for p in players if p.close_calls >= MIN_CLOSE_CALLS
         ]
         if close_candidates:
             closest = max(close_candidates, key=lambda x: x[1])
-            awards.append({
-                "id": "close_calls",
-                "emoji": "🎯",
-                "title": "close_calls",
-                "player_name": closest[0].name,
-                "value": closest[1],
-                "value_label": "close_guesses",
-            })
+            awards.append(
+                {
+                    "id": "close_calls",
+                    "emoji": "🎯",
+                    "title": "close_calls",
+                    "player_name": closest[0].name,
+                    "value": closest[1],
+                    "value_label": "close_guesses",
+                }
+            )
 
         # Limit to MAX_SUPERLATIVES awards (AC1)
         return awards[:MAX_SUPERLATIVES]
 
-    def _init_artist_challenge(
-        self, song: dict[str, Any]
-    ) -> ArtistChallenge | None:
+    def _init_artist_challenge(self, song: dict[str, Any]) -> ArtistChallenge | None:
         """
         Initialize artist challenge for a round (Story 20.2).
 
@@ -2016,9 +2025,7 @@ class GameState:
             raise ValueError("No artist challenge active")
 
         # Case-insensitive comparison
-        correct = (
-            artist.strip().lower() == self.artist_challenge.correct_artist.lower()
-        )
+        correct = artist.strip().lower() == self.artist_challenge.correct_artist.lower()
 
         result: dict[str, Any] = {
             "correct": correct,

@@ -181,7 +181,9 @@ class StartGameView(HomeAssistantView):
         round_duration = body.get("round_duration")  # Story 13.1
         difficulty = body.get("difficulty", DIFFICULTY_DEFAULT)  # Story 14.1
         provider = body.get("provider", PROVIDER_DEFAULT)  # Story 17.2
-        artist_challenge_enabled = body.get("artist_challenge_enabled", True)  # Story 20.7
+        artist_challenge_enabled = body.get(
+            "artist_challenge_enabled", True
+        )  # Story 20.7
 
         # Validate difficulty (Story 14.1)
         valid_difficulties = (DIFFICULTY_EASY, DIFFICULTY_NORMAL, DIFFICULTY_HARD)
@@ -207,7 +209,10 @@ class StartGameView(HomeAssistantView):
                     )
             except (ValueError, TypeError):
                 return web.json_response(
-                    {"error": "INVALID_REQUEST", "message": "Invalid round duration value"},
+                    {
+                        "error": "INVALID_REQUEST",
+                        "message": "Invalid round duration value",
+                    },
                     status=400,
                 )
 
@@ -344,7 +349,11 @@ class StartGameView(HomeAssistantView):
         """Get base URL for join URL construction from request."""
         # Use the request URL - this is what the user actually used to access the app
         url = request.url
-        return f"{url.scheme}://{url.host}:{url.port}" if url.port else f"{url.scheme}://{url.host}"
+        return (
+            f"{url.scheme}://{url.host}:{url.port}"
+            if url.port
+            else f"{url.scheme}://{url.host}"
+        )
 
 
 class EndGameView(HomeAssistantView):
@@ -471,40 +480,48 @@ class GameStatusView(HomeAssistantView):
 
         # No game ID provided
         if not game_id:
-            return web.json_response({
-                "exists": False,
-                "phase": None,
-                "can_join": False,
-            })
+            return web.json_response(
+                {
+                    "exists": False,
+                    "phase": None,
+                    "can_join": False,
+                }
+            )
 
         # Get game state with safe access
         game_state = self.hass.data.get(DOMAIN, {}).get("game")
 
         # No game state or different game ID
         if not game_state:
-            return web.json_response({
-                "exists": False,
-                "phase": None,
-                "can_join": False,
-            })
+            return web.json_response(
+                {
+                    "exists": False,
+                    "phase": None,
+                    "can_join": False,
+                }
+            )
 
         if game_state.game_id != game_id:
-            return web.json_response({
-                "exists": False,
-                "phase": None,
-                "can_join": False,
-            })
+            return web.json_response(
+                {
+                    "exists": False,
+                    "phase": None,
+                    "can_join": False,
+                }
+            )
 
         # Game exists - return status
         phase = game_state.phase.value
         # Late join supported during LOBBY, PLAYING, and REVEAL (Story 16.5)
         can_join = phase in ("LOBBY", "PLAYING", "REVEAL")
 
-        return web.json_response({
-            "exists": True,
-            "phase": phase,
-            "can_join": can_join,
-        })
+        return web.json_response(
+            {
+                "exists": True,
+                "phase": phase,
+                "can_join": can_join,
+            }
+        )
 
 
 class DashboardView(HomeAssistantView):
@@ -546,22 +563,26 @@ class StatsView(HomeAssistantView):
         stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
 
         if not stats_service:
-            return web.json_response({
-                "summary": {
-                    "games_played": 0,
-                    "highest_avg_score": 0.0,
-                    "all_time_avg": 0.0,
-                },
-                "history": [],
-            })
+            return web.json_response(
+                {
+                    "summary": {
+                        "games_played": 0,
+                        "highest_avg_score": 0.0,
+                        "all_time_avg": 0.0,
+                    },
+                    "history": [],
+                }
+            )
 
         summary = await stats_service.get_summary()
         history = await stats_service.get_history(limit=10)
 
-        return web.json_response({
-            "summary": summary,
-            "history": history,
-        })
+        return web.json_response(
+            {
+                "summary": summary,
+                "history": history,
+            }
+        )
 
 
 class AnalyticsView(HomeAssistantView):
@@ -631,15 +652,17 @@ class AnalyticsView(HomeAssistantView):
         analytics = self.hass.data.get(DOMAIN, {}).get("analytics")
 
         if not analytics:
-            return web.json_response({
-                "period": period,
-                "total_games": 0,
-                "avg_players_per_game": 0,
-                "avg_score": 0,
-                "error_rate": 0,
-                "trends": {"games": 0, "players": 0, "score": 0, "errors": 0},
-                "generated_at": int(time.time()),
-            })
+            return web.json_response(
+                {
+                    "period": period,
+                    "total_games": 0,
+                    "avg_players_per_game": 0,
+                    "avg_score": 0,
+                    "error_rate": 0,
+                    "trends": {"games": 0, "players": 0, "score": 0, "errors": 0},
+                    "generated_at": int(time.time()),
+                }
+            )
 
         # Check cache (invalidate if period changed or TTL expired)
         now = time.time()
@@ -705,12 +728,14 @@ class SongStatsView(HomeAssistantView):
         stats_service = self.hass.data.get(DOMAIN, {}).get("stats")
 
         if not stats_service:
-            return web.json_response({
-                "most_played": None,
-                "hardest": None,
-                "easiest": None,
-                "by_playlist": [],
-            })
+            return web.json_response(
+                {
+                    "most_played": None,
+                    "hardest": None,
+                    "easiest": None,
+                    "by_playlist": [],
+                }
+            )
 
         # Check cache (invalidate if playlist changed or TTL expired)
         now = time.time()

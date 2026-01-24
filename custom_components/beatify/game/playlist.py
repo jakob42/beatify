@@ -119,6 +119,7 @@ class PlaylistManager:
         """
         return len(self._songs)
 
+
 # Validation constants
 MIN_YEAR = 1900
 MAX_YEAR = 2030
@@ -182,8 +183,10 @@ def _get_playlist_version(path: Path) -> str:
 
 def _compare_versions(v1: str, v2: str) -> int:
     """Compare version strings. Returns: -1 if v1<v2, 0 if equal, 1 if v1>v2."""
+
     def parse(v: str) -> tuple[int, ...]:
         return tuple(int(x) for x in v.split("."))
+
     try:
         p1, p2 = parse(v1), parse(v2)
         if p1 < p2:
@@ -226,27 +229,27 @@ async def _copy_bundled_playlists(dest_dir: Path) -> None:
 
             if not dest_file.exists():
                 # New playlist - copy it
-                await loop.run_in_executor(
-                    None, _copy_file, playlist_file, dest_file
-                )
+                await loop.run_in_executor(None, _copy_file, playlist_file, dest_file)
                 _LOGGER.info(
                     "Copied bundled playlist %s (v%s)", playlist_file.name, bundled_ver
                 )
             elif _compare_versions(bundled_ver, existing_ver) > 0:
                 # Bundled version is newer - update
-                await loop.run_in_executor(
-                    None, _copy_file, playlist_file, dest_file
-                )
+                await loop.run_in_executor(None, _copy_file, playlist_file, dest_file)
                 _LOGGER.info(
                     "Updated playlist %s: v%s -> v%s",
-                    playlist_file.name, existing_ver, bundled_ver
+                    playlist_file.name,
+                    existing_ver,
+                    bundled_ver,
                 )
             else:
                 _LOGGER.debug(
                     "Playlist %s is up to date (v%s)", playlist_file.name, existing_ver
                 )
         except Exception as err:  # noqa: BLE001
-            _LOGGER.warning("Failed to process playlist %s: %s", playlist_file.name, err)
+            _LOGGER.warning(
+                "Failed to process playlist %s: %s", playlist_file.name, err
+            )
 
 
 def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -268,15 +271,15 @@ def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
     # Validate each song
     for i, song in enumerate(songs):
         if not isinstance(song, dict):
-            errors.append(f"Song {i+1}: not a valid object")
+            errors.append(f"Song {i + 1}: not a valid object")
             continue
 
         # Check year
         year = song.get("year")
         if not isinstance(year, int):
-            errors.append(f"Song {i+1}: missing or invalid 'year' (must be integer)")
+            errors.append(f"Song {i + 1}: missing or invalid 'year' (must be integer)")
         elif not (MIN_YEAR <= year <= MAX_YEAR):
-            errors.append(f"Song {i+1}: year {year} out of range")
+            errors.append(f"Song {i + 1}: year {year} out of range")
 
         # Check URIs - validate patterns and ensure at least one valid URI exists
         has_valid_uri = False
@@ -288,7 +291,7 @@ def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
                 has_valid_uri = True
             else:
                 errors.append(
-                    f"Song {i+1}: 'uri' invalid (expected spotify:track:{{22-char-id}})"
+                    f"Song {i + 1}: 'uri' invalid (expected spotify:track:{{22-char-id}})"
                 )
 
         # Check 'uri_spotify' field
@@ -298,7 +301,7 @@ def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
                 has_valid_uri = True
             else:
                 errors.append(
-                    f"Song {i+1}: 'uri_spotify' invalid (expected spotify:track:{{22-char-id}})"
+                    f"Song {i + 1}: 'uri_spotify' invalid (expected spotify:track:{{22-char-id}})"
                 )
 
         # Check 'uri_apple_music' field
@@ -308,26 +311,28 @@ def validate_playlist(data: dict[str, Any]) -> tuple[bool, list[str]]:
                 has_valid_uri = True
             else:
                 errors.append(
-                    f"Song {i+1}: 'uri_apple_music' invalid (expected applemusic://track/id)"
+                    f"Song {i + 1}: 'uri_apple_music' invalid (expected applemusic://track/id)"
                 )
 
         # Error if no valid URI found
         if not has_valid_uri:
-            errors.append(f"Song {i+1}: no valid URI")
+            errors.append(f"Song {i + 1}: no valid URI")
 
         # Story 20.2: Validate alt_artists if present (optional field)
         alt_artists = song.get("alt_artists")
         if alt_artists is not None:
             if not isinstance(alt_artists, list):
-                errors.append(f"Song {i+1}: 'alt_artists' must be an array")
+                errors.append(f"Song {i + 1}: 'alt_artists' must be an array")
             else:
                 for j, alt in enumerate(alt_artists):
                     if not isinstance(alt, str) or not alt.strip():
                         errors.append(
-                            f"Song {i+1}: 'alt_artists[{j}]' must be non-empty string"
+                            f"Song {i + 1}: 'alt_artists[{j}]' must be non-empty string"
                         )
                 # Log warning if fewer than 2 alternatives (weak challenge)
-                valid_alts = [a for a in alt_artists if isinstance(a, str) and a.strip()]
+                valid_alts = [
+                    a for a in alt_artists if isinstance(a, str) and a.strip()
+                ]
                 if len(valid_alts) < 2:
                     _LOGGER.debug(
                         "Song %d has only %d alt_artists (2 recommended)",
@@ -414,35 +419,35 @@ async def async_discover_playlists(hass: HomeAssistant) -> list[dict]:
             # Count songs per provider (Story 17.1)
             songs = data.get("songs", [])
             spotify_count = sum(
-                1
-                for s in songs
-                if s.get("uri") or s.get("uri_spotify")
+                1 for s in songs if s.get("uri") or s.get("uri_spotify")
             )
-            apple_music_count = sum(
-                1 for s in songs if s.get("uri_apple_music")
-            )
+            apple_music_count = sum(1 for s in songs if s.get("uri_apple_music"))
 
-            playlists.append({
-                "path": str(json_file),
-                "filename": json_file.name,
-                "name": data.get("name", json_file.stem),
-                "song_count": len(songs),
-                "spotify_count": spotify_count,
-                "apple_music_count": apple_music_count,
-                "is_valid": is_valid,
-                "errors": errors,
-            })
+            playlists.append(
+                {
+                    "path": str(json_file),
+                    "filename": json_file.name,
+                    "name": data.get("name", json_file.stem),
+                    "song_count": len(songs),
+                    "spotify_count": spotify_count,
+                    "apple_music_count": apple_music_count,
+                    "is_valid": is_valid,
+                    "errors": errors,
+                }
+            )
         except json.JSONDecodeError as e:
-            playlists.append({
-                "path": str(json_file),
-                "filename": json_file.name,
-                "name": json_file.stem,
-                "song_count": 0,
-                "spotify_count": 0,
-                "apple_music_count": 0,
-                "is_valid": False,
-                "errors": [f"Invalid JSON: {e}"],
-            })
+            playlists.append(
+                {
+                    "path": str(json_file),
+                    "filename": json_file.name,
+                    "name": json_file.stem,
+                    "song_count": 0,
+                    "spotify_count": 0,
+                    "apple_music_count": 0,
+                    "is_valid": False,
+                    "errors": [f"Invalid JSON: {e}"],
+                }
+            )
 
     _LOGGER.debug("Found %d playlists", len(playlists))
     return playlists
@@ -462,9 +467,7 @@ async def async_load_and_validate_playlist(
         return p.read_text(encoding="utf-8")
 
     try:
-        content = await asyncio.get_event_loop().run_in_executor(
-            None, _read_file, path
-        )
+        content = await asyncio.get_event_loop().run_in_executor(None, _read_file, path)
         data = json.loads(content)
     except json.JSONDecodeError as e:
         return (None, [f"Invalid JSON: {e}"])

@@ -61,16 +61,22 @@ class PlayerSession:
     bets_won: int = 0  # Successful bets
 
     # Superlative tracking (Story 15.2) - CUMULATIVE, NOT reset in reset_round()
-    submission_times: list[float] = field(default_factory=list)  # Time-to-submit per round (seconds)
+    submission_times: list[float] = field(
+        default_factory=list
+    )  # Time-to-submit per round (seconds)
     bets_placed: int = 0  # Total bets placed (distinct from bets_won)
     close_calls: int = 0  # Number of +/-1 year guesses (not exact)
-    round_scores: list[int] = field(default_factory=list)  # All round scores for final 3 calc
+    round_scores: list[int] = field(
+        default_factory=list
+    )  # All round scores for final 3 calc
 
     # Steal power-up tracking (Story 15.3)
     steal_available: bool = False  # True if steal unlocked and not yet used
     steal_used: bool = False  # True if steal was used this game (max 1 per game)
     stole_from: str | None = None  # Per-round: who was stolen from
-    was_stolen_by: list[str] = field(default_factory=list)  # Per-round: who stole this player's answer
+    was_stolen_by: list[str] = field(
+        default_factory=list
+    )  # Per-round: who stole this player's answer
 
     def submit_guess(self, year: int, timestamp: float) -> None:
         """Record a guess submission."""

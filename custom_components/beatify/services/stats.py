@@ -101,9 +101,7 @@ class StatsService:
         except OSError as err:
             _LOGGER.error("Failed to save stats: %s", err)
 
-    async def record_game(
-        self, game_summary: dict, difficulty: str = "normal"
-    ) -> dict:
+    async def record_game(self, game_summary: dict, difficulty: str = "normal") -> dict:
         """
         Record completed game and return comparison data.
 
@@ -263,13 +261,22 @@ class StatsService:
             return {"type": "first", "message": "First game! Setting the benchmark"}
 
         if comparison.get("is_new_record"):
-            return {"type": "record", "message": "New Record! Highest scoring game ever!"}
+            return {
+                "type": "record",
+                "message": "New Record! Highest scoring game ever!",
+            }
 
         diff = comparison.get("difference", 0)
         if diff > 5:
-            return {"type": "strong", "message": f"Excellent! {diff:.1f} pts above average"}
+            return {
+                "type": "strong",
+                "message": f"Excellent! {diff:.1f} pts above average",
+            }
         if diff > 0:
-            return {"type": "above", "message": f"Strong game! {diff:.1f} pts above average"}
+            return {
+                "type": "above",
+                "message": f"Strong game! {diff:.1f} pts above average",
+            }
         if diff > -5:
             return {
                 "type": "close",
@@ -472,7 +479,10 @@ class StatsService:
         song_stats = songs.get(song_key)
 
         # Not enough data (AC4)
-        if not song_stats or song_stats.get("times_played", 0) < MIN_PLAYS_FOR_DIFFICULTY:
+        if (
+            not song_stats
+            or song_stats.get("times_played", 0) < MIN_PLAYS_FOR_DIFFICULTY
+        ):
             return None
 
         # Guard against division by zero
@@ -542,19 +552,21 @@ class StatsService:
             # Calculate average year difference
             avg_year_diff = song_data.get("total_years_off", 0) / total_guesses
 
-            song_list.append({
-                "uri_key": uri_key,
-                "title": song_data.get("title", "Unknown"),
-                "artist": song_data.get("artist", "Unknown"),
-                "year": song_data.get("year", 0),
-                "play_count": song_data.get("times_played", 0),
-                "accuracy": round(accuracy, 2),
-                "avg_year_diff": round(avg_year_diff, 1),
-                "exact_matches": exact,
-                "total_guesses": total_guesses,
-                "last_played": song_data.get("last_played", 0),
-                "playlists": song_data.get("playlists", {}),
-            })
+            song_list.append(
+                {
+                    "uri_key": uri_key,
+                    "title": song_data.get("title", "Unknown"),
+                    "artist": song_data.get("artist", "Unknown"),
+                    "year": song_data.get("year", 0),
+                    "play_count": song_data.get("times_played", 0),
+                    "accuracy": round(accuracy, 2),
+                    "avg_year_diff": round(avg_year_diff, 1),
+                    "exact_matches": exact,
+                    "total_guesses": total_guesses,
+                    "last_played": song_data.get("last_played", 0),
+                    "playlists": song_data.get("playlists", {}),
+                }
+            )
 
         if not song_list:
             return {
@@ -573,7 +585,9 @@ class StatsService:
         min_plays_threshold = min(max_play_count, 3)
 
         # Find hardest song - lowest accuracy with dynamic threshold
-        songs_with_enough_plays = [s for s in song_list if s["play_count"] >= min_plays_threshold]
+        songs_with_enough_plays = [
+            s for s in song_list if s["play_count"] >= min_plays_threshold
+        ]
 
         hardest = None
         easiest = None
@@ -603,16 +617,18 @@ class StatsService:
                 ps["total_accuracy"] += song["accuracy"] * play_count
                 ps["accuracy_count"] += play_count
 
-                ps["songs"].append({
-                    "title": song["title"],
-                    "artist": song["artist"],
-                    "year": song["year"],
-                    "play_count": play_count,
-                    "accuracy": song["accuracy"],
-                    "avg_year_diff": song["avg_year_diff"],
-                    "exact_matches": song["exact_matches"],
-                    "last_played": song["last_played"],
-                })
+                ps["songs"].append(
+                    {
+                        "title": song["title"],
+                        "artist": song["artist"],
+                        "year": song["year"],
+                        "play_count": play_count,
+                        "accuracy": song["accuracy"],
+                        "avg_year_diff": song["avg_year_diff"],
+                        "exact_matches": song["exact_matches"],
+                        "last_played": song["last_played"],
+                    }
+                )
 
         # Calculate average accuracy per playlist and sort songs
         by_playlist = []
@@ -639,8 +655,7 @@ class StatsService:
         # Apply playlist filter if specified
         if playlist_filter:
             by_playlist = [
-                p for p in by_playlist
-                if p["playlist_id"] == playlist_filter
+                p for p in by_playlist if p["playlist_id"] == playlist_filter
             ]
 
         def _format_song(s: dict) -> dict | None:
@@ -649,7 +664,9 @@ class StatsService:
                 return None
             # Find primary playlist for this song
             playlists = s.get("playlists", {})
-            primary_playlist = max(playlists.keys(), key=lambda k: playlists[k]) if playlists else ""
+            primary_playlist = (
+                max(playlists.keys(), key=lambda k: playlists[k]) if playlists else ""
+            )
             return {
                 "title": s["title"],
                 "artist": s["artist"],

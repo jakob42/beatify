@@ -79,10 +79,12 @@ class BeatifyConfigFlow(ConfigFlow, domain=DOMAIN):
             if entry.domain == "media_player":
                 # Get friendly name from entity registry or fall back to entity_id
                 friendly_name = entry.name or entry.original_name or entry.entity_id
-                media_players.append({
-                    "entity_id": entry.entity_id,
-                    "friendly_name": friendly_name,
-                })
+                media_players.append(
+                    {
+                        "entity_id": entry.entity_id,
+                        "friendly_name": friendly_name,
+                    }
+                )
 
         _LOGGER.debug(
             "Found %d media_player entities: %s",

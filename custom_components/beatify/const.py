@@ -42,9 +42,24 @@ DIFFICULTY_DEFAULT = DIFFICULTY_NORMAL
 # near_range/near_points: years off and points for "near" tier
 # Exact match always awards 10 points (POINTS_EXACT)
 DIFFICULTY_SCORING: dict[str, dict[str, int]] = {
-    DIFFICULTY_EASY: {"close_range": 7, "close_points": 5, "near_range": 10, "near_points": 1},
-    DIFFICULTY_NORMAL: {"close_range": 3, "close_points": 5, "near_range": 5, "near_points": 1},
-    DIFFICULTY_HARD: {"close_range": 2, "close_points": 3, "near_range": 0, "near_points": 0},
+    DIFFICULTY_EASY: {
+        "close_range": 7,
+        "close_points": 5,
+        "near_range": 10,
+        "near_points": 1,
+    },
+    DIFFICULTY_NORMAL: {
+        "close_range": 3,
+        "close_points": 5,
+        "near_range": 5,
+        "near_points": 1,
+    },
+    DIFFICULTY_HARD: {
+        "close_range": 2,
+        "close_points": 3,
+        "near_range": 0,
+        "near_points": 0,
+    },
 }
 
 # Error codes
@@ -66,7 +81,9 @@ ERR_SESSION_NOT_FOUND = "SESSION_NOT_FOUND"  # Story 11.2
 ERR_SESSION_TAKEOVER = "SESSION_TAKEOVER"  # Story 11.2 - dual-tab scenario
 ERR_ADMIN_CANNOT_LEAVE = "ADMIN_CANNOT_LEAVE"  # Story 11.5
 ERR_NO_STEAL_AVAILABLE = "NO_STEAL_AVAILABLE"  # Story 15.3 - player has no steal
-ERR_TARGET_NOT_SUBMITTED = "TARGET_NOT_SUBMITTED"  # Story 15.3 - target hasn't submitted
+ERR_TARGET_NOT_SUBMITTED = (
+    "TARGET_NOT_SUBMITTED"  # Story 15.3 - target hasn't submitted
+)
 ERR_CANNOT_STEAL_SELF = "CANNOT_STEAL_SELF"  # Story 15.3 - cannot target self
 ERR_NO_ARTIST_CHALLENGE = "NO_ARTIST_CHALLENGE"  # Story 20.3 - no artist challenge
 
@@ -101,16 +118,18 @@ PLAYLIST_DIR = "beatify/playlists"
 # Maps URI prefix to the media_content_type required by different devices
 # Alexa devices require "spotify" content type, not generic "music"
 MEDIA_CONTENT_TYPES: dict[str, str] = {
-    "spotify": "spotify",       # Spotify URIs (spotify:track:xxx)
-    "applemusic": "music",      # Apple Music URIs (applemusic://track/123) via Music Assistant
+    "spotify": "spotify",  # Spotify URIs (spotify:track:xxx)
+    "applemusic": "music",  # Apple Music URIs (applemusic://track/123) via Music Assistant
     "apple_music": "apple_music",  # Legacy: Apple Music URIs with underscore prefix
-    "tidal": "tidal",           # Future: Tidal URIs
+    "tidal": "tidal",  # Future: Tidal URIs
 }
 MEDIA_CONTENT_TYPE_DEFAULT = "music"  # Fallback for unknown providers
 
 # Multi-provider URI patterns (Story 17.1)
 URI_PATTERN_SPOTIFY = r"^spotify:track:[a-zA-Z0-9]{22}$"
-URI_PATTERN_APPLE_MUSIC = r"^applemusic://track/\d+$"  # Preserved for playlist validation
+URI_PATTERN_APPLE_MUSIC = (
+    r"^applemusic://track/\d+$"  # Preserved for playlist validation
+)
 
 # Provider identifiers (Story 17.1)
 PROVIDER_SPOTIFY = "spotify"

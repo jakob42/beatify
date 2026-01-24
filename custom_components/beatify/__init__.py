@@ -75,7 +75,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Initialize stats service (Story 14.4)
     stats_service = StatsService(hass)
     await stats_service.load()
-    _LOGGER.debug("Stats service initialized: %d games played", stats_service.games_played)
+    _LOGGER.debug(
+        "Stats service initialized: %d games played", stats_service.games_played
+    )
 
     # Initialize analytics storage (Story 19.1)
     analytics = AnalyticsStorage(hass)
