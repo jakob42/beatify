@@ -749,6 +749,94 @@ function showLobbyView(gameData) {
     // Render initial player list and start polling (Story 16.8)
     renderLobbyPlayers(gameData.players || []);
     startLobbyPolling();
+
+    // Update difficulty badge (use gameData.difficulty if available, else selectedDifficulty)
+    updateLobbyDifficultyBadge(gameData.difficulty || selectedDifficulty);
+
+    // Setup QR tap-to-enlarge
+    setupQRModal();
+}
+
+// ==========================================
+// QR Modal Functions (tap to enlarge)
+// ==========================================
+
+/**
+ * Open QR modal with enlarged code
+ */
+function openQRModal() {
+    if (!cachedQRUrl) return;
+
+    var modal = document.getElementById('qr-modal');
+    var modalCode = document.getElementById('qr-modal-code');
+    if (!modal || !modalCode) return;
+
+    // Clear and render larger QR
+    modalCode.innerHTML = '';
+
+    if (typeof QRCode !== 'undefined') {
+        new QRCode(modalCode, {
+            text: cachedQRUrl,
+            width: 280,
+            height: 280,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    // Focus close button for accessibility
+    var closeBtn = document.getElementById('qr-modal-close');
+    if (closeBtn) closeBtn.focus();
+}
+
+/**
+ * Close QR modal
+ */
+function closeQRModal() {
+    var modal = document.getElementById('qr-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+/**
+ * Setup QR modal event handlers
+ */
+function setupQRModal() {
+    var qrContainer = document.getElementById('admin-qr-container');
+    var modal = document.getElementById('qr-modal');
+    var backdrop = modal ? modal.querySelector('.qr-modal-backdrop') : null;
+    var closeBtn = document.getElementById('qr-modal-close');
+
+    // QR container tap to enlarge
+    if (qrContainer) {
+        qrContainer.addEventListener('click', openQRModal);
+        qrContainer.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openQRModal();
+            }
+        });
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener('click', closeQRModal);
+    }
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeQRModal);
+    }
+
+    // Escape key to close
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+            closeQRModal();
+        }
+    });
 }
 
 /**
@@ -1220,6 +1308,25 @@ function setDifficulty(difficulty) {
     }
 }
 
+/**
+ * Update difficulty badge in lobby view
+ * @param {string} difficulty - Difficulty level ('easy', 'normal', or 'hard')
+ */
+function updateLobbyDifficultyBadge(difficulty) {
+    var badge = document.getElementById('lobby-difficulty-badge');
+    if (!badge) return;
+
+    var labelKey = {
+        easy: 'game.difficultyEasy',
+        normal: 'game.difficultyNormal',
+        hard: 'game.difficultyHard'
+    }[difficulty] || 'game.difficultyNormal';
+
+    var label = utils.t(labelKey);
+    badge.textContent = label;
+    badge.className = 'difficulty-badge difficulty-badge--' + (difficulty || 'normal');
+}
+
 // ==========================================
 // Artist Challenge Toggle Functions (Story 20.7)
 // ==========================================
@@ -1315,7 +1422,6 @@ function renderLobbyPlayers(players) {
     var countEl = document.getElementById('lobby-player-count');
     var summaryEl = document.getElementById('admin-players-summary');
     var emptyEl = document.getElementById('lobby-players-empty');
-    var statusEl = document.getElementById('lobby-status-value');
     if (!listEl) return;
 
     players = players || [];
@@ -1328,17 +1434,6 @@ function renderLobbyPlayers(players) {
     // Update players section summary badge
     if (summaryEl) {
         summaryEl.textContent = players.length;
-    }
-
-    // Update status based on player count
-    if (statusEl) {
-        if (players.length === 0) {
-            statusEl.textContent = utils.t('lobby.statusWaiting', 'Waiting');
-        } else if (players.length >= 2) {
-            statusEl.textContent = utils.t('lobby.statusReady', 'Ready');
-        } else {
-            statusEl.textContent = utils.t('lobby.statusNeedMore', 'Need 1+');
-        }
     }
 
     // Handle empty state visibility

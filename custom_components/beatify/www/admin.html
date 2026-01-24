@@ -115,11 +115,6 @@
 
         <!-- Lobby view (Story 2.3, mobile-optimized compact layout) -->
         <div id="lobby-section" class="lobby-view-wrapper hidden">
-            <!-- Beatify Wordmark Header (no analytics icon) -->
-            <header class="lobby-wordmark-header">
-                <h1 class="wordmark"><span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span></h1>
-            </header>
-
             <div class="lobby-container lobby-container--compact">
                 <!-- Header with inline stat badges -->
                 <div class="lobby-header-compact">
@@ -132,28 +127,27 @@
                             <span class="stat-badge-icon" aria-hidden="true">👥</span>
                             <span id="lobby-player-count" class="stat-badge-value">0</span>
                         </span>
-                        <span class="stat-badge stat-badge--status">
-                            <span class="stat-badge-icon" aria-hidden="true">⏳</span>
-                            <span id="lobby-status-value" class="stat-badge-value">Waiting</span>
-                        </span>
+                        <!-- Difficulty Badge -->
+                        <span id="lobby-difficulty-badge" class="stat-badge stat-badge--difficulty"></span>
                     </div>
                 </div>
 
-                <!-- Compact QR Section -->
-                <section class="section-collapsible qr-print-area" id="qr-section">
+                <!-- Invite Friends Section - Expanded by default for admin -->
+                <section class="section-collapsible" id="qr-section">
                     <button type="button" class="section-header-collapsible" aria-expanded="true" aria-controls="qr-content">
                         <span class="section-icon" aria-hidden="true">📲</span>
-                        <span data-i18n="admin.scanToPlay">Scan to Play</span>
+                        <span data-i18n="lobby.inviteFriends">Invite Friends</span>
                         <span class="section-toggle" aria-hidden="true">▼</span>
                     </button>
                     <div class="section-content" id="qr-content">
                         <div class="qr-section qr-section--compact">
-                            <div class="qr-container">
-                                <div id="qr-code" aria-label="QR code to join Beatify game"></div>
+                            <div class="qr-container" id="admin-qr-container" role="button" tabindex="0"
+                                 aria-label="Tap to enlarge QR code">
+                                <div id="qr-code"></div>
                             </div>
                             <p id="join-url" class="qr-url-display qr-url-display--compact"></p>
                             <!-- Inline dashboard link -->
-                            <a href="#" id="admin-dashboard-url" class="dashboard-link no-print" target="_blank">
+                            <a href="#" id="admin-dashboard-url" class="dashboard-link" target="_blank">
                                 <span aria-hidden="true">📺</span>
                                 <span data-i18n="dashboard.castToTv">Cast to TV</span>
                                 <span class="dashboard-link-arrow" aria-hidden="true">→</span>
@@ -182,7 +176,7 @@
                 </section>
 
                 <!-- Sticky Lobby Actions -->
-                <div class="lobby-actions lobby-actions--sticky no-print">
+                <div class="lobby-actions lobby-actions--sticky">
                     <button id="participate-btn" class="btn btn-primary btn-large btn-full-width">
                         <span class="btn-icon" aria-hidden="true">🎮</span>
                         <span data-i18n="admin.joinAsPlayer">Join as Player</span>
@@ -236,6 +230,21 @@
                 <button id="end-game-confirm-btn" class="btn btn-primary" data-i18n="admin.endGame">End Game</button>
                 <button id="end-game-cancel-btn" class="btn btn-secondary" data-i18n="common.cancel">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <!-- QR Modal (tap to enlarge) -->
+    <div id="qr-modal" class="qr-modal hidden" role="dialog" aria-modal="true"
+         aria-labelledby="qr-modal-title">
+        <div class="qr-modal-backdrop"></div>
+        <div class="qr-modal-content">
+            <h2 id="qr-modal-title" class="sr-only" data-i18n="lobby.joinGameQr">Join Game QR Code</h2>
+            <div id="qr-modal-code" class="qr-modal-code">
+                <!-- Large QR code rendered here -->
+            </div>
+            <p class="qr-modal-label" data-i18n="lobby.scanToJoin">Scan to join the game</p>
+            <button id="qr-modal-close" class="btn btn-secondary qr-modal-close"
+                    aria-label="Close QR code" data-i18n="common.close">Close</button>
         </div>
     </div>
 

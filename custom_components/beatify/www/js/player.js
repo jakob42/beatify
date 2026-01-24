@@ -1963,9 +1963,8 @@
     function renderSubmissionTracker(players) {
         var tracker = document.getElementById('submission-tracker');
         var container = document.getElementById('submitted-players');
-        var countEl = document.getElementById('submission-count');
 
-        if (!tracker || !container || !countEl) return;
+        if (!tracker || !container) return;
 
         var playerList = players || [];
         var submittedCount = playerList.filter(function(p) {
@@ -1973,23 +1972,11 @@
         }).length;
         var totalCount = playerList.length;
 
-        // Update count (Story 16.3 - i18n)
-        countEl.textContent = utils.t('game.submittedCount', { count: submittedCount, total: totalCount });
-
         // Check if all submitted
         var allSubmitted = submittedCount === totalCount && totalCount > 0;
         tracker.classList.toggle('all-submitted', allSubmitted);
 
-        // Compact mode for many players
-        var isCompact = playerList.length > 10;
-        tracker.classList.toggle('is-compact', isCompact);
-
-        if (isCompact) {
-            container.innerHTML = '';
-            return;
-        }
-
-        // Render player indicators (Story 9.10: added is-betting class, Story 11.4: disconnected)
+        // Render player indicators with bet/steal badges
         container.innerHTML = playerList.map(function(player) {
             var initials = getInitials(player.name);
             var isCurrentPlayer = player.name === playerName;
@@ -1998,11 +1985,20 @@
                 'player-indicator',
                 player.submitted ? 'is-submitted' : '',
                 isCurrentPlayer ? 'is-current-player' : '',
-                player.bet ? 'is-betting' : '',
                 isDisconnected ? 'player-indicator--disconnected' : ''
             ].filter(Boolean).join(' ');
 
+            // Build badge HTML
+            var badges = '';
+            if (player.steal_used) {
+                badges += '<span class="player-badge player-badge--steal">🥷</span>';
+            }
+            if (player.bet) {
+                badges += '<span class="player-badge player-badge--bet">🎲</span>';
+            }
+
             return '<div class="' + classes + '">' +
+                badges +
                 '<div class="player-avatar">' +
                     '<span class="player-initials">' + escapeHtml(initials) + '</span>' +
                 '</div>' +
@@ -2133,6 +2129,9 @@
         // Update quick indicator
         updateYouIndicator(leaderboard);
 
+        // Update leaderboard summary badge for collapsed view
+        updateLeaderboardSummary(leaderboard);
+
         // Update previous state for next comparison (Story 13.2)
         updatePreviousState(data.players || [], leaderboard);
     }
@@ -2199,19 +2198,30 @@
     }
 
     /**
-     * Setup leaderboard toggle behavior
+     * Setup leaderboard toggle behavior (collapsible section pattern)
      */
     function setupLeaderboardToggle() {
         var toggle = document.getElementById('leaderboard-toggle');
         var leaderboard = document.getElementById('game-leaderboard');
         if (toggle && leaderboard) {
             toggle.addEventListener('click', function() {
-                leaderboard.classList.toggle('is-expanded');
-                var icon = toggle.querySelector('.toggle-icon');
-                if (icon) {
-                    icon.textContent = leaderboard.classList.contains('is-expanded') ? '▲' : '▼';
-                }
+                var isCollapsed = leaderboard.classList.toggle('collapsed');
+                toggle.setAttribute('aria-expanded', !isCollapsed);
             });
+        }
+    }
+
+    /**
+     * Update leaderboard summary badge with leader info
+     * @param {Array} leaderboard - Leaderboard array
+     */
+    function updateLeaderboardSummary(leaderboard) {
+        var summaryEl = document.getElementById('leaderboard-summary');
+        if (!summaryEl || !leaderboard || leaderboard.length === 0) return;
+
+        var leader = leaderboard[0];
+        if (leader) {
+            summaryEl.textContent = leader.name + ': ' + leader.score;
         }
     }
 
@@ -4430,7 +4440,6 @@
     function updateAdminControls(players) {
         const adminControls = document.getElementById('admin-controls');
         const lobbyStatus = document.getElementById('lobby-status');
-        const leaveGameContainer = document.getElementById('leave-game-container');
         if (!adminControls) return;
         // Guard: ensure players is an array
         if (!players || !Array.isArray(players)) {
@@ -4444,13 +4453,9 @@
         if (playerIsAdmin) {
             adminControls.classList.remove('hidden');
             if (lobbyStatus) lobbyStatus.classList.add('hidden');
-            // Story 11.5: Admin cannot leave, hide button
-            if (leaveGameContainer) leaveGameContainer.classList.add('hidden');
         } else {
             adminControls.classList.add('hidden');
             if (lobbyStatus) lobbyStatus.classList.remove('hidden');
-            // Story 11.5: Non-admin can leave
-            if (leaveGameContainer) leaveGameContainer.classList.remove('hidden');
         }
     }
 
@@ -4470,12 +4475,6 @@
                 type: 'admin',
                 action: 'start_game'
             }));
-        });
-
-        // Story 11.5: Leave Game button
-        const leaveBtn = document.getElementById('leave-game-btn');
-        leaveBtn?.addEventListener('click', function() {
-            handleLeaveGame();
         });
     }
 

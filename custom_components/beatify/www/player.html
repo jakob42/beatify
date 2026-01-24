@@ -14,12 +14,14 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </head>
 <body class="theme-dark">
+    <header class="player-header">
+        <h1 class="wordmark"><span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span></h1>
+    </header>
+
     <main class="player-container">
         <!-- Loading state -->
         <div id="loading-view" class="view">
-            <h1 class="wordmark wordmark-hero logo-loading">
-                <span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span>
-            </h1>
+            <div class="loading-spinner"></div>
             <p data-i18n="common.connecting">Connecting to game...</p>
         </div>
 
@@ -51,9 +53,6 @@
         <!-- Join form -->
         <div id="join-view" class="view hidden">
             <div class="join-form">
-                <h1 class="wordmark wordmark-hero">
-                    <span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span>
-                </h1>
                 <p data-i18n="join.enterName">Enter your name to play</p>
                 <div class="form-group">
                     <input type="text" id="name-input" class="name-input"
@@ -69,11 +68,6 @@
 
         <!-- Lobby view - Redesigned to match admin lobby -->
         <div id="lobby-view" class="view hidden">
-            <!-- Beatify Wordmark Header -->
-            <header class="lobby-wordmark-header">
-                <h1 class="wordmark"><span class="wordmark-beat">Beat</span><span class="wordmark-gradient">ify</span></h1>
-            </header>
-
             <div class="lobby-container lobby-container--compact">
                 <!-- Compact Header with Stat Badges -->
                 <div class="lobby-header-compact">
@@ -85,10 +79,6 @@
                         <span class="stat-badge">
                             <span class="stat-badge-icon" aria-hidden="true">👥</span>
                             <span id="player-count-badge" class="stat-badge-value">0</span>
-                        </span>
-                        <span class="stat-badge stat-badge--status">
-                            <span class="stat-badge-icon" aria-hidden="true">⏳</span>
-                            <span id="lobby-status-badge" class="stat-badge-value" data-i18n="lobby.statusWaiting">Waiting</span>
                         </span>
                         <!-- Difficulty Badge (Story 14.1) -->
                         <span id="lobby-difficulty-badge" class="stat-badge stat-badge--difficulty"></span>
@@ -135,7 +125,7 @@
                 <section class="section-collapsible collapsed" id="invite-section">
                     <button type="button" class="section-header-collapsible" aria-expanded="false" aria-controls="invite-content">
                         <span class="section-icon" aria-hidden="true">📲</span>
-                        <span data-i18n="lobby.inviteFriends">Invite friends</span>
+                        <span data-i18n="lobby.inviteFriends">Invite Friends</span>
                         <span class="section-toggle" aria-hidden="true">▼</span>
                     </button>
                     <div class="section-content" id="invite-content">
@@ -160,23 +150,12 @@
                     <p data-i18n="lobby.waitingForHost">Waiting for host to start the game...</p>
                 </div>
 
-                <!-- Sticky Lobby Actions -->
-                <div class="lobby-actions lobby-actions--sticky">
-                    <!-- Admin: Start Game button -->
-                    <div id="admin-controls" class="hidden">
-                        <button id="start-game-btn" class="btn btn-primary btn-large btn-full-width">
-                            <span class="btn-icon" aria-hidden="true">🎉</span>
-                            <span data-i18n="lobby.startGame">Start Game</span>
-                        </button>
-                    </div>
-                    <!-- Non-admin: Leave Game button -->
-                    <div id="leave-game-container" class="hidden">
-                        <button id="leave-game-btn" class="btn btn-secondary btn-full-width"
-                                aria-label="Leave game and return to join screen"
-                                data-i18n="lobby.leaveGame">
-                            Leave Game
-                        </button>
-                    </div>
+                <!-- Sticky Lobby Actions (Admin only) -->
+                <div id="admin-controls" class="lobby-actions lobby-actions--sticky hidden">
+                    <button id="start-game-btn" class="btn btn-primary btn-large btn-full-width">
+                        <span class="btn-icon" aria-hidden="true">🎉</span>
+                        <span data-i18n="lobby.startGame">Start Game</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -184,20 +163,29 @@
         <!-- Game view (Epic 4) -->
         <div id="game-view" class="view hidden">
             <div class="game-container">
-                <!-- Round Indicator -->
-                <div id="round-indicator" class="round-indicator">
-                    <span data-i18n="game.roundLabel">Round</span> <span id="current-round">1</span> <span data-i18n="game.ofLabel">of</span> <span id="total-rounds">10</span>
-                    <!-- Difficulty Badge (Story 14.1) -->
-                    <span id="game-difficulty-badge" class="difficulty-badge"></span>
+                <!-- Game Header with Round Info -->
+                <div class="game-header-compact">
+                    <div class="game-header-left">
+                        <span class="section-icon" aria-hidden="true">🎮</span>
+                        <span id="round-indicator" class="round-indicator-text">
+                            <span data-i18n="game.roundLabel">Round</span>
+                            <span id="current-round">1</span>
+                            <span data-i18n="game.ofLabel">of</span>
+                            <span id="total-rounds">10</span>
+                        </span>
+                    </div>
+                    <div class="stat-badge-bar">
+                        <!-- Difficulty Badge -->
+                        <span id="game-difficulty-badge" class="stat-badge stat-badge--difficulty"></span>
+                        <!-- Steal Available Indicator (Story 15.3) -->
+                        <span id="steal-indicator" class="stat-badge stat-badge--steal hidden">
+                            <span class="stat-badge-icon" aria-hidden="true">🥷</span>
+                        </span>
+                    </div>
                 </div>
+                <!-- Last Round Banner -->
                 <div id="last-round-banner" class="last-round-banner hidden" data-i18n="game.finalRound">
                     Final Round!
-                </div>
-
-                <!-- Steal Available Indicator (Story 15.3 AC1) -->
-                <div id="steal-indicator" class="steal-indicator hidden">
-                    <span class="steal-indicator-icon">🥷</span>
-                    <span class="steal-indicator-text" data-i18n="steal.available">Steal Available!</span>
                 </div>
 
                 <!-- Album Cover -->
@@ -218,28 +206,31 @@
 
                 <!-- Submission Tracker (Story 4.4) -->
                 <div id="submission-tracker" class="submission-tracker">
-                    <div class="submission-header">
-                        <span id="submission-count" class="submission-count">0/0 submitted</span>
-                    </div>
                     <div id="submitted-players" class="submitted-players">
                         <!-- Player indicators populated dynamically -->
+                        <!-- Each player has optional badges: .player-badge--bet (🎲) and .player-badge--steal (🥷) -->
                     </div>
                 </div>
 
-                <!-- Artist Challenge (Story 20.5) -->
-                <div id="artist-challenge-container" class="artist-challenge hidden">
-                    <div class="artist-challenge-header">
-                        <span class="artist-challenge-title" data-i18n="artistChallenge.whoSings">Who sings this song?</span>
-                        <span class="artist-challenge-bonus">+10</span>
-                    </div>
-                    <div id="artist-options" class="artist-options">
+                <!-- Artist Challenge (Story 20.5) - Aligned with card-section pattern -->
+                <section id="artist-challenge-container" class="card-section artist-challenge hidden">
+                    <h2 class="section-header">
+                        <span class="section-icon" aria-hidden="true">🎤</span>
+                        <span data-i18n="artistChallenge.whoSings">Who sings this song?</span>
+                        <span class="stat-badge stat-badge--bonus">+5</span>
+                    </h2>
+                    <div id="artist-options" class="artist-options-grid">
                         <!-- Dynamically populated -->
                     </div>
                     <div id="artist-result" class="artist-result hidden"></div>
-                </div>
+                </section>
 
-                <!-- Year Selector (Story 4.3) -->
-                <div id="year-selector-container" class="year-selector-container">
+                <!-- Year Selector (Story 4.3) - Aligned with card-section pattern -->
+                <section id="year-selector-container" class="card-section year-selector-section">
+                    <h2 class="section-header">
+                        <span class="section-icon" aria-hidden="true">🎯</span>
+                        <span data-i18n="game.yourGuess">Your Guess</span>
+                    </h2>
                     <div id="year-selector" class="year-selector">
                         <div class="year-display">
                             <span id="selected-year">1990</span>
@@ -279,23 +270,22 @@
                             <span data-i18n="game.submitted">Submitted!</span>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Leaderboard (Story 5.5 - moved below year selector per Story 9.10) -->
-                <div id="game-leaderboard" class="leaderboard is-compact">
-                    <div class="leaderboard-header">
-                        <span class="leaderboard-title" data-i18n="leaderboard.title">Leaderboard</span>
-                        <button id="leaderboard-toggle" class="leaderboard-toggle" type="button">
-                            <span class="toggle-icon">▼</span>
-                        </button>
+                <!-- Leaderboard (Story 5.5) - Collapsible section pattern -->
+                <section id="game-leaderboard" class="section-collapsible leaderboard-section collapsed">
+                    <button type="button" class="section-header-collapsible" id="leaderboard-toggle" aria-expanded="false" aria-controls="leaderboard-content">
+                        <span class="section-icon" aria-hidden="true">🏆</span>
+                        <span data-i18n="leaderboard.title">Leaderboard</span>
+                        <span class="section-summary" id="leaderboard-summary">--</span>
+                        <span class="section-toggle" aria-hidden="true">▼</span>
+                    </button>
+                    <div class="section-content" id="leaderboard-content">
+                        <div id="leaderboard-list" class="leaderboard-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
                     </div>
-                    <div id="leaderboard-list" class="leaderboard-list">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                    <div id="leaderboard-you" class="leaderboard-you hidden">
-                        <!-- Quick "You: #X" indicator when scrolled -->
-                    </div>
-                </div>
+                </section>
             </div>
         </div>
 

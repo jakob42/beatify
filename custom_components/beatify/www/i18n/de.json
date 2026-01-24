@@ -62,6 +62,7 @@
   },
   "game": {
     "roundLabel": "Runde",
+    "yourGuess": "Dein Tipp",
     "ofLabel": "von",
     "finalRound": "Letzte Runde!",
     "selectYear": "Jahr wählen",
