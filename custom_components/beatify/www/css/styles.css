@@ -4163,22 +4163,14 @@ body.theme-dark .artist-reveal-section {
 /* Year Section with Emotion */
 .reveal-year-section {
     text-align: center;
-    padding: var(--space-md) 0;
-    position: relative;
+    padding: var(--space-sm) 0;
 }
 
 .reveal-emotion-inline {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-xs);
     animation: reveal-emotion-entrance 0.5s ease-out;
-}
-
-.reveal-emotion-inline .reveal-emotion-subtitle {
-    font-size: 0.875rem;
-    font-weight: 400;
-    margin-top: var(--space-xs);
-    opacity: 0.8;
 }
 
 .reveal-year-section .correct-year-label {
@@ -6368,9 +6360,12 @@ main:has(.admin-control-bar:not(.hidden)) .reaction-container {
         opacity: 1;
         transform: translateY(0);
     }
+    70% {
+        opacity: 1;
+    }
     100% {
         opacity: 0;
-        transform: translateY(-80px);
+        transform: translateY(calc(-50vh + 60px));
     }
 }
 
