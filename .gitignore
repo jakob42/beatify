@@ -15,6 +15,9 @@ pyproject.toml
 requirements*.txt
 .ruff.toml
 
+# Node
+node_modules/
+
 # Python artifacts
 __pycache__/
 *.py[cod]
