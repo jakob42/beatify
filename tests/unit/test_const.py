@@ -36,7 +36,7 @@ def test_const_file_has_game_configuration():
     assert "MAX_PLAYERS = 20" in content
     assert "MIN_PLAYERS = 2" in content
     assert "RECONNECT_TIMEOUT = 60" in content
-    assert "DEFAULT_ROUND_DURATION = 30" in content
+    assert "DEFAULT_ROUND_DURATION = 45" in content
     assert "MAX_NAME_LENGTH = 20" in content
     assert "MIN_NAME_LENGTH = 1" in content
 
@@ -47,14 +47,8 @@ def test_const_file_has_round_timer_constants():
     content = const_path.read_text()
 
     # Timer range constants
-    assert "ROUND_DURATION_MIN = 10" in content
+    assert "ROUND_DURATION_MIN = 15" in content
     assert "ROUND_DURATION_MAX = 60" in content
-
-    # Timer presets
-    assert "ROUND_DURATION_PRESETS" in content
-    assert '"quick": 15' in content
-    assert '"normal": 30' in content
-    assert '"relaxed": 45' in content
 
 
 def test_const_file_has_error_codes():

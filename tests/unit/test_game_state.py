@@ -1943,7 +1943,7 @@ class TestArtistBonusPointsConstant:
         """ARTIST_BONUS_POINTS constant is defined."""
         from custom_components.beatify.const import ARTIST_BONUS_POINTS
 
-        assert ARTIST_BONUS_POINTS == 10
+        assert ARTIST_BONUS_POINTS == 5
 
     def test_artist_bonus_points_is_integer(self):
         """ARTIST_BONUS_POINTS is an integer."""
@@ -2568,7 +2568,7 @@ class TestArtistBonusScoring:
 
         await state.end_round()
 
-        assert state.players["Alice"].artist_bonus == 10
+        assert state.players["Alice"].artist_bonus == 5
 
     @pytest.mark.asyncio
     async def test_non_winner_gets_zero_bonus(self):
@@ -2605,7 +2605,7 @@ class TestArtistBonusScoring:
 
         await state.end_round()
 
-        assert state.players["Alice"].artist_bonus == 10
+        assert state.players["Alice"].artist_bonus == 5
         assert state.players["Bob"].artist_bonus == 0
 
     @pytest.mark.asyncio
@@ -2640,10 +2640,10 @@ class TestArtistBonusScoring:
 
         await state.end_round()
 
-        # Score should include round_score + artist_bonus (10)
+        # Score should include round_score + artist_bonus (5)
         # Artist bonus is added separately, not multiplied
         assert state.players["Alice"].score > initial_score
-        assert state.players["Alice"].artist_bonus == 10
+        assert state.players["Alice"].artist_bonus == 5
         # Total includes artist bonus
         expected_score = (
             state.players["Alice"].round_score
@@ -2754,5 +2754,5 @@ class TestArtistBonusScoring:
 
         # Player missed round but still gets artist bonus
         assert state.players["Alice"].missed_round is True
-        assert state.players["Alice"].artist_bonus == 10
+        assert state.players["Alice"].artist_bonus == 5
         assert state.players["Alice"].score == 10  # Only artist bonus
