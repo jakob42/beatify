@@ -15,7 +15,6 @@ from __future__ import annotations
 import json
 import sys
 import time
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -29,12 +28,10 @@ sys.modules["homeassistant.components.frontend"] = MagicMock()
 sys.modules["homeassistant.components.http"] = MagicMock()
 
 from custom_components.beatify.analytics import (
-    AnalyticsStorage,
     ERROR_MEDIA_PLAYER_ERROR,
     ERROR_WEBSOCKET_DISCONNECT,
+    AnalyticsStorage,
     GameRecord,
-    MAX_DETAILED_RECORDS,
-    RETENTION_DAYS,
 )
 
 

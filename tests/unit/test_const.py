@@ -1,4 +1,5 @@
-"""Tests for Beatify constants.
+"""
+Tests for Beatify constants.
 
 These tests verify the const.py module has correct values.
 Tests are skipped if Home Assistant is not installed since importing
@@ -94,14 +95,8 @@ def test_domain_constant_import():
 def test_error_code_constants_import():
     """Test error code constants can be imported."""
     from custom_components.beatify.const import (
-        ERR_GAME_ALREADY_STARTED,
-        ERR_GAME_NOT_STARTED,
-        ERR_INVALID_ACTION,
         ERR_MEDIA_PLAYER_UNAVAILABLE,
-        ERR_NAME_INVALID,
         ERR_NAME_TAKEN,
-        ERR_NOT_ADMIN,
-        ERR_ROUND_EXPIRED,
     )
 
     assert ERR_NAME_TAKEN == "NAME_TAKEN"

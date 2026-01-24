@@ -126,8 +126,7 @@ class StatusView(HomeAssistantView):
         # Detect Music Assistant integration (not based on entity names)
         # Check if music_assistant integration is loaded via config entries
         has_music_assistant = any(
-            entry.domain == "music_assistant"
-            for entry in self.hass.config_entries.async_entries()
+            entry.domain == "music_assistant" for entry in self.hass.config_entries.async_entries()
         )
 
         status = {
@@ -181,9 +180,7 @@ class StartGameView(HomeAssistantView):
         round_duration = body.get("round_duration")  # Story 13.1
         difficulty = body.get("difficulty", DIFFICULTY_DEFAULT)  # Story 14.1
         provider = body.get("provider", PROVIDER_DEFAULT)  # Story 17.2
-        artist_challenge_enabled = body.get(
-            "artist_challenge_enabled", True
-        )  # Story 20.7
+        artist_challenge_enabled = body.get("artist_challenge_enabled", True)  # Story 20.7
 
         # Validate difficulty (Story 14.1)
         valid_difficulties = (DIFFICULTY_EASY, DIFFICULTY_NORMAL, DIFFICULTY_HARD)
@@ -264,18 +261,14 @@ class StartGameView(HomeAssistantView):
                     continue
 
                 # Read file in executor to avoid blocking event loop
-                file_content = await self.hass.async_add_executor_job(
-                    _read_file, full_path
-                )
+                file_content = await self.hass.async_add_executor_job(_read_file, full_path)
                 playlist_data = json.loads(file_content)
 
                 for song in playlist_data.get("songs", []):
                     if "year" in song and "uri" in song:
                         songs.append(song)
                     else:
-                        warnings.append(
-                            f"Invalid song in {playlist_path}: missing year or uri"
-                        )
+                        warnings.append(f"Invalid song in {playlist_path}: missing year or uri")
 
             except Exception as err:  # noqa: BLE001
                 warnings.append(f"Failed to load {playlist_path}: {err}")
@@ -306,9 +299,7 @@ class StartGameView(HomeAssistantView):
 
         ent_reg = er.async_get(self.hass)
         entity_entry = ent_reg.async_get(media_player)
-        is_mass = (
-            entity_entry is not None and entity_entry.platform == "music_assistant"
-        )
+        is_mass = entity_entry is not None and entity_entry.platform == "music_assistant"
 
         # Build create_game kwargs with optional round_duration (Story 13.1), difficulty (Story 14.1), provider (Story 17.2), and artist_challenge_enabled (Story 20.7)
         create_kwargs: dict[str, Any] = {
@@ -349,11 +340,7 @@ class StartGameView(HomeAssistantView):
         """Get base URL for join URL construction from request."""
         # Use the request URL - this is what the user actually used to access the app
         url = request.url
-        return (
-            f"{url.scheme}://{url.host}:{url.port}"
-            if url.port
-            else f"{url.scheme}://{url.host}"
-        )
+        return f"{url.scheme}://{url.host}:{url.port}" if url.port else f"{url.scheme}://{url.host}"
 
 
 class EndGameView(HomeAssistantView):
@@ -383,9 +370,7 @@ class EndGameView(HomeAssistantView):
         # Broadcast game ended to WebSocket clients
         ws_handler = data.get("ws_handler")
         if ws_handler:
-            await ws_handler.broadcast(
-                {"type": "state", "phase": "END", "game_id": None}
-            )
+            await ws_handler.broadcast({"type": "state", "phase": "END", "game_id": None})
 
         return web.json_response({"success": True})
 

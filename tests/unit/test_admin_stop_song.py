@@ -18,7 +18,7 @@ AC #4: Works on mobile devices with adequate touch targets (44x44px)
 from __future__ import annotations
 
 import sys
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -102,10 +102,8 @@ class TestMediaPlayerStop:
     @pytest.mark.asyncio
     async def test_stop_handles_timeout_gracefully(self, mock_hass):
         """stop() handles timeout without crashing."""
-        import asyncio
-
         mock_hass.services.async_call = AsyncMock(
-            side_effect=asyncio.TimeoutError("Timeout")
+            side_effect=TimeoutError("Timeout")
         )
         service = MediaPlayerService(mock_hass, "media_player.test_speaker")
 
@@ -214,14 +212,16 @@ class TestStopSongErrorHandling:
 
 @pytest.mark.unit
 class TestStopButtonVisualFeedback:
-    """Tests verifying visual feedback requirements are documented.
+    """
+    Tests verifying visual feedback requirements are documented.
 
     Note: Actual visual testing requires E2E/Playwright tests.
     These tests document the expected JavaScript behavior.
     """
 
     def test_stop_button_immediate_feedback_documented(self):
-        """handleStopSong provides immediate visual feedback (AC #1).
+        """
+        HandleStopSong provides immediate visual feedback (AC #1).
 
         The JavaScript function should:
         1. Disable button immediately
@@ -249,7 +249,8 @@ class TestStopButtonVisualFeedback:
         assert "change label" in expected_behavior["on_click"][4]
 
     def test_stop_button_css_touch_target_documented(self):
-        """Stop button has minimum 44x44px touch target (AC #4).
+        """
+        Stop button has minimum 44x44px touch target (AC #4).
 
         The CSS rule should specify:
         .control-btn {
@@ -266,7 +267,8 @@ class TestStopButtonVisualFeedback:
         assert expected_css["min-height"] == "44px"
 
     def test_stop_button_error_recovery_documented(self):
-        """Stop button recovers on INVALID_ACTION error.
+        """
+        Stop button recovers on INVALID_ACTION error.
 
         When server returns INVALID_ACTION with 'No song playing':
         - Button state should be reset via resetSongStoppedState()

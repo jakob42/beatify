@@ -81,9 +81,7 @@ ERR_SESSION_NOT_FOUND = "SESSION_NOT_FOUND"  # Story 11.2
 ERR_SESSION_TAKEOVER = "SESSION_TAKEOVER"  # Story 11.2 - dual-tab scenario
 ERR_ADMIN_CANNOT_LEAVE = "ADMIN_CANNOT_LEAVE"  # Story 11.5
 ERR_NO_STEAL_AVAILABLE = "NO_STEAL_AVAILABLE"  # Story 15.3 - player has no steal
-ERR_TARGET_NOT_SUBMITTED = (
-    "TARGET_NOT_SUBMITTED"  # Story 15.3 - target hasn't submitted
-)
+ERR_TARGET_NOT_SUBMITTED = "TARGET_NOT_SUBMITTED"  # Story 15.3 - target hasn't submitted
 ERR_CANNOT_STEAL_SELF = "CANNOT_STEAL_SELF"  # Story 15.3 - cannot target self
 ERR_NO_ARTIST_CHALLENGE = "NO_ARTIST_CHALLENGE"  # Story 20.3 - no artist challenge
 
@@ -127,9 +125,7 @@ MEDIA_CONTENT_TYPE_DEFAULT = "music"  # Fallback for unknown providers
 
 # Multi-provider URI patterns (Story 17.1)
 URI_PATTERN_SPOTIFY = r"^spotify:track:[a-zA-Z0-9]{22}$"
-URI_PATTERN_APPLE_MUSIC = (
-    r"^applemusic://track/\d+$"  # Preserved for playlist validation
-)
+URI_PATTERN_APPLE_MUSIC = r"^applemusic://track/\d+$"  # Preserved for playlist validation
 
 # Provider identifiers (Story 17.1)
 PROVIDER_SPOTIFY = "spotify"

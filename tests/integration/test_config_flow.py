@@ -12,7 +12,6 @@ Status: Updated for course correction (2025-12-19)
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -66,7 +65,7 @@ class TestHACSMetadata:
         required = ["name"]
         missing = [f for f in required if f not in hacs]
         assert not missing, f"hacs.json missing required fields: {missing}"
-        assert hacs.get("name") == "Beatify", f"Expected name='Beatify'"
+        assert hacs.get("name") == "Beatify", "Expected name='Beatify'"
 
 
 @pytest.mark.integration

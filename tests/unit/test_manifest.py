@@ -154,7 +154,7 @@ class TestCodeQuality:
 
         result = subprocess.run(
             [sys.executable, "-m", "ruff", "check", str(CUSTOM_COMPONENTS)],
-            capture_output=True,
+            check=False, capture_output=True,
             text=True,
         )
         assert result.returncode == 0, (

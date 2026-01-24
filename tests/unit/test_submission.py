@@ -13,7 +13,6 @@ sys.modules["homeassistant.components.http"] = MagicMock()
 sys.modules["homeassistant.helpers.aiohttp_client"] = MagicMock()
 
 
-import pytest
 
 from custom_components.beatify.game.player import PlayerSession
 

@@ -15,6 +15,7 @@ from homeassistant.components.frontend import (
     async_remove_panel,
 )
 
+from .analytics import AnalyticsStorage
 from .const import DOMAIN
 from .game.playlist import (
     async_discover_playlists,
@@ -22,7 +23,6 @@ from .game.playlist import (
 )
 from .game.state import GameState
 from .server import async_register_static_paths
-from .analytics import AnalyticsStorage
 from .server.views import (
     AdminView,
     AnalyticsPageView,
@@ -75,9 +75,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Initialize stats service (Story 14.4)
     stats_service = StatsService(hass)
     await stats_service.load()
-    _LOGGER.debug(
-        "Stats service initialized: %d games played", stats_service.games_played
-    )
+    _LOGGER.debug("Stats service initialized: %d games played", stats_service.games_played)
 
     # Initialize analytics storage (Story 19.1)
     analytics = AnalyticsStorage(hass)

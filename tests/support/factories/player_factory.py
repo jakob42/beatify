@@ -17,7 +17,7 @@ Usage:
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -50,7 +50,8 @@ class Player:
 
 
 def create_player(**overrides: Any) -> Player:
-    """Create a test player with sensible defaults.
+    """
+    Create a test player with sensible defaults.
 
     All values are unique per call (UUID-based session_id)
     to ensure parallel test safety.
@@ -73,6 +74,7 @@ def create_player(**overrides: Any) -> Player:
 
         # Player with score
         winner = create_player(name="Winner", score=150, streak=5)
+
     """
     defaults = {
         "session_id": f"session-{uuid.uuid4().hex[:8]}",

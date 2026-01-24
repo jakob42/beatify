@@ -28,7 +28,6 @@ sys.modules["homeassistant.helpers"] = MagicMock()
 sys.modules["homeassistant.helpers.aiohttp_client"] = MagicMock()
 
 from custom_components.beatify.game.state import GamePhase, GameState
-from custom_components.beatify.game.playlist import PlaylistManager
 from custom_components.beatify.services.media_player import MediaPlayerService
 
 

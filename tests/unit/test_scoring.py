@@ -39,7 +39,6 @@ from custom_components.beatify.game.scoring import (
     calculate_years_off_text,
 )
 
-
 # =============================================================================
 # EXACT MATCH TESTS (10 points)
 # =============================================================================
@@ -2107,8 +2106,9 @@ class TestDifficultyIntegration:
     @pytest.mark.asyncio
     async def test_end_round_uses_difficulty_for_scoring(self):
         """end_round uses game's difficulty for scoring."""
-        from custom_components.beatify.game.state import GameState
         from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
 
         state = GameState(time_fn=lambda: 1000.0)
         songs = [{"year": 1985, "uri": "spotify:track:1", "fun_fact": "Fact 1"}]
@@ -2138,8 +2138,9 @@ class TestDifficultyIntegration:
     @pytest.mark.asyncio
     async def test_end_round_hard_difficulty_scoring(self):
         """end_round with hard difficulty uses stricter scoring."""
-        from custom_components.beatify.game.state import GameState
         from unittest.mock import MagicMock
+
+        from custom_components.beatify.game.state import GameState
 
         state = GameState(time_fn=lambda: 1000.0)
         songs = [{"year": 1985, "uri": "spotify:track:1", "fun_fact": "Fact 1"}]

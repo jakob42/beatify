@@ -12,7 +12,6 @@ from __future__ import annotations
 import pytest
 from playwright.async_api import Page, Route
 
-
 # =============================================================================
 # URL FIXTURES
 # =============================================================================
@@ -282,7 +281,8 @@ def mock_game_status_ended(page: Page):
 
 @pytest.fixture(autouse=True)
 async def setup_routes(page: Page, request):
-    """Auto-setup routes based on test fixtures.
+    """
+    Auto-setup routes based on test fixtures.
 
     This fixture checks if the test uses any mock_* fixtures
     and automatically sets up the route handlers.

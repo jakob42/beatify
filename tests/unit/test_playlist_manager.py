@@ -29,9 +29,9 @@ sys.modules["homeassistant.helpers"] = MagicMock()
 sys.modules["homeassistant.helpers.typing"] = MagicMock()
 
 from custom_components.beatify.game.playlist import (
+    SUPPORTED_LANGUAGES,
     PlaylistManager,
     get_localized_field,
-    SUPPORTED_LANGUAGES,
 )
 
 
@@ -129,7 +129,7 @@ class TestPlaylistManagerReset:
     """Tests for reset functionality."""
 
     def test_reset_clears_played_songs(self):
-        """reset clears all played song tracking."""
+        """Reset clears all played song tracking."""
         songs = [
             {"year": 1985, "uri": "spotify:track:1", "fun_fact": "Fact 1"},
             {"year": 1990, "uri": "spotify:track:2", "fun_fact": "Fact 2"},

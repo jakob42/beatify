@@ -1,4 +1,5 @@
-"""Tests for Beatify config flow.
+"""
+Tests for Beatify config flow.
 
 Note: These tests verify the config_flow.py file structure and content
 without importing it directly (to avoid homeassistant dependency).

@@ -1,4 +1,5 @@
-"""Analytics data collection and storage for Beatify (Story 19.1).
+"""
+Analytics data collection and storage for Beatify (Story 19.1).
 
 Provides persistent storage for game metrics and error events,
 enabling historical analysis through the analytics dashboard.
@@ -11,7 +12,7 @@ import json
 import logging
 import os
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypedDict
 
@@ -140,9 +141,7 @@ class AnalyticsStorage:
         async with self._save_lock:
             try:
                 # Ensure directory exists
-                await self._hass.async_add_executor_job(
-                    self._path.parent.mkdir, 0o755, True, True
-                )
+                await self._hass.async_add_executor_job(self._path.parent.mkdir, 0o755, True, True)
 
                 # Write to temp file first (atomic write pattern)
                 temp_path = self._path.with_suffix(".tmp")
@@ -250,7 +249,7 @@ class AnalyticsStorage:
         # Group old games by month and create summaries
         monthly_groups: dict[str, list[GameRecord]] = {}
         for game in old_games:
-            dt = datetime.fromtimestamp(game["ended_at"], tz=timezone.utc)
+            dt = datetime.fromtimestamp(game["ended_at"], tz=UTC)
             month_key = dt.strftime("%Y-%m")
             if month_key not in monthly_groups:
                 monthly_groups[month_key] = []
@@ -298,9 +297,7 @@ class AnalyticsStorage:
         self._data["games"] = recent_games
 
         # Also prune old errors (keep last 90 days)
-        self._data["errors"] = [
-            e for e in self._data["errors"] if e["timestamp"] >= cutoff
-        ]
+        self._data["errors"] = [e for e in self._data["errors"] if e["timestamp"] >= cutoff]
 
         _LOGGER.info(
             "Pruned %d old games into %d monthly summaries",
@@ -377,14 +374,13 @@ class AnalyticsStorage:
         Returns:
             Dict mapping slug (e.g., 'greatest-hits-of-all-time') to display name
             (e.g., 'Greatest Hits of All Time')
+
         """
         if self._playlist_display_names is not None:
             return self._playlist_display_names
 
         display_names: dict[str, str] = {}
-        playlist_dir = Path(
-            self._hass.config.path("custom_components/beatify/playlists")
-        )
+        playlist_dir = Path(self._hass.config.path("custom_components/beatify/playlists"))
 
         if not playlist_dir.exists():
             _LOGGER.debug("Playlist directory not found: %s", playlist_dir)
@@ -420,9 +416,7 @@ class AnalyticsStorage:
 
         for game in games:
             for playlist_name in game.get("playlist_names", []):
-                playlist_counts[playlist_name] = (
-                    playlist_counts.get(playlist_name, 0) + 1
-                )
+                playlist_counts[playlist_name] = playlist_counts.get(playlist_name, 0) + 1
 
         # Sort by count descending
         sorted_playlists = sorted(
@@ -438,18 +432,14 @@ class AnalyticsStorage:
 
         return [
             {
-                "name": display_names.get(
-                    slug, slug
-                ),  # Use display name or fallback to slug
+                "name": display_names.get(slug, slug),  # Use display name or fallback to slug
                 "play_count": count,
                 "percentage": round(count / total * 100, 1) if total > 0 else 0,
             }
             for slug, count in sorted_playlists
         ]
 
-    def compute_games_over_time(
-        self, games: list[GameRecord], period: str
-    ) -> dict[str, Any]:
+    def compute_games_over_time(self, games: list[GameRecord], period: str) -> dict[str, Any]:
         """
         Aggregate game counts for chart visualization (Story 19.5).
 
@@ -463,26 +453,21 @@ class AnalyticsStorage:
         """
         from datetime import timedelta  # noqa: PLC0415
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         if period == "7d":
             # Daily aggregation
             days = 7
             granularity = "day"
-            buckets = {
-                (now - timedelta(days=i)).strftime("%Y-%m-%d"): 0 for i in range(days)
-            }
+            buckets = {(now - timedelta(days=i)).strftime("%Y-%m-%d"): 0 for i in range(days)}
 
             for game in games:
-                dt = datetime.fromtimestamp(game["ended_at"], tz=timezone.utc)
+                dt = datetime.fromtimestamp(game["ended_at"], tz=UTC)
                 key = dt.strftime("%Y-%m-%d")
                 if key in buckets:
                     buckets[key] += 1
 
-            labels = [
-                (now - timedelta(days=i)).strftime("%a")
-                for i in range(days - 1, -1, -1)
-            ]
+            labels = [(now - timedelta(days=i)).strftime("%a") for i in range(days - 1, -1, -1)]
             values = [
                 buckets[(now - timedelta(days=i)).strftime("%Y-%m-%d")]
                 for i in range(days - 1, -1, -1)
@@ -499,7 +484,7 @@ class AnalyticsStorage:
                 week_buckets[week_start.strftime("%Y-%m-%d")] = 0
 
             for game in games:
-                dt = datetime.fromtimestamp(game["ended_at"], tz=timezone.utc)
+                dt = datetime.fromtimestamp(game["ended_at"], tz=UTC)
                 week_start = dt - timedelta(days=dt.weekday())
                 key = week_start.strftime("%Y-%m-%d")
                 if key in week_buckets:
@@ -515,7 +500,7 @@ class AnalyticsStorage:
             month_buckets: dict[str, int] = {}
 
             for game in games:
-                dt = datetime.fromtimestamp(game["ended_at"], tz=timezone.utc)
+                dt = datetime.fromtimestamp(game["ended_at"], tz=UTC)
                 key = dt.strftime("%Y-%m")
                 month_buckets[key] = month_buckets.get(key, 0) + 1
 
@@ -569,9 +554,7 @@ class AnalyticsStorage:
             status = "critical"
 
         # Recent errors (last 10)
-        recent_errors = sorted(
-            period_errors, key=lambda e: e["timestamp"], reverse=True
-        )[:10]
+        recent_errors = sorted(period_errors, key=lambda e: e["timestamp"], reverse=True)[:10]
 
         return {
             "error_rate": round(error_rate, 4),
@@ -603,9 +586,7 @@ class AnalyticsStorage:
 
         # Get games for current and previous periods
         current_games = self.get_games(start_date=current_start, end_date=now)
-        previous_games = self.get_games(
-            start_date=previous_start, end_date=current_start - 1
-        )
+        previous_games = self.get_games(start_date=previous_start, end_date=current_start - 1)
 
         # Get errors for current period
         current_errors = self.get_errors(start_date=current_start, end_date=now)
@@ -629,28 +610,16 @@ class AnalyticsStorage:
         prev_total_games = len(previous_games)
         prev_total_players = sum(g["player_count"] for g in previous_games)
         prev_total_rounds = sum(g["rounds_played"] for g in previous_games)
-        prev_total_score = sum(
-            g["average_score"] * g["player_count"] for g in previous_games
-        )
-        prev_errors = self.get_errors(
-            start_date=previous_start, end_date=current_start - 1
-        )
+        prev_total_score = sum(g["average_score"] * g["player_count"] for g in previous_games)
+        prev_errors = self.get_errors(start_date=previous_start, end_date=current_start - 1)
         prev_total_errors = len(prev_errors)
 
-        prev_avg_players = (
-            prev_total_players / prev_total_games if prev_total_games > 0 else 0
-        )
-        prev_avg_score = (
-            prev_total_score / prev_total_players if prev_total_players > 0 else 0
-        )
-        prev_error_rate = (
-            prev_total_errors / prev_total_rounds if prev_total_rounds > 0 else 0
-        )
+        prev_avg_players = prev_total_players / prev_total_games if prev_total_games > 0 else 0
+        prev_avg_score = prev_total_score / prev_total_players if prev_total_players > 0 else 0
+        prev_error_rate = prev_total_errors / prev_total_rounds if prev_total_rounds > 0 else 0
 
         # Story 19.9: Calculate previous period average rounds
-        prev_avg_rounds = (
-            prev_total_rounds / prev_total_games if prev_total_games > 0 else 0
-        )
+        prev_avg_rounds = prev_total_rounds / prev_total_games if prev_total_games > 0 else 0
 
         # Calculate trends (percentage change)
         def calc_trend(current: float, previous: float) -> float:
@@ -661,9 +630,7 @@ class AnalyticsStorage:
         # Compute additional data for dashboard sections
         playlists = self.compute_playlist_stats(current_games)
         chart_data = self.compute_games_over_time(current_games, period)
-        error_stats = self.compute_error_stats(
-            current_games, self._data["errors"], period
-        )
+        error_stats = self.compute_error_stats(current_games, self._data["errors"], period)
 
         # Story 19.8: Calculate peak concurrent players
         peak_players = max((g["player_count"] for g in current_games), default=0)
@@ -685,9 +652,7 @@ class AnalyticsStorage:
                 "players": round(calc_trend(avg_players, prev_avg_players), 2),
                 "score": round(calc_trend(avg_score, prev_avg_score), 2),
                 "errors": round(calc_trend(error_rate, prev_error_rate), 2),
-                "rounds": round(
-                    calc_trend(avg_rounds, prev_avg_rounds), 2
-                ),  # Story 19.9
+                "rounds": round(calc_trend(avg_rounds, prev_avg_rounds), 2),  # Story 19.9
             },
             "playlists": playlists,
             "chart_data": chart_data,
@@ -704,6 +669,7 @@ class AnalyticsStorage:
 
         Returns:
             Dict with streak counts and distribution
+
         """
         now = int(time.time())
 
@@ -739,6 +705,7 @@ class AnalyticsStorage:
 
         Returns:
             Dict with bet counts and win rate
+
         """
         now = int(time.time())
 

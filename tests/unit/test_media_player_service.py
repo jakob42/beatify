@@ -81,7 +81,7 @@ class TestMediaPlayerServicePlayback:
 
     @pytest.mark.asyncio
     async def test_stop_calls_ha_service(self, mock_hass):
-        """stop calls the correct HA service."""
+        """Stop calls the correct HA service."""
         service = MediaPlayerService(mock_hass, "media_player.living_room")
 
         result = await service.stop()
@@ -95,7 +95,7 @@ class TestMediaPlayerServicePlayback:
 
     @pytest.mark.asyncio
     async def test_stop_returns_false_on_error(self, mock_hass):
-        """stop returns False when service call fails."""
+        """Stop returns False when service call fails."""
         mock_hass.services.async_call = AsyncMock(side_effect=Exception("Service error"))
         service = MediaPlayerService(mock_hass, "media_player.living_room")
 
@@ -234,7 +234,8 @@ class TestMediaPlayerServiceAvailability:
 
 @pytest.mark.unit
 class TestMediaContentTypeDetection:
-    """Tests for provider-specific content type detection (Story 16.2).
+    """
+    Tests for provider-specific content type detection (Story 16.2).
 
     AC #1: media_content_type shall be "spotify" for Spotify URIs
     AC #5: Content type shall be parameterizable per provider
@@ -289,7 +290,8 @@ class TestMediaContentTypeDetection:
 
 @pytest.mark.unit
 class TestMediaPlayerServiceProviderPlayback:
-    """Tests for playback with different providers (Story 16.2).
+    """
+    Tests for playback with different providers (Story 16.2).
 
     AC #3: Sonos speaker playback works as before (no regression)
     AC #4: Chromecast device playback works as before (no regression)

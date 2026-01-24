@@ -20,11 +20,11 @@ from tests.support.factories.song_factory import (
 
 __all__ = [
     "Player",
-    "create_player",
-    "create_admin",
-    "create_player_with_guess",
     "Song",
+    "create_admin",
+    "create_player",
+    "create_player_with_guess",
+    "create_playlist",
     "create_song",
     "create_song_from_sample",
-    "create_playlist",
 ]

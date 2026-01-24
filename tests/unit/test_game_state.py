@@ -22,7 +22,6 @@ import pytest
 
 from tests.support.factories import create_player
 
-
 # =============================================================================
 # STATE TRANSITION TESTS
 # =============================================================================
@@ -1000,7 +999,7 @@ class TestGetStealTargets:
         """get_steal_targets returns players who have submitted."""
         from unittest.mock import MagicMock
 
-        from custom_components.beatify.game.state import GamePhase, GameState
+        from custom_components.beatify.game.state import GameState
 
         state = GameState(time_fn=lambda: 1000.0)
         state.create_game(

@@ -12,7 +12,6 @@ from __future__ import annotations
 import pytest
 from playwright.async_api import Page, expect
 
-
 # =============================================================================
 # TEST CASES
 # =============================================================================

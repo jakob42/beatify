@@ -49,18 +49,13 @@ sys.modules["homeassistant.helpers.aiohttp_client"] = mock_ha.helpers.aiohttp_cl
 sys.modules["homeassistant.config_entries"] = mock_ha.config_entries
 
 # =============================================================================
+# Imports below must come after HA mocks are set up
 
-import asyncio
-from collections.abc import AsyncGenerator, Generator
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from dataclasses import dataclass, field  # noqa: E402
+from typing import Any  # noqa: E402
+from unittest.mock import AsyncMock, MagicMock  # noqa: E402
 
-import pytest
-
-if TYPE_CHECKING:
-    from aiohttp.test_utils import TestClient
-
+import pytest  # noqa: E402
 
 # =============================================================================
 # TIME CONTROL FIXTURES
@@ -69,7 +64,8 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def frozen_time() -> float:
-    """Fixed timestamp for deterministic timer tests.
+    """
+    Fixed timestamp for deterministic timer tests.
 
     Usage:
         def test_round_expiry(game_state, frozen_time):
@@ -80,7 +76,8 @@ def frozen_time() -> float:
 
 @pytest.fixture
 def time_fn(frozen_time: float):
-    """Time function fixture for GameState injection.
+    """
+    Time function fixture for GameState injection.
 
     Usage:
         game = GameState(time_fn=time_fn)
@@ -95,7 +92,8 @@ def time_fn(frozen_time: float):
 
 @dataclass
 class MockGameState:
-    """Mock game state for testing state transitions.
+    """
+    Mock game state for testing state transitions.
 
     This is a placeholder until the actual GameState is implemented.
     Replace with import from custom_components.beatify.game.state
@@ -140,7 +138,8 @@ class MockGameState:
 
 @pytest.fixture
 def game_state(time_fn) -> MockGameState:
-    """Fresh game state with controlled time.
+    """
+    Fresh game state with controlled time.
 
     Usage:
         def test_state_transition(game_state):
@@ -159,7 +158,8 @@ def game_state(time_fn) -> MockGameState:
 
 @pytest.fixture
 def mock_hass() -> MagicMock:
-    """Mock Home Assistant instance.
+    """
+    Mock Home Assistant instance.
 
     Provides the essential HA APIs needed by Beatify:
     - hass.config.path() for file paths
@@ -187,7 +187,8 @@ def mock_hass() -> MagicMock:
 
 @pytest.fixture
 def mock_ma_service() -> AsyncMock:
-    """Mock Music Assistant service.
+    """
+    Mock Music Assistant service.
 
     Simulates MA responses for:
     - get_library_tracks() -> list of track metadata
@@ -233,7 +234,8 @@ def mock_ma_service() -> AsyncMock:
 
 @pytest.fixture
 def mock_media_player() -> MagicMock:
-    """Mock Home Assistant media player entity.
+    """
+    Mock Home Assistant media player entity.
 
     Usage:
         async def test_volume_control(mock_media_player):
@@ -300,7 +302,8 @@ def ws_admin_start_message() -> MockWebSocketMessage:
 
 @pytest.fixture
 async def ws_client(aiohttp_client, game_state, mock_hass, mock_ma_service):
-    """WebSocket test client for integration tests.
+    """
+    WebSocket test client for integration tests.
 
     Requires pytest-aiohttp to be installed.
 
@@ -342,10 +345,11 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True)
 async def cleanup_after_test():
-    """Auto-cleanup fixture that runs after each test.
+    """
+    Auto-cleanup fixture that runs after each test.
 
     Ensures no state leaks between tests.
     """
-    yield
+    return
     # Add cleanup logic here when needed
     # e.g., reset singletons, clear caches, etc.

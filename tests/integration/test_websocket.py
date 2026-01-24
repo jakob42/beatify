@@ -15,9 +15,6 @@ from __future__ import annotations
 
 import pytest
 
-from tests.support.factories import create_player, create_song
-
-
 # =============================================================================
 # JOIN FLOW TESTS
 # =============================================================================

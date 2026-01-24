@@ -6,7 +6,7 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
-from ..const import MEDIA_CONTENT_TYPES, MEDIA_CONTENT_TYPE_DEFAULT
+from ..const import MEDIA_CONTENT_TYPE_DEFAULT, MEDIA_CONTENT_TYPES
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -69,9 +69,7 @@ METADATA_POLL_INTERVAL = 0.3
 class MediaPlayerService:
     """Service for controlling HA media player."""
 
-    def __init__(
-        self, hass: HomeAssistant, entity_id: str, is_mass: bool = False
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, entity_id: str, is_mass: bool = False) -> None:
         """
         Initialize with HomeAssistant and entity_id.
 
@@ -207,9 +205,7 @@ class MediaPlayerService:
 
         # Get initial state for comparison
         initial_state = self._hass.states.get(self._entity_id)
-        initial_title = (
-            initial_state.attributes.get("media_title") if initial_state else None
-        )
+        initial_title = initial_state.attributes.get("media_title") if initial_state else None
 
         elapsed = 0.0
         while elapsed < METADATA_WAIT_TIMEOUT:
@@ -391,9 +387,7 @@ async def async_get_media_players(hass: HomeAssistant) -> list[dict]:
     for state in hass.states.async_all("media_player"):
         # Check if this entity is from Music Assistant integration
         entity_entry = ent_reg.async_get(state.entity_id)
-        is_mass = (
-            entity_entry is not None and entity_entry.platform == "music_assistant"
-        )
+        is_mass = entity_entry is not None and entity_entry.platform == "music_assistant"
 
         media_players.append(
             {

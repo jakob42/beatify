@@ -59,7 +59,8 @@ SAMPLE_SONGS = [
 
 
 def create_song(**overrides: Any) -> Song:
-    """Create a test song with sensible defaults.
+    """
+    Create a test song with sensible defaults.
 
     Args:
         **overrides: Any Song field to override
@@ -76,6 +77,7 @@ def create_song(**overrides: Any) -> Song:
 
         # Song from specific year (for testing year guessing)
         old_song = create_song(year=1975)
+
     """
     defaults = {
         "id": f"track-{uuid.uuid4().hex[:8]}",
@@ -91,7 +93,8 @@ def create_song(**overrides: Any) -> Song:
 
 
 def create_song_from_sample(index: int = 0, **overrides: Any) -> Song:
-    """Create a song from the sample library.
+    """
+    Create a song from the sample library.
 
     Args:
         index: Index into SAMPLE_SONGS (0-7)
@@ -99,13 +102,15 @@ def create_song_from_sample(index: int = 0, **overrides: Any) -> Song:
 
     Returns:
         Song with realistic data
+
     """
     sample = SAMPLE_SONGS[index % len(SAMPLE_SONGS)]
     return create_song(**sample, **overrides)
 
 
 def create_playlist(count: int = 10) -> list[Song]:
-    """Create a playlist of test songs.
+    """
+    Create a playlist of test songs.
 
     Cycles through SAMPLE_SONGS to create variety.
     """

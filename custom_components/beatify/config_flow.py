@@ -51,9 +51,7 @@ class BeatifyConfigFlow(ConfigFlow, domain=DOMAIN):
             description_placeholders = {"warning": warning_msg}
         else:
             # Show available media players with friendly names
-            player_list = ", ".join(
-                p.get("friendly_name", p["entity_id"]) for p in media_players
-            )
+            player_list = ", ".join(p.get("friendly_name", p["entity_id"]) for p in media_players)
             count = len(media_players)
             description_placeholders = {
                 "warning": f"✓ Found {count} media player(s): {player_list}"

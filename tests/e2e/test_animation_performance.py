@@ -11,8 +11,7 @@ Tests that:
 from __future__ import annotations
 
 import pytest
-from playwright.async_api import Page, expect
-
+from playwright.async_api import Page
 
 # =============================================================================
 # TEST CASES
@@ -83,7 +82,7 @@ async def test_device_tier_returns_valid_value(page: Page, base_url: str):
         }
     """)
 
-    assert tier in ['high', 'medium', 'low'], f"Device tier should be 'high', 'medium', or 'low', got {tier}"
+    assert tier in ["high", "medium", "low"], f"Device tier should be 'high', 'medium', or 'low', got {tier}"
 
 
 @pytest.mark.asyncio
@@ -105,11 +104,11 @@ async def test_quality_settings_structure(page: Page, base_url: str):
     """)
 
     assert settings is not None, "Quality settings should be returned"
-    assert 'confettiParticles' in settings, "Should have confettiParticles"
-    assert 'scoreDuration' in settings, "Should have scoreDuration"
-    assert 'leaderboardAnimation' in settings, "Should have leaderboardAnimation"
-    assert 'neonGlow' in settings, "Should have neonGlow"
-    assert 'enableAnimations' in settings, "Should have enableAnimations"
+    assert "confettiParticles" in settings, "Should have confettiParticles"
+    assert "scoreDuration" in settings, "Should have scoreDuration"
+    assert "leaderboardAnimation" in settings, "Should have leaderboardAnimation"
+    assert "neonGlow" in settings, "Should have neonGlow"
+    assert "enableAnimations" in settings, "Should have enableAnimations"
 
 
 @pytest.mark.asyncio
@@ -175,8 +174,8 @@ async def test_animation_queue_skip_all(page: Page, base_url: str):
         }
     """)
 
-    assert 'error' not in result, f"skipAll should not throw: {result.get('error')}"
-    assert result['isRunning'] is False, "Queue should not be running after skipAll"
+    assert "error" not in result, f"skipAll should not throw: {result.get('error')}"
+    assert result["isRunning"] is False, "Queue should not be running after skipAll"
 
 
 @pytest.mark.asyncio
@@ -233,8 +232,8 @@ async def test_animate_value_has_skip_method(page: Page, base_url: str):
         }
     """)
 
-    assert result.get('hasSkip'), "animateValue should return object with skipToEnd"
-    assert result.get('hasCancel'), "animateValue should return object with cancel"
+    assert result.get("hasSkip"), "animateValue should return object with skipToEnd"
+    assert result.get("hasCancel"), "animateValue should return object with cancel"
 
 
 @pytest.mark.asyncio
@@ -266,8 +265,8 @@ async def test_confetti_uses_device_tier(page: Page, base_url: str):
         }
     """)
 
-    assert result.get('exists'), "triggerConfetti should exist"
-    assert result.get('particleCount') is not None, "Should have particle count from quality settings"
+    assert result.get("exists"), "triggerConfetti should exist"
+    assert result.get("particleCount") is not None, "Should have particle count from quality settings"
 
 
 @pytest.mark.asyncio

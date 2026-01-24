@@ -126,11 +126,13 @@ class ArtistChallenge:
     winner_time: float | None = None
 
     def to_dict(self, include_answer: bool = False) -> dict[str, Any]:
-        """Convert to JSON-serializable dictionary.
+        """
+        Convert to JSON-serializable dictionary.
 
         Args:
             include_answer: If True, include correct_artist (for REVEAL phase).
                            If False, hide answer (for PLAYING phase).
+
         """
         result: dict[str, Any] = {
             "options": self.options,
@@ -419,14 +421,10 @@ class GameState:
             state["deadline"] = self.deadline
             state["last_round"] = self.last_round
             state["songs_remaining"] = (
-                self._playlist_manager.get_remaining_count()
-                if self._playlist_manager
-                else 0
+                self._playlist_manager.get_remaining_count() if self._playlist_manager else 0
             )
             # Submission tracking (Story 4.4)
-            state["submitted_count"] = sum(
-                1 for p in self.players.values() if p.submitted
-            )
+            state["submitted_count"] = sum(1 for p in self.players.values() if p.submitted)
             state["all_submitted"] = self.all_submitted()
             # Song info WITHOUT year during PLAYING (hidden until reveal)
             if self.current_song:
@@ -441,9 +439,7 @@ class GameState:
             state["leaderboard"] = self.get_leaderboard()
             # Story 20.1: Artist challenge (hide answer during PLAYING)
             if self.artist_challenge_enabled and self.artist_challenge:
-                state["artist_challenge"] = self.artist_challenge.to_dict(
-                    include_answer=False
-                )
+                state["artist_challenge"] = self.artist_challenge.to_dict(include_answer=False)
 
         elif self.phase == GamePhase.REVEAL:
             state["join_url"] = self.join_url
@@ -473,9 +469,7 @@ class GameState:
                         state["song_difficulty"] = difficulty
             # Story 20.1: Artist challenge (reveal answer during REVEAL)
             if self.artist_challenge_enabled and self.artist_challenge:
-                state["artist_challenge"] = self.artist_challenge.to_dict(
-                    include_answer=True
-                )
+                state["artist_challenge"] = self.artist_challenge.to_dict(include_answer=True)
             # Story 20.9: Early reveal flag for client-side toast
             if self._early_reveal:
                 state["early_reveal"] = True
@@ -684,9 +678,7 @@ class GameState:
 
             if remaining_ms > 0:
                 remaining_seconds = remaining_ms / 1000.0
-                self._timer_task = asyncio.create_task(
-                    self._timer_countdown(remaining_seconds)
-                )
+                self._timer_task = asyncio.create_task(self._timer_countdown(remaining_seconds))
                 _LOGGER.info("Timer restarted with %.1fs remaining", remaining_seconds)
 
                 # Resume media playback if it was stopped
@@ -722,9 +714,7 @@ class GameState:
         total = sum(p.score for p in self.players.values())
         return round(total / len(self.players))
 
-    def add_player(
-        self, name: str, ws: web.WebSocketResponse
-    ) -> tuple[bool, str | None]:
+    def add_player(self, name: str, ws: web.WebSocketResponse) -> tuple[bool, str | None]:
         """
         Add a player to the game.
 
@@ -761,9 +751,8 @@ class GameState:
                     existing_player.connected = True
                     _LOGGER.info("Player reconnected: %s", existing_name)
                     return True, None
-                else:
-                    # Player still connected, reject duplicate
-                    return False, ERR_NAME_TAKEN
+                # Player still connected, reject duplicate
+                return False, ERR_NAME_TAKEN
 
         # Check player limit
         if len(self.players) >= MAX_PLAYERS:
@@ -1229,9 +1218,7 @@ class GameState:
             resolved_uri = song.get("_resolved_uri") or song.get("uri")
             success = await self._media_player_service.play_song(resolved_uri)
             if not success:
-                _LOGGER.warning(
-                    "Failed to play song: %s", song["uri"]
-                )  # Log original for debug
+                _LOGGER.warning("Failed to play song: %s", song["uri"])  # Log original for debug
                 self._playlist_manager.mark_played(resolved_uri)
 
                 # Check retry limit to prevent runaway loop
@@ -1250,9 +1237,7 @@ class GameState:
                 return await self.start_round(hass, _retry_count + 1)
 
             # Wait for metadata to update (polls until track ID matches or timeout)
-            metadata = await self._media_player_service.wait_for_metadata_update(
-                resolved_uri
-            )
+            metadata = await self._media_player_service.wait_for_metadata_update(resolved_uri)
         else:
             # No media player (testing mode)
             metadata = {
@@ -1349,9 +1334,7 @@ class GameState:
                 _LOGGER.info("Round timer expired, transitioning to REVEAL")
                 await self.end_round()
             else:
-                _LOGGER.debug(
-                    "Timer expired but phase already changed to %s", self.phase
-                )
+                _LOGGER.debug("Timer expired but phase already changed to %s", self.phase)
         except asyncio.CancelledError:
             _LOGGER.debug("Timer task cancelled")
             # Re-raise to properly complete cancellation
@@ -1377,23 +1360,18 @@ class GameState:
         for player in self.players.values():
             if player.submitted and correct_year is not None:
                 # Calculate elapsed time for speed bonus (Story 5.1)
-                if (
-                    player.submission_time is not None
-                    and self.round_start_time is not None
-                ):
+                if player.submission_time is not None and self.round_start_time is not None:
                     elapsed = player.submission_time - self.round_start_time
                 else:
                     elapsed = self.round_duration  # No bonus if timing unavailable
 
                 # Calculate score with speed bonus
-                speed_score, player.base_score, player.speed_multiplier = (
-                    calculate_round_score(
-                        player.current_guess,
-                        correct_year,
-                        elapsed,
-                        self.round_duration,
-                        self.difficulty,
-                    )
+                speed_score, player.base_score, player.speed_multiplier = calculate_round_score(
+                    player.current_guess,
+                    correct_year,
+                    elapsed,
+                    self.round_duration,
+                    self.difficulty,
                 )
                 player.years_off = abs(player.current_guess - correct_year)
                 player.missed_round = False
@@ -1434,19 +1412,14 @@ class GameState:
                     player.streak_bonus = 0
 
                 # Story 20.4: Award artist bonus to challenge winner
-                if (
-                    self.artist_challenge
-                    and self.artist_challenge.winner == player.name
-                ):
+                if self.artist_challenge and self.artist_challenge.winner == player.name:
                     player.artist_bonus = ARTIST_BONUS_POINTS
                 else:
                     player.artist_bonus = 0
 
                 # Add to total score (round_score + streak_bonus + artist_bonus are separate)
                 # Streak bonus and artist bonus NOT doubled by bet
-                player.score += (
-                    player.round_score + player.streak_bonus + player.artist_bonus
-                )
+                player.score += player.round_score + player.streak_bonus + player.artist_bonus
 
                 # Track cumulative stats (Story 5.6) - AFTER all scoring
                 player.rounds_played += 1
@@ -1456,10 +1429,7 @@ class GameState:
 
                 # Track superlative data (Story 15.2)
                 # Record submission time (elapsed from round start)
-                if (
-                    player.submission_time is not None
-                    and self.round_start_time is not None
-                ):
+                if player.submission_time is not None and self.round_start_time is not None:
                     time_taken = player.submission_time - self.round_start_time
                     player.submission_times.append(time_taken)
 
@@ -1490,10 +1460,7 @@ class GameState:
                 player.bet_outcome = None
                 # Story 20.4: Non-submitters don't get artist bonus
                 # (Note: They can still win if they guessed artist correctly during PLAYING)
-                if (
-                    self.artist_challenge
-                    and self.artist_challenge.winner == player.name
-                ):
+                if self.artist_challenge and self.artist_challenge.winner == player.name:
                     player.artist_bonus = ARTIST_BONUS_POINTS
                     player.score += player.artist_bonus
                 else:
@@ -1525,9 +1492,7 @@ class GameState:
                 playlist_name = None
                 if self.playlists:
                     playlist_path = self.playlists[0]
-                    playlist_name = (
-                        playlist_path.replace(".json", "").replace("-", " ").title()
-                    )
+                    playlist_name = playlist_path.replace(".json", "").replace("-", " ").title()
                 await self._stats_service.record_song_result(
                     song_uri,
                     player_results,
@@ -1755,9 +1720,7 @@ class GameState:
 
         # Collect submitted player data
         submitted_players = [
-            p
-            for p in self.players.values()
-            if p.submitted and p.current_guess is not None
+            p for p in self.players.values() if p.submitted and p.current_guess is not None
         ]
 
         # Handle empty submissions (AC11)
@@ -1806,9 +1769,7 @@ class GameState:
             if p.submission_time is not None and self.round_start_time is not None
         ]
         if players_with_time:
-            fastest_time = min(
-                p.submission_time - self.round_start_time for p in players_with_time
-            )
+            fastest_time = min(p.submission_time - self.round_start_time for p in players_with_time)
             speed_champs = [
                 p.name
                 for p in players_with_time
@@ -1872,9 +1833,7 @@ class GameState:
         # Speed Demon - fastest average submission (AC3)
         # Requires at least MIN_SUBMISSIONS_FOR_SPEED submissions
         speed_candidates = [
-            (p, p.avg_submission_time)
-            for p in players
-            if p.avg_submission_time is not None
+            (p, p.avg_submission_time) for p in players if p.avg_submission_time is not None
         ]
         if speed_candidates:
             fastest = min(speed_candidates, key=lambda x: x[1])
@@ -1950,9 +1909,7 @@ class GameState:
 
         # Close Calls - most +/-1 year guesses (AC3)
         # Minimum MIN_CLOSE_CALLS close guesses
-        close_candidates = [
-            (p, p.close_calls) for p in players if p.close_calls >= MIN_CLOSE_CALLS
-        ]
+        close_candidates = [(p, p.close_calls) for p in players if p.close_calls >= MIN_CLOSE_CALLS]
         if close_candidates:
             closest = max(close_candidates, key=lambda x: x[1])
             awards.append(
