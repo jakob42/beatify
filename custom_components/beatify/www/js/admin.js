@@ -1880,15 +1880,10 @@ function renderRequestsList() {
         return;
     }
 
-    const requests = window.PlaylistRequests.getRequestsForDisplay();
-
-    // Show/hide section based on whether there are requests
-    if (requests.length === 0) {
-        section?.classList.add('hidden');
-        return;
-    }
-
+    // Always show section so users can request playlists
     section?.classList.remove('hidden');
+
+    const requests = window.PlaylistRequests.getRequestsForDisplay();
 
     // Update summary badge
     if (summary) {
