@@ -7529,7 +7529,8 @@ body.device-tier-low .reveal-skip-hint {
 
 .info-box-list {
     margin: 0;
-    padding-left: var(--space-lg);
+    padding-left: 0;
+    list-style-position: inside;
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
 }
