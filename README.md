@@ -13,7 +13,7 @@ Guests scan, songs play, everyone competes. It's that simple.
 [![Version](https://img.shields.io/badge/Version-2.0.0-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-[**Get Started**](#-5-minute-setup) • [**See It In Action**](#-the-experience) • [**Install Now**](#-installation)
+[**Get Started**](#5-minute-setup) • [**See It In Action**](#the-experience) • [**Install Now**](#installation)
 
 ---
 
@@ -245,6 +245,70 @@ Open Beatify → Pick speakers → Pick playlist → Start → Share QR → Go!
 *Print it. Display it. Share it.*
 
 </div>
+
+---
+
+<br>
+
+## Opening Beatify
+
+After installation, you can access Beatify in several ways:
+
+### Option 1: HA Sidebar (Recommended)
+
+Beatify automatically adds itself to your Home Assistant sidebar during installation.
+
+1. Open Home Assistant
+2. Look for **Beatify** in the left sidebar (with the music icon)
+3. Click to open
+
+> **Tip:** If you don't see Beatify in the sidebar, restart Home Assistant.
+
+### Option 2: Direct URL
+
+Navigate directly to Beatify in your browser:
+
+```
+http://YOUR-HA-IP:8123/beatify/admin
+```
+
+Replace `YOUR-HA-IP` with your Home Assistant's IP address or hostname.
+
+### Option 3: HA Companion App
+
+If using the Home Assistant mobile app:
+
+1. Open the HA Companion app
+2. Tap the hamburger menu (☰) or swipe from left
+3. Select **Beatify** from the sidebar
+
+---
+
+<br>
+
+## Viewing & Selecting Playlists
+
+Playlists are displayed on the main Beatify admin screen:
+
+1. Open Beatify (see above)
+2. Scroll to the **Playlists** section
+3. Check the boxes next to playlists you want to use in your game
+4. Selected playlists show their song count
+
+### Included Playlists
+
+Beatify comes with 560+ songs across several curated playlists:
+
+- 🎸 **Greatest Hits 80s-2020s** — Chart-toppers across four decades
+- 🏆 **Eurovision Winners (1956-2025)** — 72 winning songs
+- 🎤 **One-Hit Wonders** — 98 flash-in-the-pan classics
+- 🎭 **Kölner Karneval** — 291 German carnival favorites
+
+### Adding Custom Playlists
+
+Custom playlists are stored in: `config/beatify/playlists/`
+
+See [Creating Playlists](#creating-playlists) for the JSON format.
 
 ---
 

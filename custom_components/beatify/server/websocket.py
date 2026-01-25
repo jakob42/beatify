@@ -63,6 +63,9 @@ class BeatifyWebSocketHandler:
         self._pending_removals: dict[str, asyncio.Task] = {}
         self._admin_disconnect_task: asyncio.Task | None = None
         self._analytics: AnalyticsStorage | None = None
+        # Debouncing for concurrent player joins (Issue #41)
+        self._broadcast_debounce_task: asyncio.Task | None = None
+        self._broadcast_debounce_delay = 0.05  # 50ms
 
     def set_analytics(self, analytics: AnalyticsStorage) -> None:
         """
@@ -230,13 +233,9 @@ class BeatifyWebSocketHandler:
                 except Exception as err:  # noqa: BLE001
                     _LOGGER.warning("Failed to send state to new player: %s", err)
                     return
-                # Broadcast to OTHER players only (avoid double send to joiner)
-                for other_ws in list(self.connections):
-                    if other_ws != ws and not other_ws.closed:
-                        try:
-                            await other_ws.send_json(state_msg)
-                        except Exception:  # noqa: BLE001
-                            pass
+                # Debounced broadcast to others (Issue #41 - batches concurrent joins)
+                # Joiner already got state above; this notifies other players
+                await self.debounced_broadcast_state()
             else:
                 error_messages = {
                     ERR_NAME_TAKEN: "Name taken, choose another",
@@ -1020,18 +1019,63 @@ class BeatifyWebSocketHandler:
 
     async def broadcast(self, message: dict) -> None:
         """
-        Broadcast message to all connected clients.
+        Broadcast message to all connected clients in parallel (Issue #41).
+
+        Uses asyncio.gather() for parallel sends instead of sequential awaits.
 
         Args:
             message: Message to broadcast
 
         """
+        if not self.connections:
+            return
+
+        # Build list of send tasks for all open connections
+        tasks = []
         for ws in list(self.connections):
             if not ws.closed:
-                try:
-                    await ws.send_json(message)
-                except Exception as err:  # noqa: BLE001
-                    _LOGGER.warning("Failed to send to WebSocket: %s", err)
+                tasks.append(self._safe_send(ws, message))
+
+        # Execute all sends in parallel
+        if tasks:
+            await asyncio.gather(*tasks)
+
+    async def _safe_send(self, ws: web.WebSocketResponse, message: dict) -> None:
+        """
+        Send message to a single WebSocket, catching errors.
+
+        Args:
+            ws: WebSocket connection
+            message: Message to send
+
+        """
+        try:
+            await ws.send_json(message)
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.warning("Failed to send to WebSocket: %s", err)
+
+    async def debounced_broadcast_state(self) -> None:
+        """
+        Broadcast state with debouncing for concurrent events (Issue #41).
+
+        Batches rapid state changes (like multiple players joining)
+        into a single broadcast after a short delay. This prevents
+        N broadcasts when N players join within the debounce window.
+
+        """
+        # Cancel any pending broadcast
+        if self._broadcast_debounce_task and not self._broadcast_debounce_task.done():
+            self._broadcast_debounce_task.cancel()
+            try:
+                await self._broadcast_debounce_task
+            except asyncio.CancelledError:
+                pass
+
+        async def delayed_broadcast() -> None:
+            await asyncio.sleep(self._broadcast_debounce_delay)
+            await self.broadcast_state()
+
+        self._broadcast_debounce_task = asyncio.create_task(delayed_broadcast())
 
     async def broadcast_state(self) -> None:
         """Broadcast current game state to all connected players."""
