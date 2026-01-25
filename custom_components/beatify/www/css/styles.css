@@ -7385,3 +7385,206 @@ body.device-tier-low .reveal-skip-hint {
     animation: none;
     opacity: 0.6;
 }
+
+/* ========================================
+   Playlist Request Feature (Story 44)
+   ======================================== */
+
+/* Request button in playlists section */
+.request-btn {
+    margin-top: var(--space-md);
+    gap: var(--space-xs);
+}
+
+/* Requests list */
+.requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+/* Individual request item */
+.request-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.request-item-thumbnail {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.request-item-thumbnail-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.request-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.request-item-name {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.request-item-meta {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+/* Status badges */
+.request-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.request-status--pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+}
+
+.request-status--ready {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+}
+
+.request-status--installed {
+    background: transparent;
+    color: #4caf50;
+    border: 1px solid #4caf50;
+}
+
+.request-status--declined {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+}
+
+/* Update button for ready status */
+.request-update-btn {
+    font-size: var(--font-size-xs);
+    padding: 6px 12px;
+    white-space: nowrap;
+}
+
+/* Modal text input */
+.text-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-base);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    transition: border-color 0.15s ease;
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.text-input.input-error {
+    border-color: var(--color-error);
+}
+
+/* Info box */
+.info-box {
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.info-box-title {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-muted);
+}
+
+.info-box-list {
+    margin: 0;
+    padding-left: var(--space-lg);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.info-box-list li {
+    margin-bottom: var(--space-xs);
+}
+
+.info-box-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* Success modal */
+.modal-content--success {
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-sm);
+}
+
+.success-playlist-name {
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-xs);
+}
+
+.success-estimate {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+/* Loading state for submit button */
+.btn--loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn--loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

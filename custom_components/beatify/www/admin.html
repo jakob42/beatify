@@ -66,6 +66,29 @@
             </div>
         </section>
 
+        <!-- My Requested Playlists Section (Story 44.3) -->
+        <section id="my-requests" class="section-collapsible collapsed hidden" aria-labelledby="my-requests-heading">
+            <button type="button" class="section-header-collapsible" id="my-requests-toggle" aria-expanded="false" aria-controls="my-requests-content">
+                <span class="section-icon" aria-hidden="true">📋</span>
+                <span data-i18n="admin.myRequests">My Requested Playlists</span>
+                <span class="section-summary" id="my-requests-summary">0</span>
+                <span class="section-toggle" aria-hidden="true">▼</span>
+            </button>
+            <div class="section-content" id="my-requests-content">
+                <div id="my-requests-list" class="requests-list">
+                    <!-- Rendered dynamically -->
+                </div>
+                <p id="my-requests-empty" class="empty-state-inline hidden">
+                    <span aria-hidden="true">📭</span>
+                    <span data-i18n="admin.noRequests">No playlist requests yet</span>
+                </p>
+                <button type="button" id="request-playlist-btn" class="btn btn-secondary btn-full-width request-btn">
+                    <span aria-hidden="true">➕</span>
+                    <span data-i18n="admin.requestPlaylist">Request Custom Playlist</span>
+                </button>
+            </div>
+        </section>
+
         <!-- Game Settings Section - Collapsible with all settings -->
         <section id="game-settings" class="section-collapsible collapsed" aria-labelledby="game-settings-heading">
             <button type="button" class="section-header-collapsible" id="game-settings-toggle" aria-expanded="false" aria-controls="game-settings-content">
@@ -270,6 +293,48 @@
         </div>
     </div>
 
+    <!-- Playlist Request Modal (Story 44.2) -->
+    <div id="request-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="request-modal-title">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <h2 id="request-modal-title" data-i18n="admin.requestPlaylistTitle">Request Custom Playlist</h2>
+            <div class="form-group">
+                <label for="spotify-url-input" data-i18n="admin.spotifyUrl">Spotify Playlist URL</label>
+                <input type="url" id="spotify-url-input" class="text-input"
+                       data-i18n-placeholder="admin.spotifyUrlPlaceholder"
+                       placeholder="https://open.spotify.com/playlist/..."
+                       autocomplete="off" autocapitalize="off" spellcheck="false">
+                <p id="spotify-url-error" class="validation-msg hidden" data-i18n="admin.spotifyUrlInvalid">Please enter a valid Spotify playlist URL</p>
+            </div>
+            <div class="info-box">
+                <p class="info-box-title" data-i18n="admin.howItWorks">How it works:</p>
+                <ol class="info-box-list">
+                    <li data-i18n="admin.howItWorks1">We'll receive your request</li>
+                    <li data-i18n="admin.howItWorks2">Playlist is created within 24-48 hours</li>
+                    <li data-i18n="admin.howItWorks3">Update Beatify to get the new playlist</li>
+                </ol>
+            </div>
+            <div class="modal-actions">
+                <button id="request-cancel-btn" class="btn btn-secondary" data-i18n="common.cancel">Cancel</button>
+                <button id="request-submit-btn" class="btn btn-primary" disabled data-i18n="admin.submitRequest">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Playlist Request Success Modal (Story 44.2) -->
+    <div id="request-success-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="request-success-title">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-content--success">
+            <div class="success-icon" aria-hidden="true">✅</div>
+            <h2 id="request-success-title" data-i18n="admin.requestSubmitted">Request Submitted!</h2>
+            <p id="request-success-name" class="success-playlist-name"></p>
+            <p class="success-estimate" data-i18n="admin.requestEstimate">Estimated: 24-48 hours</p>
+            <div class="modal-actions">
+                <button id="request-success-close-btn" class="btn btn-primary" data-i18n="common.close">Close</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>Beatify <span id="app-version">v...</span></p>
     </footer>
@@ -279,6 +344,8 @@
     <!-- Version query strings prevent browser caching issues -->
     <script src="/beatify/static/js/i18n.min.js?v=1.7.0" onerror="var s=document.createElement('script');s.src='/beatify/static/js/i18n.js?v=1.7.0';document.head.appendChild(s);"></script>
     <script src="/beatify/static/js/utils.min.js?v=1.7.0" onerror="var s=document.createElement('script');s.src='/beatify/static/js/utils.js?v=1.7.0';document.head.appendChild(s);"></script>
+    <!-- Story 44.1: Playlist requests module -->
+    <script src="/beatify/static/js/playlist-requests.min.js?v=2.2.0" onerror="var s=document.createElement('script');s.src='/beatify/static/js/playlist-requests.js?v=2.2.0';document.head.appendChild(s);"></script>
     <script src="/beatify/static/js/admin.min.js?v=1.7.0" onerror="var s=document.createElement('script');s.src='/beatify/static/js/admin.js?v=1.7.0';document.head.appendChild(s);"></script>
 </body>
 </html>

@@ -91,10 +91,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Game settings setup (language, timer, difficulty, artist challenge)
     setupGameSettings();
 
+    // Playlist requests setup (Story 44.2, 44.3)
+    setupPlaylistRequests();
+
     // Load saved game settings from localStorage
     await loadSavedSettings();
 
     await loadStatus();
+
+    // Initialize playlist requests display (Story 44.3, 44.4)
+    initPlaylistRequests();
 });
 
 /**
@@ -114,10 +120,11 @@ async function loadStatus() {
         mediaPlayerDocsUrl = status.media_player_docs_url || '';
         // Set Music Assistant availability from backend (not based on entity names)
         hasMusicAssistant = status.has_music_assistant === true;
-        // Display version in footer
+        // Display version in footer and expose globally (Story 44.5)
         const versionEl = document.getElementById('app-version');
         if (versionEl && status.version) {
             versionEl.textContent = 'v' + status.version;
+            window.BEATIFY_VERSION = status.version;
         }
         renderMediaPlayers(status.media_players);
         renderPlaylists(status.playlists, status.playlist_dir);
@@ -154,6 +161,15 @@ function setupCollapsibleSections() {
     // Game settings toggle
     document.getElementById('game-settings-toggle')?.addEventListener('click', function() {
         const section = document.getElementById('game-settings');
+        if (section) {
+            section.classList.toggle('collapsed');
+            this.setAttribute('aria-expanded', !section.classList.contains('collapsed'));
+        }
+    });
+
+    // My Requests toggle (Story 44.3)
+    document.getElementById('my-requests-toggle')?.addEventListener('click', function() {
+        const section = document.getElementById('my-requests');
         if (section) {
             section.classList.toggle('collapsed');
             this.setAttribute('aria-expanded', !section.classList.contains('collapsed'));
@@ -1715,6 +1731,218 @@ function stopLobbyPolling() {
         clearInterval(lobbyPollingInterval);
         lobbyPollingInterval = null;
     }
+}
+
+// ============================================
+// Playlist Requests (Story 44)
+// ============================================
+
+/**
+ * Setup event handlers for playlist request modal
+ */
+function setupPlaylistRequests() {
+    const requestModal = document.getElementById('request-modal');
+    const successModal = document.getElementById('request-success-modal');
+    const urlInput = document.getElementById('spotify-url-input');
+    const urlError = document.getElementById('spotify-url-error');
+    const submitBtn = document.getElementById('request-submit-btn');
+
+    // Open request modal from button
+    document.getElementById('request-playlist-btn')?.addEventListener('click', () => {
+        if (requestModal) {
+            requestModal.classList.remove('hidden');
+            urlInput?.focus();
+        }
+    });
+
+    // Close request modal
+    document.getElementById('request-cancel-btn')?.addEventListener('click', () => {
+        closeRequestModal();
+    });
+
+    // Close on backdrop click
+    requestModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+        closeRequestModal();
+    });
+
+    // URL input validation
+    urlInput?.addEventListener('input', () => {
+        const url = urlInput.value.trim();
+        const isValid = window.PlaylistRequests?.isValidSpotifyUrl(url);
+
+        if (url && !isValid) {
+            urlInput.classList.add('input-error');
+            urlError?.classList.remove('hidden');
+        } else {
+            urlInput.classList.remove('input-error');
+            urlError?.classList.add('hidden');
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = !isValid;
+        }
+    });
+
+    // Submit request
+    submitBtn?.addEventListener('click', async () => {
+        const url = urlInput?.value.trim();
+        if (!url || !window.PlaylistRequests?.isValidSpotifyUrl(url)) return;
+
+        // Show loading state
+        submitBtn.classList.add('btn--loading');
+        submitBtn.disabled = true;
+
+        try {
+            const result = await window.PlaylistRequests.submitRequest(url);
+
+            // Close request modal
+            closeRequestModal();
+
+            // Show success modal
+            const successName = document.getElementById('request-success-name');
+            if (successName) {
+                successName.textContent = result.playlist_name;
+            }
+            successModal?.classList.remove('hidden');
+
+            // Refresh the requests list
+            renderRequestsList();
+
+        } catch (error) {
+            console.error('Failed to submit request:', error);
+            urlInput?.classList.add('input-error');
+            if (urlError) {
+                urlError.textContent = error.message || 'Failed to submit request';
+                urlError.classList.remove('hidden');
+            }
+        } finally {
+            submitBtn.classList.remove('btn--loading');
+            // Re-enable based on input validity
+            const isValid = window.PlaylistRequests?.isValidSpotifyUrl(urlInput?.value.trim() || '');
+            submitBtn.disabled = !isValid;
+        }
+    });
+
+    // Close success modal
+    document.getElementById('request-success-close-btn')?.addEventListener('click', () => {
+        successModal?.classList.add('hidden');
+    });
+
+    successModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+        successModal?.classList.add('hidden');
+    });
+
+    function closeRequestModal() {
+        requestModal?.classList.add('hidden');
+        if (urlInput) {
+            urlInput.value = '';
+            urlInput.classList.remove('input-error');
+        }
+        urlError?.classList.add('hidden');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('btn--loading');
+        }
+    }
+}
+
+/**
+ * Initialize playlist requests display and polling
+ */
+async function initPlaylistRequests() {
+    // Render existing requests
+    renderRequestsList();
+
+    // Poll for status updates (Story 44.4)
+    if (window.PlaylistRequests) {
+        try {
+            const changed = await window.PlaylistRequests.pollStatuses();
+            if (changed) {
+                renderRequestsList();
+            }
+        } catch (e) {
+            console.error('Failed to poll request statuses:', e);
+        }
+    }
+}
+
+/**
+ * Render the list of playlist requests
+ */
+function renderRequestsList() {
+    const section = document.getElementById('my-requests');
+    const listContainer = document.getElementById('my-requests-list');
+    const emptyState = document.getElementById('my-requests-empty');
+    const summary = document.getElementById('my-requests-summary');
+
+    if (!window.PlaylistRequests) {
+        section?.classList.add('hidden');
+        return;
+    }
+
+    const requests = window.PlaylistRequests.getRequestsForDisplay();
+
+    // Show/hide section based on whether there are requests
+    if (requests.length === 0) {
+        section?.classList.add('hidden');
+        return;
+    }
+
+    section?.classList.remove('hidden');
+
+    // Update summary badge
+    if (summary) {
+        summary.textContent = requests.length.toString();
+    }
+
+    // Render list or empty state
+    if (requests.length === 0) {
+        listContainer.innerHTML = '';
+        emptyState?.classList.remove('hidden');
+    } else {
+        emptyState?.classList.add('hidden');
+        listContainer.innerHTML = requests.map(request => {
+            const statusClass = `request-status--${request.status}`;
+            const statusLabels = {
+                pending: '⏳ Pending',
+                ready: '✅ Ready',
+                installed: '✓ Installed',
+                declined: '❌ Declined'
+            };
+            const statusLabel = statusLabels[request.status] || request.status;
+
+            const thumbnail = request.thumbnail_url
+                ? `<img class="request-item-thumbnail" src="${request.thumbnail_url}" alt="">`
+                : `<div class="request-item-thumbnail-placeholder">🎵</div>`;
+
+            let actionButton = '';
+            if (request.status === 'ready' && request.update_available) {
+                actionButton = `<a href="https://github.com/mholzi/beatify/releases" target="_blank"
+                    class="btn btn-primary request-update-btn">Update to v${request.release_version}</a>`;
+            }
+
+            return `
+                <div class="request-item">
+                    ${thumbnail}
+                    <div class="request-item-info">
+                        <div class="request-item-name">${escapeHtml(request.playlist_name)}</div>
+                        <div class="request-item-meta">${request.relative_time}</div>
+                    </div>
+                    <span class="request-status ${statusClass}">${statusLabel}</span>
+                    ${actionButton}
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // ============================================
