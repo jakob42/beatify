@@ -1806,7 +1806,7 @@ function setupPlaylistRequests() {
             successModal?.classList.remove('hidden');
 
             // Refresh the requests list
-            renderRequestsList();
+            await renderRequestsList();
 
         } catch (error) {
             console.error('Failed to submit request:', error);
@@ -1850,15 +1850,15 @@ function setupPlaylistRequests() {
  * Initialize playlist requests display and polling
  */
 async function initPlaylistRequests() {
-    // Render existing requests
-    renderRequestsList();
+    // Render existing requests (loads from backend)
+    await renderRequestsList();
 
     // Poll for status updates (Story 44.4)
     if (window.PlaylistRequests) {
         try {
             const changed = await window.PlaylistRequests.pollStatuses();
             if (changed) {
-                renderRequestsList();
+                await renderRequestsList();
             }
         } catch (e) {
             console.error('Failed to poll request statuses:', e);
@@ -1869,7 +1869,7 @@ async function initPlaylistRequests() {
 /**
  * Render the list of playlist requests
  */
-function renderRequestsList() {
+async function renderRequestsList() {
     const section = document.getElementById('my-requests');
     const listContainer = document.getElementById('my-requests-list');
     const emptyState = document.getElementById('my-requests-empty');
@@ -1883,7 +1883,8 @@ function renderRequestsList() {
     // Always show section so users can request playlists
     section?.classList.remove('hidden');
 
-    const requests = window.PlaylistRequests.getRequestsForDisplay();
+    // Load requests from backend (async)
+    const requests = await window.PlaylistRequests.getRequestsForDisplayAsync();
 
     // Update summary badge
     if (summary) {

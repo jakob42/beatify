@@ -20,6 +20,7 @@ from custom_components.beatify.const import (
     PLAYLIST_DOCS_URL,
     PROVIDER_DEFAULT,
     PROVIDER_SPOTIFY,
+    PROVIDER_YOUTUBE_MUSIC,
     ROUND_DURATION_MAX,
     ROUND_DURATION_MIN,
 )
@@ -190,8 +191,8 @@ class StartGameView(HomeAssistantView):
         if difficulty not in valid_difficulties:
             difficulty = DIFFICULTY_DEFAULT
 
-        # Validate provider (Story 17.6: only Spotify supported)
-        valid_providers = (PROVIDER_SPOTIFY,)
+        # Validate provider (Story 17.6: Spotify and YouTube Music supported)
+        valid_providers = (PROVIDER_SPOTIFY, PROVIDER_YOUTUBE_MUSIC)
         if provider not in valid_providers:
             provider = PROVIDER_DEFAULT
 
@@ -321,6 +322,15 @@ class StartGameView(HomeAssistantView):
                 {
                     "error": "PROVIDER_NOT_SUPPORTED",
                     "message": "Apple Music is not supported on this speaker. Use Music Assistant.",
+                },
+                status=400,
+            )
+
+        if provider == PROVIDER_YOUTUBE_MUSIC and not capabilities.get("youtube_music"):
+            return web.json_response(
+                {
+                    "error": "PROVIDER_NOT_SUPPORTED",
+                    "message": "YouTube Music is not supported on this speaker. Use Music Assistant.",
                 },
                 status=400,
             )
@@ -764,3 +774,80 @@ class SongStatsView(HomeAssistantView):
         self._cache_playlist = playlist_filter
 
         return web.json_response(data)
+
+
+class PlaylistRequestsView(HomeAssistantView):
+    """API for managing playlist requests (Story 44).
+
+    Stores requests in a JSON file on the HA server so they persist
+    across browser sessions and devices.
+    """
+
+    url = "/beatify/api/playlist-requests"
+    name = "beatify:api:playlist-requests"
+    requires_auth = False
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize view."""
+        self.hass = hass
+        self._storage_path = Path(hass.config.path("beatify/playlist_requests.json"))
+
+    def _load_requests(self) -> dict:
+        """Load requests from storage file."""
+        if self._storage_path.exists():
+            try:
+                return json.loads(self._storage_path.read_text(encoding="utf-8"))
+            except Exception as e:  # noqa: BLE001
+                _LOGGER.error("Failed to load playlist requests: %s", e)
+        return {"requests": [], "last_poll": None}
+
+    def _save_requests(self, data: dict) -> bool:
+        """Save requests to storage file."""
+        try:
+            self._storage_path.parent.mkdir(parents=True, exist_ok=True)
+            self._storage_path.write_text(
+                json.dumps(data, indent=2, ensure_ascii=False),
+                encoding="utf-8"
+            )
+            return True
+        except Exception as e:  # noqa: BLE001
+            _LOGGER.error("Failed to save playlist requests: %s", e)
+            return False
+
+    async def get(self, request: web.Request) -> web.Response:  # noqa: ARG002
+        """Get all playlist requests."""
+        data = await self.hass.async_add_executor_job(self._load_requests)
+        return web.json_response(data)
+
+    async def post(self, request: web.Request) -> web.Response:
+        """Save playlist requests (replaces all data)."""
+        try:
+            body = await request.json()
+        except Exception:  # noqa: BLE001
+            return web.json_response(
+                {"error": "INVALID_REQUEST", "message": "Invalid JSON"},
+                status=400,
+            )
+
+        # Validate data structure
+        if not isinstance(body.get("requests"), list):
+            return web.json_response(
+                {"error": "INVALID_REQUEST", "message": "Missing or invalid requests array"},
+                status=400,
+            )
+
+        # Build storage object
+        data = {
+            "requests": body.get("requests", []),
+            "last_poll": body.get("last_poll"),
+        }
+
+        # Save to file
+        success = await self.hass.async_add_executor_job(self._save_requests, data)
+        if not success:
+            return web.json_response(
+                {"error": "SAVE_FAILED", "message": "Failed to save request"},
+                status=500,
+            )
+
+        return web.json_response({"success": True, "requests": data["requests"]})

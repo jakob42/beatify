@@ -1,54 +1,84 @@
 /**
  * Playlist Requests Module (Story 44.1)
  * Handles submission and tracking of custom playlist requests
+ * Uses Home Assistant backend storage for persistence across devices
  */
 (function() {
     'use strict';
 
     const STORAGE_KEY = 'beatify_playlist_requests';
     const API_URL = 'https://beatify-api.mholzi.workers.dev';
+    const BACKEND_API = '/beatify/api/playlist-requests';
     const GITHUB_API = 'https://api.github.com/repos/mholzi/beatify/issues';
     const POLL_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+
+    // In-memory cache for current session
+    let _cache = null;
 
     // Debug: Log origin on load
     console.log('[PlaylistRequests] Module loaded. Origin:', window.location.origin);
 
     /**
-     * Load requests from localStorage
+     * Load requests from HA backend (with localStorage fallback)
      * @returns {Object} Storage object with requests array and last_poll timestamp
      */
     function loadRequests() {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            console.log('[PlaylistRequests] Loading from localStorage:', stored ? `${stored.length} bytes` : 'null');
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                console.log('[PlaylistRequests] Loaded', parsed.requests?.length || 0, 'requests');
-                return parsed;
-            }
-        } catch (e) {
-            console.error('[PlaylistRequests] Failed to load:', e);
+        // Return cache if available (sync path for immediate UI)
+        if (_cache) {
+            console.log('[PlaylistRequests] Returning cached data:', _cache.requests?.length || 0, 'requests');
+            return _cache;
         }
+        // Return empty for sync calls - async load will populate cache
         return { requests: [], last_poll: null };
     }
 
     /**
-     * Save requests to localStorage
+     * Load requests from backend API (async)
+     * @returns {Promise<Object>} Storage object with requests array
+     */
+    async function loadRequestsAsync() {
+        try {
+            console.log('[PlaylistRequests] Loading from backend API...');
+            const response = await fetch(BACKEND_API);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('[PlaylistRequests] Loaded from backend:', data.requests?.length || 0, 'requests');
+                _cache = data;
+                return data;
+            }
+            console.warn('[PlaylistRequests] Backend returned:', response.status);
+        } catch (e) {
+            console.error('[PlaylistRequests] Failed to load from backend:', e);
+        }
+        // Fallback to empty
+        _cache = { requests: [], last_poll: null };
+        return _cache;
+    }
+
+    /**
+     * Save requests to HA backend
      * @param {Object} data - Storage object with requests array
      */
-    function saveRequests(data) {
+    async function saveRequests(data) {
+        // Update cache immediately
+        _cache = data;
+
         try {
-            const json = JSON.stringify(data);
-            localStorage.setItem(STORAGE_KEY, json);
-            console.log('[PlaylistRequests] Saved', data.requests?.length || 0, 'requests,', json.length, 'bytes');
-            // Verify it was saved
-            const verify = localStorage.getItem(STORAGE_KEY);
-            if (verify !== json) {
-                console.error('[PlaylistRequests] VERIFY FAILED! Data not saved correctly');
+            console.log('[PlaylistRequests] Saving to backend:', data.requests?.length || 0, 'requests');
+            const response = await fetch(BACKEND_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                console.log('[PlaylistRequests] Saved to backend successfully');
+                return true;
             }
+            console.error('[PlaylistRequests] Backend save failed:', response.status);
         } catch (e) {
-            console.error('[PlaylistRequests] Failed to save:', e);
+            console.error('[PlaylistRequests] Failed to save to backend:', e);
         }
+        return false;
     }
 
     /**
@@ -69,8 +99,8 @@
             throw new Error(data.message || 'Failed to submit request');
         }
 
-        // Store the request locally
-        const store = loadRequests();
+        // Store the request in backend
+        const store = await loadRequestsAsync();
 
         // Check if we already have this request stored
         const existingIndex = store.requests.findIndex(r => r.issue_number === data.issue_number);
@@ -87,7 +117,7 @@
                 decline_reason: null,
                 last_checked: null
             });
-            saveRequests(store);
+            await saveRequests(store);
         }
 
         return data;
@@ -122,7 +152,7 @@
      * @returns {Promise<boolean>} True if any statuses changed
      */
     async function pollStatuses() {
-        const store = loadRequests();
+        const store = await loadRequestsAsync();
 
         // Check rate limiting
         if (store.last_poll) {
@@ -187,17 +217,35 @@
         }
 
         store.last_poll = new Date().toISOString();
-        saveRequests(store);
+        await saveRequests(store);
 
         return changed;
     }
 
     /**
-     * Get requests formatted for UI display
+     * Get requests formatted for UI display (sync version using cache)
      * @returns {Array} Requests with computed display properties
      */
     function getRequestsForDisplay() {
         const store = loadRequests();
+        return formatRequestsForDisplay(store);
+    }
+
+    /**
+     * Get requests formatted for UI display (async version)
+     * @returns {Promise<Array>} Requests with computed display properties
+     */
+    async function getRequestsForDisplayAsync() {
+        const store = await loadRequestsAsync();
+        return formatRequestsForDisplay(store);
+    }
+
+    /**
+     * Format requests for display
+     * @param {Object} store - Storage object with requests array
+     * @returns {Array} Formatted requests
+     */
+    function formatRequestsForDisplay(store) {
         const currentVersion = window.BEATIFY_VERSION;
 
         return store.requests.map(request => {
@@ -246,10 +294,12 @@
     // Expose module globally
     window.PlaylistRequests = {
         loadRequests,
+        loadRequestsAsync,
         saveRequests,
         submitRequest,
         pollStatuses,
         getRequestsForDisplay,
+        getRequestsForDisplayAsync,
         compareVersions,
         isValidSpotifyUrl,
         clearRequests
