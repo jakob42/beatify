@@ -39,7 +39,7 @@ No apps to download. No accounts to create. Just scan a QR code and play.
 
 **Uses Your Existing Setup** — Works with Music Assistant, Sonos, and Alexa speakers you already have. See [Supported Speakers](#supported-speakers) for details.
 
-**Your Music, Your Vibe** — Spotify or Apple Music playlists. Curated song packs included. Create your own.
+**Your Music, Your Vibe** — Spotify, Apple Music, or YouTube Music playlists. Curated song packs included. Create your own.
 
 **Runs Locally** — No cloud. No subscription. No data leaves your network. Fast, private, reliable.
 
@@ -260,12 +260,15 @@ Playlists are displayed on the main Beatify admin screen:
 
 ### Included Playlists
 
-Beatify comes with 560+ songs across several curated playlists:
+Beatify comes with 780+ songs across several curated playlists:
 
-- 🎸 **Greatest Hits 80s-2020s** — Chart-toppers across four decades
+- 🎸 **Greatest Hits of All Time** — 100 chart-toppers across four decades
+- 🎹 **80er Hits** — 100 classic hits from the decade of synths and MTV
 - 🏆 **Eurovision Winners (1956-2025)** — 72 winning songs
 - 🎤 **One-Hit Wonders** — 98 flash-in-the-pan classics
 - 🎭 **Kölner Karneval** — 291 German carnival favorites
+- 🎶 **Schlager Klassiker** — 60 German schlager classics
+- 🎬 **Movies: 100 Greatest Themes** — 162 iconic film soundtracks
 
 ### Adding Custom Playlists
 
@@ -329,13 +332,13 @@ Select during game setup. All players see the chosen language. Fun facts and awa
 
 Beatify works with specific Home Assistant integrations that support music playback:
 
-| Integration | Supported | Spotify | Apple Music | How It Works |
-|-------------|-----------|---------|-------------|--------------|
-| **[Music Assistant](https://music-assistant.io/)** | ✅ Yes | ✅ | ✅ | Direct URI playback to any connected speaker |
-| **Sonos** | ✅ Yes | ✅ | ❌ | Direct Spotify playback via Sonos integration |
-| **Alexa Media Player** | ✅ Yes | ✅ | ✅ | Voice search playback ("Play [song] on Spotify") |
-| **Cast (Chromecast/Nest/Google TV)** | ❌ No | — | — | Use Music Assistant instead |
-| **HomePod** | ❌ No | — | — | Use Music Assistant instead |
+| Integration | Supported | Spotify | Apple Music | YouTube Music | How It Works |
+|-------------|-----------|---------|-------------|---------------|--------------|
+| **[Music Assistant](https://music-assistant.io/)** | ✅ Yes | ✅ | ✅ | ✅ | Direct URI playback to any connected speaker |
+| **Sonos** | ✅ Yes | ✅ | ❌ | ❌ | Direct Spotify playback via Sonos integration |
+| **Alexa Media Player** | ✅ Yes | ✅ | ✅ | ❌ | Voice search playback ("Play [song] on Spotify") |
+| **Cast (Chromecast/Nest/Google TV)** | ❌ No | — | — | — | Use Music Assistant instead |
+| **HomePod** | ❌ No | — | — | — | Use Music Assistant instead |
 
 ### Why Some Speakers Don't Work Directly
 
@@ -404,7 +407,7 @@ Game pauses automatically. Reconnect and continue exactly where you left off.
 <details>
 <summary><strong>What music services work?</strong></summary>
 <br>
-Spotify and Apple Music. Support depends on your speaker platform—see the <a href="#supported-speakers">Supported Speakers</a> table for details.
+Spotify, Apple Music, and YouTube Music. Support depends on your speaker platform—see the <a href="#supported-speakers">Supported Speakers</a> table for details.
 </details>
 
 <details>
@@ -430,6 +433,16 @@ The neon dark theme is built-in and looks stunning. Custom theming is on the roa
 <br>
 
 ## What's New
+
+### v2.2.0 — YouTube Music & Playlist Requests 🎵
+- **YouTube Music support** — Use YouTube Music as your music provider alongside Spotify and Apple Music
+- **Custom playlist requests** — Users can request Spotify playlists directly from the Beatify interface
+- **80er Hits playlist** — 100 classic hits from Michael Jackson, Prince, Madonna, A-ha, and more
+
+### v2.1.0 — Smart Speaker Routing 🔊
+- **Multi-platform speaker support** — Automatic detection for Music Assistant, Sonos, and Alexa
+- **Dynamic music service selector** — Shows only compatible services for your selected speaker
+- **Cast device guidance** — Helpful hints for Chromecast/Nest users to install Music Assistant
 
 ### v2.0.0 — React & Reveal 🎭✨
 - **Live emoji reactions** — Send 🔥 😂 😮 👏 💀 reactions during reveals that float across all screens
