@@ -475,7 +475,8 @@ function renderPlayerItem(player) {
              data-entity-id="${utils.escapeHtml(player.entity_id)}"
              data-platform="${utils.escapeHtml(player.platform)}"
              data-supports-spotify="${player.supports_spotify}"
-             data-supports-apple-music="${player.supports_apple_music}">
+             data-supports-apple-music="${player.supports_apple_music}"
+             data-supports-youtube-music="${player.supports_youtube_music}">
             <label class="radio-label">
                 <input type="radio"
                        class="media-player-radio"
@@ -484,7 +485,8 @@ function renderPlayerItem(player) {
                        data-state="${utils.escapeHtml(player.state)}"
                        data-platform="${utils.escapeHtml(player.platform)}"
                        data-supports-spotify="${player.supports_spotify}"
-                       data-supports-apple-music="${player.supports_apple_music}">
+                       data-supports-apple-music="${player.supports_apple_music}"
+                       data-supports-youtube-music="${player.supports_youtube_music}">
                 <span class="player-info">
                     <span class="player-name">${utils.escapeHtml(player.friendly_name)}</span>
                     ${platformBadge}
@@ -538,6 +540,7 @@ function handleMediaPlayerSelect(radio, skipSave = false) {
     const platform = radio.dataset.platform;
     const supportsSpotify = radio.dataset.supportsSpotify === 'true';
     const supportsAppleMusic = radio.dataset.supportsAppleMusic === 'true';
+    const supportsYoutubeMusic = radio.dataset.supportsYoutubeMusic === 'true';
 
     // Update module state with platform capabilities
     selectedMediaPlayer = {
@@ -546,6 +549,7 @@ function handleMediaPlayerSelect(radio, skipSave = false) {
         platform,
         supportsSpotify,
         supportsAppleMusic,
+        supportsYoutubeMusic,
     };
 
     // Update visual selection
@@ -590,6 +594,7 @@ function handleMediaPlayerSelect(radio, skipSave = false) {
 function updateProviderOptions(player) {
     const spotifyBtn = document.querySelector('.chip[data-provider="spotify"]');
     const appleBtn = document.querySelector('.chip[data-provider="apple_music"]');
+    const youtubeBtn = document.querySelector('.chip[data-provider="youtube_music"]');
 
     if (spotifyBtn) {
         spotifyBtn.disabled = !player.supportsSpotify;
@@ -601,6 +606,11 @@ function updateProviderOptions(player) {
         appleBtn.classList.toggle('chip--disabled', !player.supportsAppleMusic);
     }
 
+    if (youtubeBtn) {
+        youtubeBtn.disabled = !player.supportsYoutubeMusic;
+        youtubeBtn.classList.toggle('chip--disabled', !player.supportsYoutubeMusic);
+    }
+
     // If current selection is now disabled, switch to Spotify
     if (selectedProvider === 'apple_music' && !player.supportsAppleMusic) {
         // Update UI
@@ -609,11 +619,22 @@ function updateProviderOptions(player) {
         selectedProvider = 'spotify';
     }
 
-    // Show hint for disabled Apple Music
+    if (selectedProvider === 'youtube_music' && !player.supportsYoutubeMusic) {
+        // Update UI
+        document.querySelectorAll('.chip[data-provider]').forEach(c => c.classList.remove('chip--active'));
+        if (spotifyBtn) spotifyBtn.classList.add('chip--active');
+        selectedProvider = 'spotify';
+    }
+
+    // Show hint for disabled providers
     const hint = document.getElementById('provider-hint');
     if (hint) {
-        if (!player.supportsAppleMusic) {
-            hint.textContent = 'Apple Music requires Music Assistant speaker';
+        const disabledProviders = [];
+        if (!player.supportsAppleMusic) disabledProviders.push('Apple Music');
+        if (!player.supportsYoutubeMusic) disabledProviders.push('YouTube Music');
+
+        if (disabledProviders.length > 0) {
+            hint.textContent = `${disabledProviders.join(' and ')} require${disabledProviders.length === 1 ? 's' : ''} Music Assistant speaker`;
             hint.classList.remove('hidden');
         } else {
             hint.classList.add('hidden');
