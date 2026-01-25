@@ -13,7 +13,7 @@ Guests scan, songs play, everyone competes. It's that simple.
 [![Version](https://img.shields.io/badge/Version-2.2.0-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-[**Get Started**](#5-minute-setup) • [**Supported Speakers**](#supported-speakers) • [**See It In Action**](#the-experience) • [**Install Now**](#installation)
+[**Get Started**](#setup-in-home-assistant) • [**Supported Speakers**](#supported-speakers) • [**See It In Action**](#the-experience)
 
 ---
 
@@ -29,60 +29,100 @@ A song plays through your speakers. Everyone races to guess the release year. Po
 
 No apps to download. No accounts to create. Just scan a QR code and play.
 
-> **Speaker Compatibility:** Works with Music Assistant, Sonos, and Alexa speakers. Chromecast/Nest devices need [Music Assistant](https://music-assistant.io/). See [Supported Speakers](#supported-speakers).
+---
+
+<br>
+
+## Why Parties Are Better With Beatify
+
+**Zero Friction Entry** — Guests scan a QR code. That's it. No apps. No accounts. No WiFi password drama. 10 seconds from scan to playing.
+
+**Uses Your Existing Setup** — Works with Music Assistant, Sonos, and Alexa speakers you already have. See [Supported Speakers](#supported-speakers) for details.
+
+**Your Music, Your Vibe** — Spotify or Apple Music playlists. Curated song packs included. Create your own.
+
+**Runs Locally** — No cloud. No subscription. No data leaves your network. Fast, private, reliable.
+
+**Everyone Competes** — Points, streaks, power-ups, and a dramatic finale with podium and stats. Real competition, real laughs.
 
 ---
 
 <br>
 
-## Why Hosts Love Beatify
+## Setup In Home Assistant
 
-<table>
-<tr>
-<td width="50%" valign="top">
+### Step 1: Install
 
-### Zero Friction Entry
-Guests scan a QR code. That's literally it.
+**Via HACS (Recommended)**
+```
+HACS → ⋮ Menu → Custom Repositories
+→ URL: https://github.com/mholzi/beatify
+→ Category: Integration
+→ Install "Beatify"
+→ Restart Home Assistant
+```
 
-No "download this app" delays. No "create an account" friction. No "what's the WiFi password" chaos.
+**Manual**
+```bash
+cd /config/custom_components
+git clone https://github.com/mholzi/beatify.git beatify
+# Restart Home Assistant
+```
 
-**10 seconds from scan to playing.**
+### Step 2: Configure
 
-</td>
-<td width="50%" valign="top">
+```
+Settings → Devices & Services → Add Integration → "Beatify"
+```
 
-### Your Existing Setup
-Works with these Home Assistant integrations:
+That's it. Beatify is now installed.
 
-| Integration | Spotify | Apple Music | Notes |
-|-------------|---------|-------------|-------|
-| **Music Assistant** | ✅ | ✅ | **Recommended** - works with any speaker |
-| **Sonos** | ✅ | ❌ | Direct Spotify playback |
-| **Alexa Media Player** | ✅ | ✅ | Voice search mode |
+---
 
-> ⚠️ **Chromecast, Nest, and Google TV** devices require [Music Assistant](https://music-assistant.io/) to work with Beatify.
+<br>
 
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
+## Opening Beatify (Admin)
 
-### Any Music Source
-Spotify, Apple Music, YouTube Music, local files—if your Home Assistant can play it, Beatify can use it.
+After installation, access Beatify to start a game:
 
-**Your playlists. Your vibe.**
+### Option 1: HA Sidebar (Recommended)
 
-</td>
-<td width="50%" valign="top">
+Beatify automatically adds itself to your Home Assistant sidebar.
 
-### Runs Locally
-No cloud dependency. No subscription. No data leaving your network.
+1. Open Home Assistant
+2. Look for **Beatify** in the left sidebar
+3. Click to open
 
-**Fast, private, reliable.**
+> **Tip:** If you don't see Beatify in the sidebar, restart Home Assistant.
 
-</td>
-</tr>
-</table>
+### Option 2: Direct URL
+
+```
+http://YOUR-HA-IP:8123/beatify/admin
+```
+
+### Option 3: HA Companion App
+
+1. Open the HA Companion app
+2. Tap the menu (☰) or swipe from left
+3. Select **Beatify** from the sidebar
+
+### Starting a Game
+
+1. **Select a speaker** — Only [supported speakers](#supported-speakers) appear
+2. **Choose your music service** — Spotify or Apple Music (depends on speaker)
+3. **Pick playlists** — Select one or more
+4. **Adjust settings** — Language, timer, difficulty
+5. **Start Game** — Share the QR code with guests
+
+<div align="center">
+
+<!-- SCREENSHOT: QR code display with join URL -->
+<img src="images/qr-lobby.png" alt="QR code lobby screen" width="400">
+
+*Print it. Display it. Share it.*
+
+</div>
 
 ---
 
@@ -209,87 +249,6 @@ Everything you need to demand a rematch.
 
 <br>
 
-## 5-Minute Setup
-
-### Step 1: Install (2 minutes)
-
-**Via HACS (Recommended)**
-```
-HACS → ⋮ Menu → Custom Repositories
-→ URL: https://github.com/mholzi/beatify
-→ Category: Integration
-→ Install "Beatify"
-→ Restart Home Assistant
-```
-
-**Manual**
-```bash
-cd /config/custom_components
-git clone https://github.com/mholzi/beatify.git beatify
-# Restart Home Assistant
-```
-
-### Step 2: Configure (1 minute)
-
-```
-Settings → Devices & Services → Add Integration → "Beatify"
-```
-
-### Step 3: Play (instantly)
-
-```
-Open Beatify → Pick speakers → Pick playlist → Start → Share QR → Go!
-```
-
-<div align="center">
-
-<!-- SCREENSHOT: QR code display with join URL -->
-<img src="images/qr-lobby.png" alt="QR code lobby screen" width="400">
-
-*Print it. Display it. Share it.*
-
-</div>
-
----
-
-<br>
-
-## Opening Beatify
-
-After installation, you can access Beatify in several ways:
-
-### Option 1: HA Sidebar (Recommended)
-
-Beatify automatically adds itself to your Home Assistant sidebar during installation.
-
-1. Open Home Assistant
-2. Look for **Beatify** in the left sidebar (with the music icon)
-3. Click to open
-
-> **Tip:** If you don't see Beatify in the sidebar, restart Home Assistant.
-
-### Option 2: Direct URL
-
-Navigate directly to Beatify in your browser:
-
-```
-http://YOUR-HA-IP:8123/beatify/admin
-```
-
-Replace `YOUR-HA-IP` with your Home Assistant's IP address or hostname.
-
-### Option 3: HA Companion App
-
-If using the Home Assistant mobile app:
-
-1. Open the HA Companion app
-2. Tap the hamburger menu (☰) or swipe from left
-3. Select **Beatify** from the sidebar
-
----
-
-<br>
-
 ## Viewing & Selecting Playlists
 
 Playlists are displayed on the main Beatify admin screen:
@@ -361,21 +320,6 @@ Beatify speaks your guests' language.
 - **Español** — Soporte completo
 
 Select during game setup. All players see the chosen language. Fun facts and awards are also translated!
-
----
-
-<br>
-
-## Perfect For
-
-| Event | Why It Works |
-|-------|--------------|
-| **House Parties** | Gets people off phones and into the moment |
-| **Birthday Parties** | "Guess songs from your birth year" challenge |
-| **Game Nights** | Adds music trivia to the rotation |
-| **Family Gatherings** | Bridges generations through shared songs |
-| **Team Building** | Competition that's actually fun |
-| **Holiday Parties** | Creates memories, not awkward silences |
 
 ---
 
