@@ -1024,6 +1024,29 @@ body.theme-dark .toggle-switch {
     border: 1px solid var(--color-error);
 }
 
+/* Supported players hint below media player list */
+.supported-players-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.supported-players-hint a {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+}
+
+.supported-players-hint a:hover {
+    text-decoration: underline;
+}
+
+body.theme-dark .supported-players-hint {
+    color: var(--color-text-neon-muted);
+    border-top-color: var(--color-border-neon);
+}
+
 /* Player info container - holds name and platform badge */
 .player-info {
     display: flex;
