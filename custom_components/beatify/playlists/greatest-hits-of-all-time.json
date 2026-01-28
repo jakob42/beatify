@@ -1,6 +1,12 @@
 {
   "name": "Greatest Hits of All Time",
   "version": "1.3",
+  "tags": [
+    "classics",
+    "top-hits",
+    "international",
+    "mixed"
+  ],
   "songs": [
     {
       "year": 1975,

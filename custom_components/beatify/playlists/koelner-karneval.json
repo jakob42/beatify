@@ -1,6 +1,12 @@
 {
   "name": "Kölner Karneval",
   "version": "1.0",
+  "tags": [
+    "german",
+    "carnival",
+    "party",
+    "schlager"
+  ],
   "songs": [
     {
       "year": 1971,

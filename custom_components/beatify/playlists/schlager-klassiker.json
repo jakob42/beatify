@@ -1,6 +1,11 @@
 {
   "name": "German classics",
   "version": "1.2",
+  "tags": [
+    "german",
+    "schlager",
+    "classics"
+  ],
   "songs": [
     {
       "year": 1985,
