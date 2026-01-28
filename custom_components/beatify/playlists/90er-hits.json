@@ -1,6 +1,12 @@
 {
   "name": "90er Hits",
   "version": "1.0",
+  "tags": [
+    "1990s",
+    "pop",
+    "rock",
+    "international"
+  ],
   "songs": [
     {
       "year": 1991,

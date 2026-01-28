@@ -1,6 +1,13 @@
 {
   "name": "Yacht Rock ⛵ Top 100 Songs",
   "version": "1.0",
+  "tags": [
+    "1970s",
+    "1980s",
+    "yacht-rock",
+    "soft-rock",
+    "international"
+  ],
   "songs": [
     {
       "year": 1978,

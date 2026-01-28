@@ -1,6 +1,12 @@
 {
   "name": "One-Hit Wonders",
   "version": "1.0",
+  "tags": [
+    "one-hit",
+    "classics",
+    "international",
+    "mixed"
+  ],
   "songs": [
     {
       "year": 1965,

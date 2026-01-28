@@ -1,6 +1,12 @@
 {
   "name": "Movie's Greatest Themes",
   "version": "1.2",
+  "tags": [
+    "movies",
+    "soundtrack",
+    "international",
+    "mixed"
+  ],
   "songs": [
     {
       "year": 2001,
