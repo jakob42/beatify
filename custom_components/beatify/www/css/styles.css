@@ -1013,13 +1013,105 @@ body.theme-dark .toggle-switch {
 /* Playlist Filter Bar (Issue #70) */
 .playlist-filter-bar {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.75rem;
     padding: 0.75rem 0;
     margin-bottom: 0.5rem;
     border-bottom: 1px solid var(--color-border);
 }
 
+/* Dropdown filters container */
+.filter-dropdowns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-dropdown {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md, 6px);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #333);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    min-width: 120px;
+}
+
+.filter-dropdown:hover {
+    border-color: var(--color-primary, #6c5ce7);
+}
+
+.filter-dropdown:focus {
+    outline: none;
+    border-color: var(--color-primary, #6c5ce7);
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
+
+/* Dropdown with active selection */
+.filter-dropdown:not([value=""]):has(option:checked:not([value=""])) {
+    border-color: var(--color-primary, #6c5ce7);
+    background-color: rgba(108, 92, 231, 0.08);
+}
+
+/* Filter summary */
+.filter-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.filter-summary-text {
+    color: var(--color-text-secondary, #666);
+}
+
+.filter-clear {
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm, 4px);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #666);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filter-clear:hover {
+    background: var(--color-error, #e74c3c);
+    border-color: var(--color-error, #e74c3c);
+    color: white;
+}
+
+/* Dark theme */
+body.theme-dark .filter-dropdown {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+}
+
+body.theme-dark .filter-dropdown:hover,
+body.theme-dark .filter-dropdown:focus {
+    border-color: rgba(108, 92, 231, 0.6);
+}
+
+body.theme-dark .filter-summary-text {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+body.theme-dark .filter-clear {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Legacy filter-tag styles (kept for backwards compatibility) */
 .filter-tag {
     display: inline-flex;
     align-items: center;
@@ -1034,37 +1126,6 @@ body.theme-dark .toggle-switch {
     cursor: pointer;
     transition: all 0.15s ease;
     white-space: nowrap;
-}
-
-.filter-tag:hover {
-    background: var(--color-surface-hover);
-    border-color: var(--color-primary, #6c5ce7);
-    color: var(--color-primary, #6c5ce7);
-}
-
-.filter-tag.active {
-    background: var(--color-primary, #6c5ce7);
-    border-color: var(--color-primary, #6c5ce7);
-    color: white;
-    box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
-}
-
-body.theme-dark .filter-tag {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.85);
-}
-
-body.theme-dark .filter-tag:hover {
-    background: rgba(108, 92, 231, 0.2);
-    border-color: rgba(108, 92, 231, 0.6);
-    color: #b8acf6;
-}
-
-body.theme-dark .filter-tag.active {
-    background: var(--color-primary, #6c5ce7);
-    border-color: var(--color-primary, #6c5ce7);
-    color: white;
 }
 
 .filter-tag .filter-count {
@@ -7664,6 +7725,14 @@ body.device-tier-low .reveal-skip-hint {
 
 .info-box-list li:last-child {
     margin-bottom: 0;
+}
+
+.info-box-note {
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
 }
 
 /* Success modal */
