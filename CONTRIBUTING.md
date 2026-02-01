@@ -93,6 +93,8 @@ Playlists are JSON files in `custom_components/beatify/playlists/`. This is the 
       },
       "certifications": ["Gold (US)"],
       "awards": [],
+      "awards_de": [],
+      "awards_es": [],
       "fun_fact": "English fun fact about the song.",
       "fun_fact_de": "Deutscher Fun Fact.",
       "fun_fact_es": "Fun fact en español.",
