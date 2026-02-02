@@ -187,9 +187,7 @@ class MovieChallenge:
             )
         return {
             "winners": winners,
-            "wrong_guesses": [
-                {"name": g["name"], "guess": g["guess"]} for g in self.wrong_guesses
-            ],
+            "wrong_guesses": [{"name": g["name"], "guess": g["guess"]} for g in self.wrong_guesses],
         }
 
     def get_player_bonus(self, player_name: str) -> int:
@@ -1375,7 +1373,9 @@ class GameState:
             # Pass entire song dict for platform-specific playback routing
             success = await self._media_player_service.play_song(song)
             if not success:
-                _LOGGER.warning("Failed to play song: %s", song.get("uri"))  # Log original for debug
+                _LOGGER.warning(
+                    "Failed to play song: %s", song.get("uri")
+                )  # Log original for debug
                 self._playlist_manager.mark_played(song.get("_resolved_uri") or song.get("uri"))
 
                 # Check retry limit to prevent runaway loop
@@ -1398,13 +1398,11 @@ class GameState:
             self.metadata_pending = True
             metadata = {
                 "artist": None,  # Pending - will update async
-                "title": None,   # Pending - will update async
+                "title": None,  # Pending - will update async
                 "album_art": "/beatify/static/img/no-artwork.svg",
             }
             # Start background task to fetch metadata
-            self._metadata_task = asyncio.create_task(
-                self._fetch_metadata_async(resolved_uri)
-            )
+            self._metadata_task = asyncio.create_task(self._fetch_metadata_async(resolved_uri))
         else:
             # No media player (testing mode)
             self.metadata_pending = False
@@ -1650,7 +1648,12 @@ class GameState:
 
                 # Add to total score (round_score + streak_bonus + artist_bonus + movie_bonus are separate)
                 # Streak bonus, artist bonus, and movie bonus NOT doubled by bet
-                player.score += player.round_score + player.streak_bonus + player.artist_bonus + player.movie_bonus
+                player.score += (
+                    player.round_score
+                    + player.streak_bonus
+                    + player.artist_bonus
+                    + player.movie_bonus
+                )
 
                 # Track cumulative stats (Story 5.6) - AFTER all scoring
                 player.rounds_played += 1
@@ -2312,9 +2315,7 @@ class GameState:
             wrong_guesses=[],
         )
 
-    def submit_movie_guess(
-        self, player_name: str, movie: str, guess_time: float
-    ) -> dict[str, Any]:
+    def submit_movie_guess(self, player_name: str, movie: str, guess_time: float) -> dict[str, Any]:
         """
         Submit movie guess for bonus points (Issue #28).
 
@@ -2361,9 +2362,7 @@ class GameState:
         }
 
         if correct:
-            self.movie_challenge.correct_guesses.append(
-                {"name": player_name, "time": elapsed}
-            )
+            self.movie_challenge.correct_guesses.append({"name": player_name, "time": elapsed})
             # Sort by time (fastest first) - ensures ranking is consistent
             self.movie_challenge.correct_guesses.sort(key=lambda g: g["time"])
             # Determine rank (0-indexed position)
@@ -2383,9 +2382,7 @@ class GameState:
                 elapsed,
             )
         else:
-            self.movie_challenge.wrong_guesses.append(
-                {"name": player_name, "guess": movie.strip()}
-            )
+            self.movie_challenge.wrong_guesses.append({"name": player_name, "guess": movie.strip()})
             _LOGGER.debug(
                 "Movie quiz wrong by %s: '%s' (correct: '%s')",
                 player_name,

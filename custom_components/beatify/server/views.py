@@ -808,8 +808,7 @@ class PlaylistRequestsView(HomeAssistantView):
         try:
             self._storage_path.parent.mkdir(parents=True, exist_ok=True)
             self._storage_path.write_text(
-                json.dumps(data, indent=2, ensure_ascii=False),
-                encoding="utf-8"
+                json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
             )
             return True
         except Exception as e:  # noqa: BLE001
