@@ -1487,9 +1487,7 @@ class TestCalculateSuperlatives:
 
         assert "superlatives" in result
         # Should have the lucky_streak award
-        streak_award = next(
-            (a for a in result["superlatives"] if a["id"] == "lucky_streak"), None
-        )
+        streak_award = next((a for a in result["superlatives"] if a["id"] == "lucky_streak"), None)
         assert streak_award is not None
 
 
@@ -1584,6 +1582,7 @@ class TestLiveReactions:
 
         # Manually trigger end_round to transition to REVEAL
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(state.end_round())
 
         # Reactions should be cleared
@@ -2756,3 +2755,158 @@ class TestArtistBonusScoring:
         assert state.players["Alice"].missed_round is True
         assert state.players["Alice"].artist_bonus == 5
         assert state.players["Alice"].score == 5  # Only artist bonus (ARTIST_BONUS_POINTS=5)
+
+
+# =============================================================================
+# REMATCH TESTS (Issue #108)
+# =============================================================================
+
+from custom_components.beatify.game.state import GamePhase, GameState
+
+
+def _make_real_game_state(**kwargs):
+    """Create a real GameState with a game for rematch tests."""
+    state = GameState(time_fn=lambda: 1000.0)
+    songs = [
+        {"year": 1985, "uri": "spotify:track:1", "_resolved_uri": "spotify:track:1"},
+        {"year": 1990, "uri": "spotify:track:2", "_resolved_uri": "spotify:track:2"},
+    ]
+    state.create_game(
+        playlists=["test.json"],
+        songs=songs,
+        media_player="media_player.test",
+        base_url="http://test.local:8123",
+        **kwargs,
+    )
+    return state
+
+
+@pytest.mark.unit
+class TestResetGameInternals:
+    """Tests for _reset_game_internals() helper method (Issue #108)."""
+
+    def test_reset_clears_game_fields(self):
+        """Reset should clear all game state fields."""
+        state = _make_real_game_state()
+        state.round = 5
+        state.total_rounds = 10
+        state.current_song = {"title": "Test Song"}
+        state.deadline = 1234567890
+        state.song_stopped = True
+        state.round_start_time = 1000.0
+
+        state._reset_game_internals()
+
+        assert state.round == 0
+        assert state.total_rounds == 0
+        assert state.current_song is None
+        assert state.deadline is None
+        assert state.song_stopped is False
+        assert state.round_start_time is None
+
+    def test_reset_does_not_clear_players(self):
+        """Reset should NOT clear the players dict."""
+        state = _make_real_game_state()
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+        state.add_player("Bob", mock_ws)
+
+        state._reset_game_internals()
+
+        assert len(state.players) == 2
+
+    def test_reset_does_not_set_phase(self):
+        """Reset should NOT change the phase (caller's responsibility)."""
+        state = _make_real_game_state()
+        state.phase = GamePhase.END
+
+        state._reset_game_internals()
+
+        assert state.phase == GamePhase.END
+
+
+@pytest.mark.unit
+class TestRematchGame:
+    """Tests for rematch_game() method (Issue #108)."""
+
+    def test_rematch_preserves_players(self):
+        """Rematch should keep all players connected."""
+        state = _make_real_game_state()
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+        state.add_player("Bob", mock_ws)
+        state.players["Alice"].score = 100
+        state.players["Bob"].score = 80
+
+        state.rematch_game()
+
+        assert len(state.players) == 2
+        assert "Alice" in state.players
+        assert "Bob" in state.players
+
+    def test_rematch_resets_player_scores(self):
+        """Rematch should reset all player scores to 0."""
+        state = _make_real_game_state()
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+        state.add_player("Bob", mock_ws)
+        state.players["Alice"].score = 100
+        state.players["Bob"].score = 80
+
+        state.rematch_game()
+
+        assert state.players["Alice"].score == 0
+        assert state.players["Bob"].score == 0
+
+    def test_rematch_generates_new_game_id(self):
+        """Rematch should generate a new game_id."""
+        state = _make_real_game_state()
+        old_id = state.game_id
+
+        state.rematch_game()
+
+        assert state.game_id is not None
+        assert state.game_id != old_id
+
+    def test_rematch_sets_lobby_phase(self):
+        """Rematch should set phase to LOBBY."""
+        state = _make_real_game_state()
+        state.phase = GamePhase.END
+
+        state.rematch_game()
+
+        assert state.phase == GamePhase.LOBBY
+
+    def test_rematch_resets_player_stats(self):
+        """Rematch should reset player game stats."""
+        state = _make_real_game_state()
+        mock_ws = MagicMock()
+        state.add_player("Alice", mock_ws)
+        state.players["Alice"].streak = 5
+        state.players["Alice"].best_streak = 5
+        state.players["Alice"].rounds_played = 10
+
+        state.rematch_game()
+
+        assert state.players["Alice"].streak == 0
+        assert state.players["Alice"].best_streak == 0
+        assert state.players["Alice"].rounds_played == 0
+
+    def test_rematch_recreates_playlist_manager(self):
+        """Rematch should re-init PlaylistManager so songs are available."""
+        state = _make_real_game_state()
+
+        state.rematch_game()
+
+        assert state._playlist_manager is not None
+        assert state.total_rounds == 2  # Our 2 test songs
+
+    def test_rematch_preserves_settings(self):
+        """Rematch should preserve game settings (difficulty, language, etc)."""
+        state = _make_real_game_state(difficulty="hard")
+        state.language = "de"
+
+        state.rematch_game()
+
+        assert state.difficulty == "hard"
+        assert state.language == "de"

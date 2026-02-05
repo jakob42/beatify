@@ -691,20 +691,25 @@ class GameState:
             "bets_won": self.bet_tracking.get("bets_won", 0),
         }
 
-    def end_game(self) -> None:
-        """End the current game and reset state."""
-        _LOGGER.info("Game ended: %s", self.game_id)
-        # Cancel any running timer
-        self.cancel_timer()
-        self.game_id = None
-        self.phase = GamePhase.LOBBY
+    def _reset_game_internals(self) -> None:
+        """Reset internal game state (Issue #108).
+
+        Shared by end_game() and rematch_game() to prevent field drift.
+        Does NOT reset: players, sessions, phase, game_id, callbacks,
+        service refs (_stats_service, _on_round_end, _on_metadata_update),
+        or volume_level (caller's responsibility).
+        """
+        # Cancel async tasks before resetting references
+        self._cancel_intro_timer()
+        if self._metadata_task and not self._metadata_task.done():
+            self._metadata_task.cancel()
+        self._metadata_task = None
+
+        # Reset playlists and media
         self.playlists = []
         self.songs = []
         self.media_player = None
         self.join_url = None
-        self.players = {}
-        # Clear all session mappings (Story 11.6)
-        self.clear_all_sessions()
 
         # Reset round tracking (Epic 4)
         self.round = 0
@@ -742,6 +747,20 @@ class GameState:
         # Reset provider (Story 17.2)
         self.provider = PROVIDER_DEFAULT
 
+        # Issue #23: Reset intro mode per-round state
+        self.is_intro_round = False
+        self.intro_stopped = False
+        self._intro_round_start_time = None
+
+        # Reset metadata state
+        self.metadata_pending = False
+
+        # Reset reaction rate-limiting (Story 18.9)
+        self._reactions_this_phase = set()
+
+        # Reset error detail
+        self.last_error_detail = ""
+
         # Story 19.11: Reset streak tracking
         self.streak_achievements = {"streak_3": 0, "streak_5": 0, "streak_7": 0}
 
@@ -755,6 +774,73 @@ class GameState:
         # Issue #28: Reset movie quiz challenge
         self.movie_challenge = None
         self.movie_quiz_enabled = True  # Reset to default
+
+    def end_game(self) -> None:
+        """End the current game and reset state."""
+        _LOGGER.info("Game ended: %s", self.game_id)
+        self.cancel_timer()
+        self._reset_game_internals()
+        self.game_id = None
+        self.phase = GamePhase.LOBBY
+        self.players = {}
+        self.clear_all_sessions()
+
+    def rematch_game(self) -> None:
+        """Reset game for rematch, preserving connected players (Issue #108)."""
+        _LOGGER.info("Rematch initiated from game: %s", self.game_id)
+        self.cancel_timer()
+
+        # Preserve game settings that the admin configured
+        preserved_playlists = self.playlists
+        preserved_songs = list(self.songs)  # Copy so we get a fresh playlist
+        preserved_media_player = self.media_player
+        preserved_join_url = self.join_url
+        preserved_provider = self.provider
+        preserved_platform = self.platform
+        preserved_difficulty = self.difficulty
+        preserved_language = self.language
+        preserved_round_duration = self.round_duration
+        preserved_artist_challenge = self.artist_challenge_enabled
+        preserved_movie_quiz = self.movie_quiz_enabled
+        preserved_intro_mode = self.intro_mode_enabled
+
+        self._reset_game_internals()
+
+        # Restore preserved settings for seamless rematch
+        self.playlists = preserved_playlists
+        self.songs = preserved_songs
+        self.media_player = preserved_media_player
+        self.provider = preserved_provider
+        self.platform = preserved_platform
+        self.difficulty = preserved_difficulty
+        self.language = preserved_language
+        self.round_duration = preserved_round_duration
+        self.artist_challenge_enabled = preserved_artist_challenge
+        self.movie_quiz_enabled = preserved_movie_quiz
+        self.intro_mode_enabled = preserved_intro_mode
+
+        # Re-create PlaylistManager with fresh song list
+        self._playlist_manager = PlaylistManager(preserved_songs, preserved_provider)
+        self.total_rounds = len(preserved_songs)
+
+        self.phase = GamePhase.LOBBY
+        # Reset each player's game stats but keep them connected
+        for player in self.players.values():
+            player.reset_for_new_game()
+        # Generate new game ID for the rematch
+        self.game_id = secrets.token_urlsafe(8)
+
+        # Regenerate join_url with new game_id
+        if preserved_join_url:
+            base_url = preserved_join_url.split("/beatify/play")[0]
+            self.join_url = f"{base_url}/beatify/play?game={self.game_id}"
+
+        _LOGGER.info(
+            "Rematch ready with %d players, %d songs, new game_id: %s",
+            len(self.players),
+            self.total_rounds,
+            self.game_id,
+        )
 
     async def pause_game(self, reason: str) -> bool:
         """
