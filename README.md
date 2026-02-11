@@ -402,6 +402,28 @@ In Beatify's admin screen:
 - ✅ **Supported players** show with a platform badge (Music Assistant, Sonos, Alexa)
 - ❌ **Unsupported players** (Cast, etc.) are hidden with a hint to use Music Assistant
 
+### Guest WiFi / Network Setup
+
+Beatify runs entirely within Home Assistant's HTTP server — **no extra ports or services needed**.
+
+| Protocol | Port | Purpose |
+|----------|------|---------|
+| HTTP/HTTPS | 8123 (default) | Game UI, API, static assets |
+| WebSocket | 8123 (same port) | Real-time game communication |
+
+**If guests are on a separate WiFi/VLAN**, add a single firewall rule:
+
+```
+Guest VLAN → HA IP : TCP 8123
+```
+
+That's it. No mDNS, no broadcast, no additional ports.
+
+**Tips:**
+- The QR code uses the HA URL as seen by the admin's browser — make sure that URL is reachable from the guest network
+- If using a reverse proxy (nginx/Caddy), ensure WebSocket upgrades are allowed for `/beatify/ws` (standard HA proxy configs already handle this)
+- If using HTTPS with a self-signed cert, guests may need to accept it once
+
 ---
 
 <br>
