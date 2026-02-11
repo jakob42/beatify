@@ -588,6 +588,7 @@ The neon dark theme is built-in and looks stunning. Custom theming is on the roa
 - Verify Home Assistant is accessible on your network
 - Try IP address instead of hostname
 - Ensure port 8123 is reachable
+- Guests on a separate WiFi/VLAN? See [Guest WiFi / Network Setup](#guest-wifi--network-setup) — just open TCP 8123
 
 **Music won't play?**
 - Check media player is online in Home Assistant
