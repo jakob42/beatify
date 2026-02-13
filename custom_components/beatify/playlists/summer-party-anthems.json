@@ -1326,7 +1326,7 @@
     },
     {
       "year": 1960,
-      "uri": "spotify:track:2g2GkH3vZHk4lWzBjqQdJVWP",
+      "uri": "spotify:track:2G0GextMwZJLkNxcSZ7ZJ3",
       "artist": "Sam Cooke",
       "alt_artists": [
         "Otis Redding",
@@ -1346,7 +1346,10 @@
       "fun_fact": "Sam Cooke's 'Wonderful World' barely cracked the Top 12 when first released in 1960 but became a massive hit when re-released in 1986 after being featured in a Levi's commercial, reaching number 2 in the UK.",
       "fun_fact_de": "Sam Cookes 'Wonderful World' schaffte es 1960 kaum in die Top 12, wurde aber 1986 nach der Verwendung in einem Levi's-Werbespot ein Riesenhit und erreichte Platz 2 in Grossbritannien.",
       "fun_fact_es": "'Wonderful World' de Sam Cooke apenas entro en el Top 12 cuando se lanzo en 1960, pero se convirtio en un gran exito cuando se relanzo en 1986 tras aparecer en un comercial de Levi's, alcanzando el numero 2 en el Reino Unido.",
-      "fun_fact_fr": "« Wonderful World » de Sam Cooke a à peine atteint le Top 12 lors de sa sortie initiale en 1960, mais est devenu un énorme succès lors de sa ressortie en 1986 après avoir été utilisé dans une publicité Levi's, atteignant la 2e place au Royaume-Uni."
+      "fun_fact_fr": "« Wonderful World » de Sam Cooke a à peine atteint le Top 12 lors de sa sortie initiale en 1960, mais est devenu un énorme succès lors de sa ressortie en 1986 après avoir été utilisé dans une publicité Levi's, atteignant la 2e place au Royaume-Uni.",
+      "uri_apple_music": "applemusic://track/1088173094",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=VzlLi5jX_C4",
+      "uri_tidal": "tidal://track/57755161"
     },
     {
       "year": 1958,
