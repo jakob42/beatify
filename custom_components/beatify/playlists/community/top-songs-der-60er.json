@@ -1,0 +1,1146 @@
+{
+  "name": "Top Songs der 60er 🎸",
+  "version": "1.0",
+  "source": "https://open.spotify.com/playlist/6rtsNFUv2UK3j78PRVMpSd",
+  "tags": [
+    "1960s",
+    "classic rock",
+    "british invasion",
+    "psychedelic",
+    "international"
+  ],
+  "songs": [
+    {
+      "year": 1966,
+      "uri": "spotify:track:1Umw3vhysHBodpBFpFsVgK",
+      "artist": "The Beach Boys",
+      "alt_artists": [
+        "The Beatles",
+        "The Monkees",
+        "Simon & Garfunkel"
+      ],
+      "title": "God Only Knows",
+      "chart_info": {
+        "billboard_peak": 39,
+        "uk_peak": 2,
+        "weeks_on_chart": 8
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Paul McCartney called this 'the greatest song ever written.' It was one of the first pop songs to include the word 'God' in the title, which caused radio stations to initially avoid playing it.",
+      "fun_fact_de": "Paul McCartney nannte es 'das beste Lied, das je geschrieben wurde.' Es war eines der ersten Poplieder mit dem Wort 'Gott' im Titel, weshalb Radiosender es zunächst nicht spielen wollten.",
+      "fun_fact_es": "Paul McCartney la llamó 'la mejor canción jamás escrita.' Fue una de las primeras canciones pop con la palabra 'Dios' en el título, lo que hizo que las radios evitaran reproducirla inicialmente.",
+      "uri_apple_music": "applemusic://track/1440852180",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=NADx3-qRxek",
+      "uri_tidal": "tidal://track/150851"
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:7tf64lNC31lWlTsih0nfZf",
+      "artist": "The Beach Boys",
+      "alt_artists": [
+        "The Beatles",
+        "The Monkees",
+        "The Turtles"
+      ],
+      "title": "Good Vibrations",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 13
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "The song took over six months and $50,000 to produce—an astronomical sum in 1966. It was recorded across four different studios and used 90 hours of tape.",
+      "fun_fact_de": "Der Song brauchte über sechs Monate und 50.000 Dollar zur Produktion—eine astronomische Summe 1966. Er wurde in vier verschiedenen Studios aufgenommen und verwendete 90 Stunden Tonband.",
+      "fun_fact_es": "La canción tardó más de seis meses y $50,000 en producirse—una suma astronómica en 1966. Se grabó en cuatro estudios diferentes y usó 90 horas de cinta.",
+      "uri_apple_music": "applemusic://track/1442865074",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=apBWI6xrbLY",
+      "uri_tidal": "tidal://track/1392966"
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:4S7jIHvp7nhq9gfOuQk9Nb",
+      "artist": "The Monkees",
+      "alt_artists": [
+        "The Beatles",
+        "The Beach Boys",
+        "The Turtles"
+      ],
+      "title": "I'm a Believer",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 14
+      },
+      "certifications": [
+        "2x Platinum (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Written by Neil Diamond, this song spent seven weeks at #1 and sold over 10 million copies worldwide. It was later famously covered in the movie Shrek (2001).",
+      "fun_fact_de": "Geschrieben von Neil Diamond, stand dieser Song sieben Wochen auf Platz 1 und verkaufte sich weltweit über 10 Millionen Mal. Später wurde er berühmt durch das Cover im Film Shrek (2001).",
+      "fun_fact_es": "Escrita por Neil Diamond, esta canción estuvo siete semanas en el #1 y vendió más de 10 millones de copias en todo el mundo. Más tarde se hizo famosa por la versión de la película Shrek (2001).",
+      "uri_apple_music": "applemusic://track/4512481",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=4PQAqprjOuA",
+      "uri_tidal": "tidal://track/3268142"
+    },
+    {
+      "year": 1961,
+      "uri": "spotify:track:4FDKqeZj1evsMVi9wIOoL9",
+      "artist": "Ben E. King",
+      "alt_artists": [
+        "Sam Cooke",
+        "Otis Redding",
+        "The Drifters"
+      ],
+      "title": "Stand By Me",
+      "chart_info": {
+        "billboard_peak": 4,
+        "uk_peak": 1,
+        "weeks_on_chart": 23
+      },
+      "certifications": [
+        "Platinum (US)"
+      ],
+      "awards": [],
+      "fun_fact": "The song became a #1 hit twice—in 1961 and again in 1987 after being featured in the film of the same name. The bassline was inspired by a gospel song.",
+      "fun_fact_de": "Der Song wurde zweimal ein Nummer-1-Hit—1961 und erneut 1987 nach dem gleichnamigen Film. Die Basslinie wurde von einem Gospel-Song inspiriert.",
+      "fun_fact_es": "La canción llegó al #1 dos veces—en 1961 y de nuevo en 1987 tras aparecer en la película del mismo nombre. La línea de bajo se inspiró en una canción gospel.",
+      "uri_apple_music": "applemusic://track/68210790",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=z5i9vT8wGY8",
+      "uri_tidal": "tidal://track/207819"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:1izBRnjNiVRughOs4XkcnP",
+      "artist": "The Monkees",
+      "alt_artists": [
+        "The Beatles",
+        "The Beach Boys",
+        "The Turtles"
+      ],
+      "title": "Daydream Believer",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 5,
+        "weeks_on_chart": 15
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Written by John Stewart of the Kingston Trio. Davy Jones initially hated the song but it became one of The Monkees' most beloved hits.",
+      "fun_fact_de": "Geschrieben von John Stewart von den Kingston Trio. Davy Jones hasste den Song zunächst, aber er wurde einer der beliebtesten Hits der Monkees.",
+      "fun_fact_es": "Escrita por John Stewart de Kingston Trio. Davy Jones odiaba la canción al principio, pero se convirtió en uno de los éxitos más queridos de The Monkees.",
+      "uri_apple_music": "applemusic://track/23419779",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=K3syk2VOmRw",
+      "uri_tidal": "tidal://track/3268157"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:5uvosCdMlFdTXhoazkTI5R",
+      "artist": "The Doors",
+      "alt_artists": [
+        "Jefferson Airplane",
+        "Cream",
+        "Jimi Hendrix"
+      ],
+      "title": "Light My Fire",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 49,
+        "weeks_on_chart": 16
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "The song's famous keyboard intro was written by Ray Manzarek, inspired by Bach. The radio edit cut the 7-minute album version down to under 3 minutes.",
+      "fun_fact_de": "Das berühmte Keyboard-Intro wurde von Ray Manzarek geschrieben, inspiriert von Bach. Die Radio-Version kürzte die 7-minütige Albumversion auf unter 3 Minuten.",
+      "fun_fact_es": "La famosa intro de teclado fue escrita por Ray Manzarek, inspirada en Bach. La versión de radio redujo la versión de 7 minutos del álbum a menos de 3 minutos.",
+      "uri_apple_music": "applemusic://track/1192962303",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=_g_tuOS-iZ4",
+      "uri_tidal": "tidal://track/389264"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:2YRZhSbpYnTmNBY6vxaxvX",
+      "artist": "The Doors",
+      "alt_artists": [
+        "Pink Floyd",
+        "Led Zeppelin",
+        "King Crimson"
+      ],
+      "title": "The End",
+      "chart_info": {
+        "billboard_peak": null,
+        "uk_peak": null,
+        "weeks_on_chart": null
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "This 12-minute epic was famously used in Francis Ford Coppola's Apocalypse Now. The Oedipal section was improvised by Jim Morrison during a live performance.",
+      "fun_fact_de": "Dieses 12-minütige Epos wurde berühmt durch Francis Ford Coppolas Apocalypse Now. Der ödipale Teil wurde von Jim Morrison während einer Live-Performance improvisiert.",
+      "fun_fact_es": "Esta épica de 12 minutos se usó famosamente en Apocalypse Now de Francis Ford Coppola. La sección edípica fue improvisada por Jim Morrison durante una actuación en vivo.",
+      "uri_apple_music": "applemusic://track/640047587",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=RAiuUCCcdJI",
+      "uri_tidal": "tidal://track/68710966"
+    },
+    {
+      "year": 1963,
+      "uri": "spotify:track:3GhpgjhCNZZa6Lb7Wtrp3S",
+      "artist": "Johnny Cash",
+      "alt_artists": [
+        "Elvis Presley",
+        "Carl Perkins",
+        "Jerry Lee Lewis"
+      ],
+      "title": "Ring Of Fire",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": null,
+        "weeks_on_chart": 26
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Written by June Carter Cash and Merle Kilgore. The distinctive mariachi brass section was inspired by a dream Johnny Cash had about the song.",
+      "fun_fact_de": "Geschrieben von June Carter Cash und Merle Kilgore. Die markante Mariachi-Bläsersektion wurde durch einen Traum inspiriert, den Johnny Cash über das Lied hatte.",
+      "fun_fact_es": "Escrita por June Carter Cash y Merle Kilgore. La distintiva sección de metales mariachi se inspiró en un sueño que Johnny Cash tuvo sobre la canción.",
+      "uri_apple_music": "applemusic://track/251002253",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=1WaV2x8GXj0",
+      "uri_tidal": "tidal://track/2045087"
+    },
+    {
+      "year": 1964,
+      "uri": "spotify:track:61Q9oJNd9hJQFhSDh6Qlap",
+      "artist": "The Animals",
+      "alt_artists": [
+        "Bob Dylan",
+        "The Yardbirds",
+        "The Kinks"
+      ],
+      "title": "House Of The Rising Sun",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 11
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "The song is a traditional folk song of unknown origin. The Animals' version was recorded in just one take and inspired Bob Dylan to go electric.",
+      "fun_fact_de": "Das Lied ist ein traditionelles Volkslied unbekannten Ursprungs. Die Version der Animals wurde in nur einer Aufnahme aufgenommen und inspirierte Bob Dylan, elektrisch zu werden.",
+      "fun_fact_es": "La canción es una canción tradicional de origen desconocido. La versión de The Animals se grabó en una sola toma e inspiró a Bob Dylan a pasarse al rock eléctrico.",
+      "uri_apple_music": "applemusic://track/697238871",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=MJkr0DWbhTk",
+      "uri_tidal": "tidal://track/147055"
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:5kS29U9Hb8Ow2jGXEnedCi",
+      "artist": "Nancy Sinatra",
+      "alt_artists": [
+        "Dusty Springfield",
+        "Petula Clark",
+        "Lulu"
+      ],
+      "title": "These Boots Are Made For Walkin'",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 13
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Written by Lee Hazlewood, who wrote the song as a male song but gave it to Nancy because he thought it would be more interesting sung by a woman.",
+      "fun_fact_de": "Geschrieben von Lee Hazlewood, der das Lied als Männerlied schrieb, es aber Nancy gab, weil er dachte, es wäre interessanter, wenn eine Frau es singt.",
+      "fun_fact_es": "Escrita por Lee Hazlewood, quien escribió la canción para un hombre pero se la dio a Nancy porque pensó que sería más interesante cantada por una mujer.",
+      "uri_apple_music": "applemusic://track/1576574977",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=GM1kzbAgo_E",
+      "uri_tidal": "tidal://track/158703964"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:3k19pe06GkmxNsJw6woFYb",
+      "artist": "Procol Harum",
+      "alt_artists": [
+        "The Moody Blues",
+        "Traffic",
+        "Cream"
+      ],
+      "title": "A Whiter Shade Of Pale",
+      "chart_info": {
+        "billboard_peak": 5,
+        "uk_peak": 1,
+        "weeks_on_chart": 10
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "The iconic organ melody is based on Bach's 'Air on a G String.' It spent six weeks at #1 in the UK and is one of the most-played songs in public places in UK history.",
+      "fun_fact_de": "Die ikonische Orgelmelodie basiert auf Bachs 'Air auf der G-Saite.' Es war sechs Wochen auf Platz 1 in Großbritannien und gehört zu den meistgespielten Songs an öffentlichen Orten in der UK-Geschichte.",
+      "fun_fact_es": "La icónica melodía de órgano se basa en 'Air on a G String' de Bach. Estuvo seis semanas en el #1 en el Reino Unido y es una de las canciones más reproducidas en lugares públicos en la historia del Reino Unido.",
+      "uri_apple_music": "applemusic://track/1469579797",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=z0vCwGUZe1I",
+      "uri_tidal": "tidal://track/201461600"
+    },
+    {
+      "year": 1971,
+      "uri": "spotify:track:7u8LNgkrmUXGT6JEwiy8Ia",
+      "artist": "Bill Withers",
+      "alt_artists": [
+        "Marvin Gaye",
+        "Al Green",
+        "Stevie Wonder"
+      ],
+      "title": "Ain't No Sunshine",
+      "chart_info": {
+        "billboard_peak": 3,
+        "uk_peak": 40,
+        "weeks_on_chart": 16
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [
+        "Grammy Award for Best R&B Song (1972)"
+      ],
+      "fun_fact": "The repetition of 'I know' 26 times was originally a placeholder until Withers could write proper lyrics, but the producer insisted on keeping it.",
+      "fun_fact_de": "Die 26-malige Wiederholung von 'I know' war ursprünglich ein Platzhalter, bis Withers richtige Texte schreiben konnte, aber der Produzent bestand darauf, es beizubehalten.",
+      "fun_fact_es": "La repetición de 'I know' 26 veces era originalmente un marcador hasta que Withers pudiera escribir letras adecuadas, pero el productor insistió en mantenerlo.",
+      "uri_apple_music": "applemusic://track/391725482",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=YuKfiH0Scao",
+      "uri_tidal": "tidal://track/2098894"
+    },
+    {
+      "year": 1964,
+      "uri": "spotify:track:5ixPfNV1Sx1HCuxdmBnbmE",
+      "artist": "Petula Clark",
+      "alt_artists": [
+        "Dusty Springfield",
+        "Nancy Sinatra",
+        "Lulu"
+      ],
+      "title": "Downtown",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 2,
+        "weeks_on_chart": 15
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [
+        "Grammy Award for Best Rock and Roll Recording (1965)"
+      ],
+      "fun_fact": "The song was written by Tony Hatch in 30 minutes after visiting Times Square in New York. It was the first British female solo hit to reach #1 in the US.",
+      "fun_fact_de": "Das Lied wurde von Tony Hatch in 30 Minuten geschrieben, nachdem er den Times Square in New York besucht hatte. Es war der erste britische weibliche Solo-Hit, der Platz 1 in den USA erreichte.",
+      "fun_fact_es": "La canción fue escrita por Tony Hatch en 30 minutos después de visitar Times Square en Nueva York. Fue el primer éxito solista femenino británico en llegar al #1 en EE.UU.",
+      "uri_apple_music": "applemusic://track/1676474357",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=cieS-GgnV7Q",
+      "uri_tidal": "tidal://track/283456891"
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:6EppVV63aHdyNrsT1P8CPq",
+      "artist": "Steppenwolf",
+      "alt_artists": [
+        "The Doors",
+        "Cream",
+        "Iron Butterfly"
+      ],
+      "title": "Born To Be Wild",
+      "chart_info": {
+        "billboard_peak": 2,
+        "uk_peak": 30,
+        "weeks_on_chart": 14
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "The song coined the phrase 'heavy metal thunder,' making it one of the first uses of the term 'heavy metal' in music. It became iconic through the film Easy Rider (1969).",
+      "fun_fact_de": "Der Song prägte den Ausdruck 'heavy metal thunder' und war damit eine der ersten Verwendungen des Begriffs 'Heavy Metal' in der Musik. Durch den Film Easy Rider (1969) wurde er ikonisch.",
+      "fun_fact_es": "La canción acuñó la frase 'heavy metal thunder,' siendo uno de los primeros usos del término 'heavy metal' en la música. Se volvió icónica por la película Easy Rider (1969).",
+      "uri_apple_music": "applemusic://track/1735503786",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=egMWlD3fLJ8",
+      "uri_tidal": "tidal://track/77611624"
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:1Zi2ezNOqt9y9irC11xYpN",
+      "artist": "Barry McGuire",
+      "alt_artists": [
+        "Bob Dylan",
+        "The Byrds",
+        "Buffalo Springfield"
+      ],
+      "title": "Eve Of Destruction",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 3,
+        "weeks_on_chart": 9
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "This protest song was banned by many US radio stations for being 'too political.' It was recorded in one take, and you can hear McGuire's voice crack at times.",
+      "fun_fact_de": "Dieser Protestsong wurde von vielen US-Radiosendern als 'zu politisch' verboten. Er wurde in einer Aufnahme aufgenommen, und man kann hören, wie McGuires Stimme manchmal bricht.",
+      "fun_fact_es": "Esta canción de protesta fue prohibida por muchas estaciones de radio estadounidenses por ser 'demasiado política.' Se grabó en una toma, y se puede escuchar cómo la voz de McGuire se quiebra a veces.",
+      "uri_apple_music": "applemusic://track/1442439941",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=_38SWIIKITE",
+      "uri_tidal": "tidal://track/78447224"
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:3sb66av9ZpdI1JmPDHVa18",
+      "artist": "David Bowie",
+      "alt_artists": [
+        "Elton John",
+        "Marc Bolan",
+        "Lou Reed"
+      ],
+      "title": "Space Oddity",
+      "chart_info": {
+        "billboard_peak": 15,
+        "uk_peak": 1,
+        "weeks_on_chart": 13
+      },
+      "certifications": [],
+      "awards": [
+        "Ivor Novello Award for Originality (1970)"
+      ],
+      "fun_fact": "Released five days before the Apollo 11 moon landing, the BBC played it during their coverage. However, they avoided it for a while after, fearing it might jinx the astronauts.",
+      "fun_fact_de": "Fünf Tage vor der Apollo-11-Mondlandung veröffentlicht, spielte die BBC es während ihrer Berichterstattung. Danach vermieden sie es jedoch eine Weile, aus Angst, es könnte den Astronauten Pech bringen.",
+      "fun_fact_es": "Lanzada cinco días antes del alunizaje del Apollo 11, la BBC la reprodujo durante su cobertura. Sin embargo, la evitaron por un tiempo después, temiendo que pudiera traer mala suerte a los astronautas.",
+      "uri_apple_music": "applemusic://track/1676421247",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=5PgdZDXg0z0",
+      "uri_tidal": "tidal://track/37697128"
+    },
+    {
+      "year": 1964,
+      "uri": "spotify:track:2LkaNhCrNVmcYgXJeLVmsw",
+      "artist": "Simon & Garfunkel",
+      "alt_artists": [
+        "Bob Dylan",
+        "The Byrds",
+        "The Mamas & The Papas"
+      ],
+      "title": "The Sound of Silence",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 13,
+        "weeks_on_chart": 14
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "The original acoustic version flopped, but producer Tom Wilson added electric instruments without telling the duo, creating the hit version. It became #1 while they were touring in Denmark.",
+      "fun_fact_de": "Die ursprüngliche akustische Version floppte, aber Produzent Tom Wilson fügte elektrische Instrumente hinzu, ohne dem Duo Bescheid zu sagen, und schuf so die Hit-Version. Es wurde #1, während sie in Dänemark auf Tour waren.",
+      "fun_fact_es": "La versión acústica original fracasó, pero el productor Tom Wilson añadió instrumentos eléctricos sin decirle al dúo, creando la versión exitosa. Llegó al #1 mientras estaban de gira en Dinamarca.",
+      "uri_apple_music": "applemusic://track/1463651734",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=4fWyzwo1xg0",
+      "uri_tidal": "tidal://track/109335795"
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:6dGnYIeXmHdcikdzNNDMm2",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "The Rolling Stones",
+        "The Beach Boys",
+        "The Who"
+      ],
+      "title": "Here Comes The Sun",
+      "chart_info": {
+        "billboard_peak": null,
+        "uk_peak": null,
+        "weeks_on_chart": null
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "George Harrison wrote this song in Eric Clapton's garden while skipping a Beatles business meeting. It's now the most-streamed Beatles song on Spotify.",
+      "fun_fact_de": "George Harrison schrieb dieses Lied in Eric Claptons Garten, während er ein Beatles-Geschäftstreffen schwänzte. Es ist jetzt der meistgestreamte Beatles-Song auf Spotify.",
+      "fun_fact_es": "George Harrison escribió esta canción en el jardín de Eric Clapton mientras se saltaba una reunión de negocios de los Beatles. Ahora es la canción más reproducida de los Beatles en Spotify.",
+      "uri_apple_music": "applemusic://track/1474833934",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=KQetemT1sWc",
+      "uri_tidal": "tidal://track/55130637"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:1JO1xLtVc8mWhIoE3YaCL0",
+      "artist": "The Turtles",
+      "alt_artists": [
+        "The Monkees",
+        "The Beach Boys",
+        "The Association"
+      ],
+      "title": "Happy Together",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 12,
+        "weeks_on_chart": 14
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "This song knocked the Beatles' 'Penny Lane' off the #1 spot. It was rejected by several groups before The Turtles recorded it.",
+      "fun_fact_de": "Dieser Song verdrängte 'Penny Lane' der Beatles von Platz 1. Er wurde von mehreren Gruppen abgelehnt, bevor The Turtles ihn aufnahmen.",
+      "fun_fact_es": "Esta canción sacó a 'Penny Lane' de los Beatles del puesto #1. Fue rechazada por varios grupos antes de que The Turtles la grabaran.",
+      "uri_apple_music": "applemusic://track/79087150",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=uzAWDG3ZieM",
+      "uri_tidal": "tidal://track/12445712"
+    },
+    {
+      "year": 1970,
+      "uri": "spotify:track:6QhXQOpyYvbpdbyjgAqKdY",
+      "artist": "Simon & Garfunkel",
+      "alt_artists": [
+        "The Byrds",
+        "Crosby, Stills & Nash",
+        "The Mamas & The Papas"
+      ],
+      "title": "Cecilia",
+      "chart_info": {
+        "billboard_peak": 4,
+        "uk_peak": 56,
+        "weeks_on_chart": 12
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "The percussion was created by slapping thighs and dropping objects on the floor in the studio. The song is named after Saint Cecilia, the patron saint of music.",
+      "fun_fact_de": "Das Schlagzeug wurde durch Klopfen auf Oberschenkel und Fallenlassen von Gegenständen auf den Studioboden erzeugt. Das Lied ist nach der Heiligen Cäcilia benannt, der Schutzpatronin der Musik.",
+      "fun_fact_es": "La percusión se creó golpeando muslos y dejando caer objetos en el suelo del estudio. La canción lleva el nombre de Santa Cecilia, la patrona de la música.",
+      "uri_apple_music": "applemusic://track/324127936",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=e5uei2AFEaQ",
+      "uri_tidal": "tidal://track/650233"
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:5vQZHA4qZ51MX4AGqIg7Mk",
+      "artist": "Simon & Garfunkel",
+      "alt_artists": [
+        "The Byrds",
+        "The Mamas & The Papas",
+        "Crosby, Stills & Nash"
+      ],
+      "title": "Mrs. Robinson",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 4,
+        "weeks_on_chart": 12
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [
+        "Grammy Award for Record of the Year (1969)"
+      ],
+      "fun_fact": "Written for the film The Graduate (1967), the original title was 'Mrs. Roosevelt.' The 'DiMaggio' line wasn't planned—Paul Simon improvised it.",
+      "fun_fact_de": "Geschrieben für den Film Die Reifeprüfung (1967), war der ursprüngliche Titel 'Mrs. Roosevelt.' Die 'DiMaggio'-Zeile war nicht geplant—Paul Simon improvisierte sie.",
+      "fun_fact_es": "Escrita para la película El Graduado (1967), el título original era 'Mrs. Roosevelt.' La línea de 'DiMaggio' no estaba planeada—Paul Simon la improvisó.",
+      "uri_apple_music": "applemusic://track/1463652181",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=_C2vqI9FVwg",
+      "uri_tidal": "tidal://track/37667986"
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:2PzU4IB8Dr6mxV3lHuaG34",
+      "artist": "The Rolling Stones",
+      "alt_artists": [
+        "The Beatles",
+        "The Who",
+        "The Kinks"
+      ],
+      "title": "(I Can't Get No) Satisfaction",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 14
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Keith Richards wrote the riff in his sleep and recorded it on a cassette player by his bed. He has no memory of doing it and initially wanted to replace the fuzz guitar with horns.",
+      "fun_fact_de": "Keith Richards schrieb das Riff im Schlaf und nahm es auf einem Kassettenrekorder neben seinem Bett auf. Er hat keine Erinnerung daran und wollte ursprünglich die Fuzz-Gitarre durch Bläser ersetzen.",
+      "fun_fact_es": "Keith Richards escribió el riff mientras dormía y lo grabó en una grabadora de casete junto a su cama. No tiene recuerdos de haberlo hecho y originalmente quería reemplazar la guitarra con metales.",
+      "uri_apple_music": "applemusic://track/1440743544",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=MSSxnv1_J2g",
+      "uri_tidal": "tidal://track/5693554"
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:4s6LhHAV5SEsOV0lC2tjvJ",
+      "artist": "The Mamas & The Papas",
+      "alt_artists": [
+        "Simon & Garfunkel",
+        "The Byrds",
+        "The Beach Boys"
+      ],
+      "title": "California Dreamin'",
+      "chart_info": {
+        "billboard_peak": 4,
+        "uk_peak": 23,
+        "weeks_on_chart": 17
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Written by John and Michelle Phillips while freezing in New York City, longing for warm California. The flute solo was added because Bud Shank happened to be in the studio.",
+      "fun_fact_de": "Geschrieben von John und Michelle Phillips, als sie in New York City froren und sich nach dem warmen Kalifornien sehnten. Das Flötensolo wurde hinzugefügt, weil Bud Shank zufällig im Studio war.",
+      "fun_fact_es": "Escrita por John y Michelle Phillips mientras se congelaban en Nueva York, añorando la cálida California. El solo de flauta se añadió porque Bud Shank estaba casualmente en el estudio.",
+      "uri_apple_music": "applemusic://track/1440796325",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=oU6uUEwZ8FM",
+      "uri_tidal": "tidal://track/36379797"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:77qBwefBIdzymXNCuAI8YX",
+      "artist": "Scott McKenzie",
+      "alt_artists": [
+        "The Mamas & The Papas",
+        "The Byrds",
+        "Jefferson Airplane"
+      ],
+      "title": "San Francisco (Be Sure to Wear Some Flowers In Your Hair)",
+      "chart_info": {
+        "billboard_peak": 4,
+        "uk_peak": 1,
+        "weeks_on_chart": 10
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Written by John Phillips to promote the Monterey Pop Festival, it became the anthem of the Summer of Love. McKenzie refused to perform it live for years, tired of being a 'one-hit wonder.'",
+      "fun_fact_de": "Geschrieben von John Phillips zur Bewerbung des Monterey Pop Festivals, wurde es zur Hymne des Summer of Love. McKenzie weigerte sich jahrelang, es live zu spielen, weil er es leid war, ein 'One-Hit-Wonder' zu sein.",
+      "fun_fact_es": "Escrita por John Phillips para promocionar el Festival de Monterey Pop, se convirtió en el himno del Verano del Amor. McKenzie se negó a interpretarla en vivo durante años, cansado de ser un 'one-hit wonder.'",
+      "uri_apple_music": "applemusic://track/352008332",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=Qp3eFAKgbDE",
+      "uri_tidal": "tidal://track/14558019"
+    },
+    {
+      "year": 1971,
+      "uri": "spotify:track:4gLkg8FU59ahcQZHQFb5nl",
+      "artist": "Don McLean",
+      "alt_artists": [
+        "James Taylor",
+        "Cat Stevens",
+        "Carole King"
+      ],
+      "title": "American Pie, Pt. 1",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 2,
+        "weeks_on_chart": 17
+      },
+      "certifications": [
+        "Platinum (US)"
+      ],
+      "awards": [],
+      "fun_fact": "The 8.5-minute song references 'the day the music died'—February 3, 1959, when Buddy Holly, Ritchie Valens, and The Big Bopper died in a plane crash. McLean has never fully explained the lyrics.",
+      "fun_fact_de": "Der 8,5-minütige Song bezieht sich auf 'den Tag, an dem die Musik starb'—den 3. Februar 1959, als Buddy Holly, Ritchie Valens und The Big Bopper bei einem Flugzeugabsturz starben. McLean hat die Texte nie vollständig erklärt.",
+      "fun_fact_es": "La canción de 8.5 minutos hace referencia a 'el día que murió la música'—el 3 de febrero de 1959, cuando Buddy Holly, Ritchie Valens y The Big Bopper murieron en un accidente aéreo. McLean nunca ha explicado completamente las letras.",
+      "uri_apple_music": "applemusic://track/1528951690",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=PRpiBpDy7MQ",
+      "uri_tidal": "tidal://track/153487245"
+    },
+    {
+      "year": 1964,
+      "uri": "spotify:track:1pctwlBtIcKIjQMzsVcGHB",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "The Rolling Stones",
+        "The Kinks",
+        "The Who"
+      ],
+      "title": "A Hard Day's Night",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 13
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "The title came from a Ringo Starr malapropism. The famous opening chord has been debated for decades—it's actually George Harrison's 12-string Rickenbacker layered with other instruments.",
+      "fun_fact_de": "Der Titel stammt von einem Versprecher von Ringo Starr. Der berühmte Anfangsakkord wurde jahrzehntelang diskutiert—es ist eigentlich George Harrisons 12-saitige Rickenbacker, überlagert mit anderen Instrumenten.",
+      "fun_fact_es": "El título provino de un error de Ringo Starr. El famoso acorde inicial ha sido debatido durante décadas—en realidad es la Rickenbacker de 12 cuerdas de George Harrison superpuesta con otros instrumentos.",
+      "uri_apple_music": "applemusic://track/1441164417",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=AMSiHdrHl0g",
+      "uri_tidal": "tidal://track/55130565"
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:3Smida2eCUsLzDcmZqXEZ3",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "The Rolling Stones",
+        "The Who",
+        "The Kinks"
+      ],
+      "title": "Help!",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 13
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "John Lennon later said this was a genuine cry for help during a difficult period. Originally written as a slow ballad, producer George Martin sped it up for commercial appeal.",
+      "fun_fact_de": "John Lennon sagte später, dies sei ein echter Hilferuf während einer schwierigen Zeit gewesen. Ursprünglich als langsame Ballade geschrieben, beschleunigte Produzent George Martin es für den kommerziellen Erfolg.",
+      "fun_fact_es": "John Lennon dijo más tarde que fue un verdadero grito de ayuda durante un período difícil. Originalmente escrita como una balada lenta, el productor George Martin la aceleró para atraer comercialmente.",
+      "uri_apple_music": "applemusic://track/1441164536",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=MKUex3fci5c",
+      "uri_tidal": "tidal://track/55130682"
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:4E5rL7YL0hVUPqeMSpjEF2",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "Simon & Garfunkel",
+        "Bob Dylan",
+        "The Beach Boys"
+      ],
+      "title": "Yesterday",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": null,
+        "weeks_on_chart": 11
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Paul McCartney dreamed the melody and originally used the placeholder lyrics 'Scrambled eggs, oh my baby how I love your legs.' It's the most covered song in history with over 2,200 versions.",
+      "fun_fact_de": "Paul McCartney träumte die Melodie und verwendete ursprünglich den Platzhaltertext 'Rührei, oh mein Baby, wie ich deine Beine liebe.' Es ist der meistgecoverte Song der Geschichte mit über 2.200 Versionen.",
+      "fun_fact_es": "Paul McCartney soñó la melodía y originalmente usó la letra provisional 'Huevos revueltos, oh mi bebé cómo amo tus piernas.' Es la canción más versionada de la historia con más de 2,200 versiones.",
+      "uri_apple_music": "applemusic://track/1441133496",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=TQemQRL_YVQ",
+      "uri_tidal": "tidal://track/55130694"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:7afyyi8zn4FzWbcJ70F56V",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "The Rolling Stones",
+        "The Kinks",
+        "The Who"
+      ],
+      "title": "Penny Lane",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 2,
+        "weeks_on_chart": 10
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "The piccolo trumpet solo was inspired by a Bach Brandenburg Concerto that Paul McCartney heard on TV. Penny Lane is a real street in Liverpool, and street signs are constantly stolen by fans.",
+      "fun_fact_de": "Das Piccolo-Trompetensolo wurde durch ein Bach-Brandenburgisches Konzert inspiriert, das Paul McCartney im Fernsehen hörte. Penny Lane ist eine echte Straße in Liverpool, und Straßenschilder werden ständig von Fans gestohlen.",
+      "fun_fact_es": "El solo de trompeta piccolo se inspiró en un Concierto de Brandenburgo de Bach que Paul McCartney escuchó en la televisión. Penny Lane es una calle real en Liverpool, y los carteles de la calle son constantemente robados por los fans.",
+      "uri_apple_music": "applemusic://track/1441163777",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=z7syIxQCquo",
+      "uri_tidal": "tidal://track/55130776"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:6KqiVlOLfDzJViJVAPym1p",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "The Rolling Stones",
+        "The Beach Boys",
+        "The Who"
+      ],
+      "title": "All You Need Is Love",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 11
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Written for 'Our World,' the first live global satellite TV broadcast watched by 400 million people. The song was deliberately written in unusual time signatures to make it hard to cover.",
+      "fun_fact_de": "Geschrieben für 'Our World,' die erste globale Live-Satellitenübertragung, die von 400 Millionen Menschen gesehen wurde. Das Lied wurde absichtlich in ungewöhnlichen Taktarten geschrieben, um es schwer zu covern.",
+      "fun_fact_es": "Escrita para 'Our World,' la primera transmisión de televisión por satélite en vivo global vista por 400 millones de personas. La canción fue deliberadamente escrita en compases inusuales para hacerla difícil de versionar.",
+      "uri_apple_music": "applemusic://track/1441133271",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=_paPrw0gAUo",
+      "uri_tidal": "tidal://track/55130778"
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:1raiIrqaqRAqZmQWZlLuBd",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "The Rolling Stones",
+        "The Who",
+        "The Kinks"
+      ],
+      "title": "Lady Madonna",
+      "chart_info": {
+        "billboard_peak": 4,
+        "uk_peak": 1,
+        "weeks_on_chart": 11
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Paul McCartney was inspired by a National Geographic photo of a Vietnamese woman with the caption 'Mountain Madonna.' The piano riff was influenced by Fats Domino's boogie-woogie style.",
+      "fun_fact_de": "Paul McCartney wurde durch ein National Geographic-Foto einer vietnamesischen Frau mit der Bildunterschrift 'Berg-Madonna' inspiriert. Das Klavierriff wurde vom Boogie-Woogie-Stil von Fats Domino beeinflusst.",
+      "fun_fact_es": "Paul McCartney se inspiró en una foto de National Geographic de una mujer vietnamita con el pie de foto 'Madonna de la Montaña.' El riff de piano fue influenciado por el estilo boogie-woogie de Fats Domino.",
+      "uri_apple_music": "applemusic://track/1441133276",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=uLRiGX3L-kw",
+      "uri_tidal": "tidal://track/55130616"
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:0aym2LBJBk9DAYuHHutrIl",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "The Rolling Stones",
+        "The Beach Boys",
+        "Simon & Garfunkel"
+      ],
+      "title": "Hey Jude",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 19
+      },
+      "certifications": [
+        "4x Platinum (US)"
+      ],
+      "awards": [],
+      "fun_fact": "At 7 minutes 11 seconds, it was the longest single to top the UK charts. Written for John Lennon's son Julian during his parents' divorce, it spent 9 weeks at #1 in the US.",
+      "fun_fact_de": "Mit 7 Minuten und 11 Sekunden war es die längste Single, die die UK-Charts anführte. Geschrieben für John Lennons Sohn Julian während der Scheidung seiner Eltern, war es 9 Wochen auf Platz 1 in den USA.",
+      "fun_fact_es": "Con 7 minutos y 11 segundos, fue el sencillo más largo en encabezar las listas del Reino Unido. Escrita para el hijo de John Lennon, Julian, durante el divorcio de sus padres, estuvo 9 semanas en el #1 en EE.UU.",
+      "uri_apple_music": "applemusic://track/1440834224",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=mQER0A0ej0M",
+      "uri_tidal": "tidal://track/55130617"
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:3g2fYZW5v2od8KIF7VktT0",
+      "artist": "Simon & Garfunkel",
+      "alt_artists": [
+        "The Byrds",
+        "Crosby, Stills & Nash",
+        "The Mamas & The Papas"
+      ],
+      "title": "Scarborough Fair / Canticle",
+      "chart_info": {
+        "billboard_peak": 11,
+        "uk_peak": null,
+        "weeks_on_chart": 9
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "An arrangement of a traditional English ballad dating back to at least 1670. The 'Canticle' overlaid is an anti-war song that Paul Simon wrote as a counterpoint.",
+      "fun_fact_de": "Eine Bearbeitung einer traditionellen englischen Ballade, die mindestens bis 1670 zurückreicht. Das überlagerte 'Canticle' ist ein Antikriegslied, das Paul Simon als Kontrapunkt schrieb.",
+      "fun_fact_es": "Un arreglo de una balada tradicional inglesa que data de al menos 1670. El 'Canticle' superpuesto es una canción contra la guerra que Paul Simon escribió como contrapunto.",
+      "uri_apple_music": "applemusic://track/1467438670",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=-Jj4s9I-53g",
+      "uri_tidal": "tidal://track/110811717"
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:3NW1YMA8kfNVTzGJCGBS8m",
+      "artist": "Joni Mitchell",
+      "alt_artists": [
+        "Judy Collins",
+        "Carole King",
+        "Joan Baez"
+      ],
+      "title": "Both Sides Now",
+      "chart_info": {
+        "billboard_peak": null,
+        "uk_peak": null,
+        "weeks_on_chart": null
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Written when Mitchell was only 23, inspired by reading a passage about clouds in Saul Bellow's novel Henderson the Rain King. Judy Collins had a hit with it before Joni recorded her own version.",
+      "fun_fact_de": "Geschrieben, als Mitchell erst 23 war, inspiriert durch eine Passage über Wolken in Saul Bellows Roman 'Henderson the Rain King.' Judy Collins hatte einen Hit damit, bevor Joni ihre eigene Version aufnahm.",
+      "fun_fact_es": "Escrita cuando Mitchell tenía solo 23 años, inspirada en un pasaje sobre nubes en la novela Henderson the Rain King de Saul Bellow. Judy Collins tuvo un éxito con ella antes de que Joni grabara su propia versión.",
+      "uri_apple_music": "applemusic://track/74769301",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=yXr2EFomFkU",
+      "uri_tidal": "tidal://track/393346"
+    },
+    {
+      "year": 1969,
+      "uri": "spotify:track:60C8zGPTdAAmDshHnMuyfc",
+      "artist": "The Who",
+      "alt_artists": [
+        "The Beatles",
+        "The Rolling Stones",
+        "Led Zeppelin"
+      ],
+      "title": "Pinball Wizard",
+      "chart_info": {
+        "billboard_peak": 19,
+        "uk_peak": 4,
+        "weeks_on_chart": 10
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Pete Townshend wrote it to impress a journalist who was a pinball enthusiast. It became the signature song of the rock opera Tommy, later performed by Elton John in the 1975 film.",
+      "fun_fact_de": "Pete Townshend schrieb es, um einen Journalisten zu beeindrucken, der ein Flipper-Enthusiast war. Es wurde zum Erkennungssong der Rockoper Tommy, später von Elton John im Film von 1975 aufgeführt.",
+      "fun_fact_es": "Pete Townshend la escribió para impresionar a un periodista que era entusiasta del pinball. Se convirtió en la canción emblemática de la ópera rock Tommy, interpretada más tarde por Elton John en la película de 1975.",
+      "uri_apple_music": "applemusic://track/1461216296",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=hHc7bR6y06M",
+      "uri_tidal": "tidal://track/93164145"
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:6awTbDHgM907tGecNQYPaV",
+      "artist": "The Who",
+      "alt_artists": [
+        "The Beatles",
+        "The Rolling Stones",
+        "The Kinks"
+      ],
+      "title": "My Generation",
+      "chart_info": {
+        "billboard_peak": 74,
+        "uk_peak": 2,
+        "weeks_on_chart": 13
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Roger Daltrey's stuttering vocal style was Pete Townshend's attempt to simulate a pill-popping mod. The BBC initially banned it, thinking it mocked people with speech impediments.",
+      "fun_fact_de": "Roger Daltreys stotternder Gesangsstil war Pete Townshends Versuch, einen pillenschluckenden Mod zu simulieren. Die BBC verbot es zunächst, weil sie dachten, es verspotte Menschen mit Sprachstörungen.",
+      "fun_fact_es": "El estilo vocal tartamudeante de Roger Daltrey fue el intento de Pete Townshend de simular un mod que tomaba pastillas. La BBC inicialmente la prohibió, pensando que se burlaba de personas con impedimentos del habla.",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=MgJ9K7cPRKk",
+      "uri_tidal": "tidal://track/77557764"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:6L5BZEcZmD6RBJnimzlyKr",
+      "artist": "The Moody Blues",
+      "alt_artists": [
+        "Procol Harum",
+        "Pink Floyd",
+        "King Crimson"
+      ],
+      "title": "Nights In White Satin",
+      "chart_info": {
+        "billboard_peak": 2,
+        "uk_peak": 19,
+        "weeks_on_chart": 16
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Justin Hayward was only 19 when he wrote it about unrequited love. The song was not a hit until 1972 when it was re-released, five years after it was recorded.",
+      "fun_fact_de": "Justin Hayward war erst 19, als er es über unerwiderte Liebe schrieb. Das Lied war erst 1972 ein Hit, als es wiederveröffentlicht wurde, fünf Jahre nach der Aufnahme.",
+      "fun_fact_es": "Justin Hayward tenía solo 19 años cuando la escribió sobre amor no correspondido. La canción no fue un éxito hasta 1972 cuando se relanzó, cinco años después de ser grabada.",
+      "uri_apple_music": "applemusic://track/1452620940",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=qbqxbGm9hBI",
+      "uri_tidal": "tidal://track/81354385"
+    },
+    {
+      "year": 1967,
+      "uri": "spotify:track:1qRA5BS78u3gME0loMl9AA",
+      "artist": "Buffalo Springfield",
+      "alt_artists": [
+        "The Byrds",
+        "Crosby, Stills & Nash",
+        "Jefferson Airplane"
+      ],
+      "title": "For What It's Worth",
+      "chart_info": {
+        "billboard_peak": 7,
+        "uk_peak": null,
+        "weeks_on_chart": 15
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Despite becoming an anti-Vietnam War anthem, it was actually written about the Sunset Strip riots, when police clashed with young people protesting a curfew at nightclubs.",
+      "fun_fact_de": "Obwohl es zur Anti-Vietnam-Kriegs-Hymne wurde, wurde es tatsächlich über die Sunset Strip-Unruhen geschrieben, als die Polizei mit jungen Leuten zusammenstieß, die gegen eine Ausgangssperre in Nachtclubs protestierten.",
+      "fun_fact_es": "A pesar de convertirse en un himno contra la guerra de Vietnam, en realidad fue escrita sobre los disturbios de Sunset Strip, cuando la policía chocó con jóvenes que protestaban contra un toque de queda en los clubes nocturnos.",
+      "uri_apple_music": "applemusic://track/265611986",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=80_39eAx3z8",
+      "uri_tidal": "tidal://track/1186304"
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:0djZ2ndRfAL69WYNra5jRC",
+      "artist": "Simon & Garfunkel",
+      "alt_artists": [
+        "The Byrds",
+        "Crosby, Stills & Nash",
+        "The Mamas & The Papas"
+      ],
+      "title": "April Come She Will",
+      "chart_info": {
+        "billboard_peak": null,
+        "uk_peak": null,
+        "weeks_on_chart": null
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "This short, beautiful track from the 'Sounds of Silence' album uses the changing months as a metaphor for a relationship's progression from spring romance to autumn's end.",
+      "fun_fact_de": "Dieser kurze, schöne Track vom Album 'Sounds of Silence' verwendet die wechselnden Monate als Metapher für die Entwicklung einer Beziehung von der Frühlingsromanze bis zum Herbstende.",
+      "fun_fact_es": "Esta corta y hermosa canción del álbum 'Sounds of Silence' usa los meses cambiantes como metáfora de la progresión de una relación desde el romance primaveral hasta el final del otoño.",
+      "uri_apple_music": "applemusic://track/192480540",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=6NWjRmfnmIk",
+      "uri_tidal": "tidal://track/37667960"
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:0iOZM63lendWRTTeKhZBSC",
+      "artist": "Simon & Garfunkel",
+      "alt_artists": [
+        "The Byrds",
+        "The Mamas & The Papas",
+        "Crosby, Stills & Nash"
+      ],
+      "title": "Mrs. Robinson",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 4,
+        "weeks_on_chart": 12
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [
+        "Grammy Award for Record of the Year (1969)"
+      ],
+      "fun_fact": "This is an alternate/live version of the track. The studio version was actually compiled from various takes recorded during The Graduate sessions.",
+      "fun_fact_de": "Dies ist eine alternative/Live-Version des Tracks. Die Studioversion wurde tatsächlich aus verschiedenen Takes zusammengestellt, die während der Reifeprüfung-Sessions aufgenommen wurden.",
+      "fun_fact_es": "Esta es una versión alternativa/en vivo de la canción. La versión de estudio fue compilada de varias tomas grabadas durante las sesiones de El Graduado.",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=_C2vqI9FVwg",
+      "uri_tidal": "tidal://track/37667986"
+    },
+    {
+      "year": 1965,
+      "uri": "spotify:track:4F1AgKpuFRMLEgtPETVwZk",
+      "artist": "The Beatles",
+      "alt_artists": [
+        "Bob Dylan",
+        "The Byrds",
+        "Simon & Garfunkel"
+      ],
+      "title": "You've Got To Hide Your Love Away",
+      "chart_info": {
+        "billboard_peak": null,
+        "uk_peak": null,
+        "weeks_on_chart": null
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "John Lennon's most Dylan-influenced song, featuring the first outside musicians on a Beatles recording—session flautists. Some believe it's about Brian Epstein's closeted homosexuality.",
+      "fun_fact_de": "John Lennons am stärksten von Dylan beeinflusster Song, mit den ersten Gastmusikern auf einer Beatles-Aufnahme—Session-Flötisten. Manche glauben, es geht um Brian Epsteins heimliche Homosexualität.",
+      "fun_fact_es": "La canción de John Lennon más influenciada por Dylan, con los primeros músicos externos en una grabación de los Beatles—flautistas de sesión. Algunos creen que trata sobre la homosexualidad oculta de Brian Epstein.",
+      "uri_apple_music": "applemusic://track/1441164546",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=oRrz3yYC2Yg",
+      "uri_tidal": "tidal://track/55130684"
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:3Jw1RfDEUEBBIIyNjGt9xP",
+      "artist": "The Easybeats",
+      "alt_artists": [
+        "The Kinks",
+        "The Who",
+        "The Hollies"
+      ],
+      "title": "Friday On My Mind",
+      "chart_info": {
+        "billboard_peak": 16,
+        "uk_peak": 6,
+        "weeks_on_chart": 11
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Written by Harry Vanda and George Young (whose younger brothers would later form AC/DC). Rolling Stone ranked it as one of the greatest songs of all time.",
+      "fun_fact_de": "Geschrieben von Harry Vanda und George Young (dessen jüngere Brüder später AC/DC gründen würden). Rolling Stone stufte es als einen der größten Songs aller Zeiten ein.",
+      "fun_fact_es": "Escrita por Harry Vanda y George Young (cuyos hermanos menores luego formarían AC/DC). Rolling Stone la clasificó como una de las mejores canciones de todos los tiempos.",
+      "uri_apple_music": "applemusic://track/1438550837",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=rOtnpb2EtQ8",
+      "uri_tidal": "tidal://track/71574224"
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:6w78eLPBj0fTq6jp3wUIRy",
+      "artist": "Small Faces",
+      "alt_artists": [
+        "The Who",
+        "The Kinks",
+        "The Hollies"
+      ],
+      "title": "Lazy Sunday",
+      "chart_info": {
+        "billboard_peak": null,
+        "uk_peak": 2,
+        "weeks_on_chart": 9
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "A satirical song about suburban English life that the band didn't want released as a single. Steve Marriott was so embarrassed by its success that it contributed to his leaving the band.",
+      "fun_fact_de": "Ein satirisches Lied über das englische Vorstadtleben, das die Band nicht als Single veröffentlichen wollte. Steve Marriott war so peinlich berührt von seinem Erfolg, dass es dazu beitrug, dass er die Band verließ.",
+      "fun_fact_es": "Una canción satírica sobre la vida suburbana inglesa que la banda no quería lanzar como sencillo. Steve Marriott estaba tan avergonzado por su éxito que contribuyó a que dejara la banda.",
+      "uri_apple_music": "applemusic://track/1439066304",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=3H95IJD6zb4",
+      "uri_tidal": "tidal://track/96729950"
+    },
+    {
+      "year": 1966,
+      "uri": "spotify:track:63T7DJ1AFDD6Bn8VzG6JE8",
+      "artist": "The Rolling Stones",
+      "alt_artists": [
+        "The Beatles",
+        "The Who",
+        "The Kinks"
+      ],
+      "title": "Paint It, Black",
+      "chart_info": {
+        "billboard_peak": 1,
+        "uk_peak": 1,
+        "weeks_on_chart": 11
+      },
+      "certifications": [
+        "Gold (US)"
+      ],
+      "awards": [],
+      "fun_fact": "Features a sitar played by Brian Jones, who learned it in just a few weeks. The comma in the title was a printing error that the band decided to keep.",
+      "fun_fact_de": "Enthält eine Sitar, gespielt von Brian Jones, der sie in nur wenigen Wochen lernte. Das Komma im Titel war ein Druckfehler, den die Band behalten wollte.",
+      "fun_fact_es": "Presenta un sitar tocado por Brian Jones, quien lo aprendió en solo unas pocas semanas. La coma en el título fue un error de impresión que la banda decidió mantener.",
+      "uri_apple_music": "applemusic://track/1440765582",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=170sceOWWXc",
+      "uri_tidal": "tidal://track/13434396"
+    },
+    {
+      "year": 1968,
+      "uri": "spotify:track:27hhIs2fp6w06N5zx4Eaa5",
+      "artist": "The Mamas & The Papas",
+      "alt_artists": [
+        "Simon & Garfunkel",
+        "The Byrds",
+        "Joni Mitchell"
+      ],
+      "title": "Dream A Little Dream Of Me",
+      "chart_info": {
+        "billboard_peak": 12,
+        "uk_peak": 11,
+        "weeks_on_chart": 12
+      },
+      "certifications": [],
+      "awards": [],
+      "fun_fact": "Originally a 1931 jazz standard, this version features Mama Cass as lead vocalist. It was released as a Mama Cass solo single in the UK while credited to the full group in the US.",
+      "fun_fact_de": "Ursprünglich ein Jazz-Standard von 1931, zeigt diese Version Mama Cass als Leadsängerin. Es wurde als Mama Cass Solo-Single in Großbritannien veröffentlicht, während es in den USA der ganzen Gruppe zugeschrieben wurde.",
+      "fun_fact_es": "Originalmente un estándar de jazz de 1931, esta versión presenta a Mama Cass como vocalista principal. Se lanzó como single en solitario de Mama Cass en el Reino Unido mientras se acreditaba al grupo completo en EE.UU.",
+      "uri_apple_music": "applemusic://track/1423329233",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=fJwjLYRPxJY",
+      "uri_tidal": "tidal://track/93240303"
+    }
+  ]
+}

@@ -171,6 +171,9 @@ def calculate_streak_bonus(streak: int) -> int:
     - 3 consecutive: +20 points
     - 5 consecutive: +50 points
     - 10 consecutive: +100 points
+    - 15 consecutive: +150 points
+    - 20 consecutive: +250 points
+    - 25 consecutive: +400 points
 
     Args:
         streak: Current streak count (after incrementing for this round)
@@ -517,12 +520,19 @@ class ScoringService:
             if speed_score > 0:
                 player.previous_streak = 0
                 player.streak += 1
+                # Track streak achievements (Issue #147)
                 if player.streak == 3:
                     streak_achievements["streak_3"] += 1
                 elif player.streak == 5:
                     streak_achievements["streak_5"] += 1
                 elif player.streak == 7:
                     streak_achievements["streak_7"] += 1
+                elif player.streak == 15:
+                    streak_achievements["streak_15"] += 1
+                elif player.streak == 20:
+                    streak_achievements["streak_20"] += 1
+                elif player.streak == 25:
+                    streak_achievements["streak_25"] += 1
                 player.streak_bonus = calculate_streak_bonus(player.streak)
                 if player.streak == STEAL_UNLOCK_STREAK:
                     player.unlock_steal()

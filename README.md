@@ -4,13 +4,13 @@
 
 <img src="images/beatify-logo.png" alt="Beatify Logo" width="400">
 
-### **The Music Quiz Party Game Your Smart Home Was Made For**
+### **Multiplayer Music Trivia Quiz Game for Home Assistant**
 
 Turn any gathering into an unforgettable music trivia experience.
 Guests scan, songs play, everyone competes. It's that simple.
 
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.1+-41BDF5?style=for-the-badge&logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/Version-2.3.2-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
+[![Version](https://img.shields.io/badge/Version-2.4.0-ff00ff?style=for-the-badge)](https://github.com/mholzi/beatify/releases)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [**Get Started**](#setup-in-home-assistant) • [**Supported Speakers**](#supported-speakers) • [**See It In Action**](#the-experience)
@@ -39,7 +39,7 @@ No apps to download. No accounts to create. Just scan a QR code and play.
 
 **Uses Your Existing Smart Speakers** — Works with Music Assistant, Sonos, and Alexa speakers you already have. See [Supported Speakers](#supported-speakers) for details.
 
-**Your Music, Your Vibe** — Spotify, Apple Music, or YouTube Music playlists. Curated song packs included. Create your own.
+**Your Music, Your Vibe** — Spotify, Apple Music, YouTube Music, or Tidal playlists. Curated song packs included. Create your own.
 
 **Runs Locally** — No cloud. No subscription. No data leaves your network. Fast, private, reliable.
 
@@ -253,6 +253,9 @@ Linear scale in between. Hesitation costs points.
 - **3 in a row:** +20 bonus points
 - **5 in a row:** +50 bonus points
 - **10 in a row:** +100 bonus points
+- **15 in a row:** +150 bonus points
+- **20 in a row:** +250 bonus points
+- **25 in a row:** +400 bonus points
 
 Miss one? Streak resets. The pressure is real.
 
@@ -302,7 +305,7 @@ Playlists are displayed on the main Beatify admin screen:
 
 ### Included Playlists
 
-Beatify comes with 1,565 songs across 15 curated playlists:
+Beatify comes with 2,008 songs across 18 curated playlists:
 
 - 🎵 **Motown & Soul Classics** — 100 iconic soul tracks from Diana Ross, Marvin Gaye, The Temptations
 - 🕺 **Disco & Funk Classics** — 76 essential disco and funk tracks from the 70s and 80s
@@ -311,6 +314,7 @@ Beatify comes with 1,565 songs across 15 curated playlists:
 - 🎵 **90er Hits** — 32 essential tracks from the decade
 - 💥 **Eurodance 90s** — 100 party songs from the eurodance era
 - 🎸 **Pure Pop Punk** — 100 essential pop-punk tracks from the 2000s
+- 🎵 **2000s Pop Anthems** — 151 essential pop hits from the 2000s
 - ⛵ **Yacht Rock** — 100 smooth West Coast classics from the 70s and 80s
 - 💔 **Power Ballads** — 99 epic rock ballads from the 80s and 90s
 - 🎯 **Greatest Hits of All Time** — 100 chart-toppers across four decades
@@ -318,6 +322,8 @@ Beatify comes with 1,565 songs across 15 curated playlists:
 - 🎤 **One-Hit Wonders** — 98 flash-in-the-pan classics
 - 🎭 **Kölner Karneval** — 291 German carnival favorites
 - 🎶 **Schlager Klassiker** — 60 German schlager classics
+- 🇬🇧 **British Invasion & Britpop** — 100 tracks from The Beatles to Blur
+- ☀️ **Summer Party Anthems** — 112 feel-good tracks from 1957-2020
 - 🎬 **Movies: 100 Greatest Themes** — 162 iconic film soundtracks
 
 ### Adding Custom Playlists
@@ -371,6 +377,7 @@ Beatify speaks your guests' language.
 - **English** — Full support
 - **Deutsch** — Vollständige Unterstützung
 - **Español** — Soporte completo
+- **Français** — Support complet
 
 Select during game setup. All players see the chosen language. Fun facts and awards are also translated!
 
@@ -382,13 +389,13 @@ Select during game setup. All players see the chosen language. Fun facts and awa
 
 Beatify works with specific Home Assistant integrations that support music playback:
 
-| Integration | Supported | Spotify | Apple Music | YouTube Music | How It Works |
-|-------------|-----------|---------|-------------|---------------|--------------|
-| **[Music Assistant](https://music-assistant.io/)** | ✅ Yes | ✅ | ✅ | ✅ | Direct URI playback to any connected speaker |
-| **Sonos** | ✅ Yes | ✅ | ❌ | ❌ | Direct Spotify playback via Sonos integration |
-| **Alexa Media Player** | ✅ Yes | ✅ | ✅ | ❌ | Voice search playback ("Play [song] on Spotify") |
-| **Cast (Chromecast/Nest/Google TV)** | ❌ No | — | — | — | Use Music Assistant instead |
-| **HomePod** | ❌ No | — | — | — | Use Music Assistant instead |
+| Integration | Supported | Spotify | Apple Music | YouTube Music | Tidal | How It Works |
+|-------------|-----------|---------|-------------|---------------|-------|--------------|
+| **[Music Assistant](https://music-assistant.io/)** | ✅ Yes | ✅ | ✅ | ✅ | ✅ | Direct URI playback to any connected speaker |
+| **Sonos** | ✅ Yes | ✅ | ❌ | ❌ | ❌ | Direct Spotify playback via Sonos integration |
+| **Alexa Media Player** | ✅ Yes | ✅ | ✅ | ❌ | ❌ | Voice search playback ("Play [song] on Spotify") |
+| **Cast (Chromecast/Nest/Google TV)** | ❌ No | — | — | — | — | Use Music Assistant instead |
+| **HomePod** | ❌ No | — | — | — | — | Use Music Assistant instead |
 
 ### Why Some Speakers Don't Work Directly
 
@@ -452,6 +459,8 @@ Home Assistant
             └── Web UI (Admin + Player)
 ```
 
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full system overview and [WEBSOCKET.md](docs/WEBSOCKET.md) for the WebSocket API protocol.
+
 ---
 
 <br>
@@ -479,7 +488,7 @@ Game pauses automatically. Reconnect and continue exactly where you left off.
 <details>
 <summary><strong>What music services work?</strong></summary>
 <br>
-Spotify, Apple Music, and YouTube Music. Support depends on your speaker platform—see the <a href="#supported-speakers">Supported Speakers</a> table for details.
+Spotify, Apple Music, YouTube Music, and Tidal. Support depends on your speaker platform—see the <a href="#supported-speakers">Supported Speakers</a> table for details.
 </details>
 
 <details>
@@ -505,6 +514,14 @@ The neon dark theme is built-in and looks stunning. Custom theming is on the roa
 <br>
 
 ## What's New
+
+### v2.4.0 — Tidal & Movie Quiz
+- **Tidal support** — Fourth streaming provider (Spotify, Apple Music, YouTube Music, Tidal)
+- **Movie Quiz Bonus** — Guess the movie a soundtrack is from for tiered bonus points (5/3/1)
+- **French language** — Fourth UI language (EN, DE, ES, FR)
+- **Film Buff superlative** — New end-game award for movie quiz performance
+- **2 new playlists** — British Invasion & Britpop (100 songs), Summer Party Anthems (112 songs)
+- All 18 playlists enriched with Tidal URIs
 
 ### v2.3.2 — Soul, Disco & Latin Expansion 🎵
 - **3 new playlists** — Motown & Soul Classics (100 songs), Disco & Funk Classics (76 songs), Fiesta Latina 90s (50 songs)
@@ -621,6 +638,8 @@ Have a question? Check our [Discussions Q&A](https://github.com/mholzi/beatify/d
 ## Contributing
 
 Contributions welcome! Whether it's a new playlist, a bug fix, or a translation — check our [**CONTRIBUTING.md**](CONTRIBUTING.md) for the full guide.
+
+Developer docs: [Architecture](docs/ARCHITECTURE.md) | [WebSocket API](docs/WEBSOCKET.md) | [Changelog](CHANGELOG.md)
 
 Quick start: Fork → Branch → PR. See [good first issues](https://github.com/mholzi/beatify/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) for easy starting points.
 

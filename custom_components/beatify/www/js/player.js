@@ -445,7 +445,7 @@
     }
 
     // Streak milestones for bonus detection
-    var STREAK_MILESTONES = [3, 5, 10];
+    var STREAK_MILESTONES = [3, 5, 10, 15, 20, 25];
 
     // ============================================
     // Animation Performance Utilities (Story 18.3)

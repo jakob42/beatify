@@ -712,8 +712,32 @@ class TestStreakBonus:
         assert calculate_streak_bonus(10) == 100
 
     def test_streak_11_no_bonus(self):
-        """Streak 11 → 0 bonus (past all milestones)."""
+        """Streak 11 → 0 bonus (between milestones)."""
         assert calculate_streak_bonus(11) == 0
+
+    def test_streak_15_gives_150_bonus(self):
+        """Streak 15 → 150 bonus (Issue #147)."""
+        assert calculate_streak_bonus(15) == 150
+
+    def test_streak_16_no_bonus(self):
+        """Streak 16 → 0 bonus (between milestones)."""
+        assert calculate_streak_bonus(16) == 0
+
+    def test_streak_20_gives_250_bonus(self):
+        """Streak 20 → 250 bonus (Issue #147)."""
+        assert calculate_streak_bonus(20) == 250
+
+    def test_streak_21_no_bonus(self):
+        """Streak 21 → 0 bonus (between milestones)."""
+        assert calculate_streak_bonus(21) == 0
+
+    def test_streak_25_gives_400_bonus(self):
+        """Streak 25 → 400 bonus (Issue #147)."""
+        assert calculate_streak_bonus(25) == 400
+
+    def test_streak_26_no_bonus(self):
+        """Streak 26 → 0 bonus (past all milestones)."""
+        assert calculate_streak_bonus(26) == 0
 
     def test_streak_0_no_bonus(self):
         """Streak 0 → 0 bonus (no streak)."""

@@ -20,9 +20,9 @@ YEAR_MAX = 2025
 # Volume control step (10%) - Story 6.4
 VOLUME_STEP = 0.1
 
-# Streak milestone bonuses (Story 5.2)
+# Streak milestone bonuses (Story 5.2, Issue #147)
 # Key = streak count, Value = bonus points
-STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100}
+STREAK_MILESTONES: dict[int, int] = {3: 20, 5: 50, 10: 100, 15: 150, 20: 250, 25: 400}
 
 # Artist challenge bonus (Story 20.1)
 ARTIST_BONUS_POINTS = 5

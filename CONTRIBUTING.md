@@ -1,6 +1,6 @@
 # Contributing to Beatify
 
-Thanks for your interest in making Beatify better! 🎵
+Thanks for your interest in making Beatify better!
 
 Whether you're fixing a bug, adding a playlist, improving translations, or building a new feature — you're welcome here.
 
@@ -17,7 +17,7 @@ Whether you're fixing a bug, adding a playlist, improving translations, or build
 ### Prerequisites
 
 - [Home Assistant](https://www.home-assistant.io/) 2024.1+
-- [Music Assistant](https://music-assistant.io/) with a connected music provider (Spotify, Apple Music, YouTube Music)
+- [Music Assistant](https://music-assistant.io/) with a connected music provider (Spotify, Apple Music, YouTube Music, or Tidal)
 - Python 3.12+
 - Node.js 18+ (for frontend build)
 
@@ -45,6 +45,8 @@ source .venv/bin/activate
 pytest tests/ -v
 ```
 
+The test suite includes unit, integration, and end-to-end tests. See `tests/README.md` for the full testing guide.
+
 ### Build Frontend
 
 ```bash
@@ -62,15 +64,58 @@ npm run build:watch
 
 1. Copy (or symlink) `custom_components/beatify/` into your HA `config/custom_components/` directory
 2. Restart Home Assistant
-3. Add the Beatify integration via Settings → Integrations
+3. Add the Beatify integration via Settings > Integrations
+
+---
+
+## Project Structure
+
+```
+custom_components/beatify/
+  __init__.py           # Integration setup, lifecycle
+  const.py              # Constants: scoring, limits, error codes
+  config_flow.py        # HA config flow
+  analytics.py          # Aggregate game analytics
+  manifest.json         # Integration metadata
+  game/
+    state.py            # Core game state machine (phases, scoring, rounds)
+    player.py           # Player session management
+    playlist.py         # Playlist discovery and loading
+    scoring.py          # Scoring logic
+  server/
+    websocket.py        # WebSocket handler (real-time sync)
+    views.py            # HTTP endpoints (REST API + page serving)
+  services/
+    media_player.py     # Platform-aware media playback routing
+    stats.py            # Per-game/per-song statistics
+  playlists/            # JSON playlist files (18 playlists, 2,008 songs)
+  www/                  # Frontend assets
+    admin.html          # Admin interface
+    player.html         # Player interface
+    dashboard.html      # TV spectator view
+    analytics.html      # Analytics dashboard
+    js/                 # Vanilla JS source + minified bundles
+    css/                # Stylesheets
+    i18n/               # Translation files (EN, DE, ES, FR)
+  translations/         # HA config flow translations
+```
+
+For architecture details, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). For the WebSocket protocol, see [docs/WEBSOCKET.md](docs/WEBSOCKET.md).
 
 ---
 
 ## How to Contribute
 
-### 🎵 Add a Playlist (Easiest!)
+### Add a Playlist (Easiest!)
 
-Playlists are JSON files in `custom_components/beatify/playlists/`. This is the easiest way to contribute — no Python knowledge required.
+Playlists are JSON files in `custom_components/beatify/playlists/`. No Python knowledge required.
+
+**Requirements for playlists:**
+- Minimum **100 songs** per playlist
+- Every song needs: `year`, `uri` (Spotify), `artist`, `alt_artists` (3 wrong choices), `title`
+- Fun facts in English required; German, Spanish, and French appreciated
+- Cross-platform URIs (`uri_youtube_music`, `uri_tidal`) optional but welcome
+- Use `scripts/enrich_playlists.py` to auto-populate cross-platform URIs
 
 **Playlist JSON structure:**
 
@@ -97,27 +142,24 @@ Playlists are JSON files in `custom_components/beatify/playlists/`. This is the 
       "awards_es": [],
       "fun_fact": "English fun fact about the song.",
       "fun_fact_de": "Deutscher Fun Fact.",
-      "fun_fact_es": "Fun fact en español.",
-      "uri_apple_music": "",
-      "uri_youtube_music": ""
+      "fun_fact_es": "Fun fact en espanol.",
+      "fun_fact_fr": "Anecdote en francais.",
+      "uri_youtube_music": "https://music.youtube.com/watch?v=...",
+      "uri_tidal": "tidal://track/..."
     }
   ]
 }
 ```
 
-**Requirements for playlists:**
-- Minimum **100 songs** per playlist
-- Every song needs: `year`, `uri` (Spotify), `artist`, `alt_artists` (3 wrong choices), `title`
-- Fun facts in English required; German (`fun_fact_de`) and Spanish (`fun_fact_es`) appreciated
-- `uri_apple_music` and `uri_youtube_music` optional but welcome
-
 **Steps:**
-1. Create an issue using the 🎵 Playlist Request template
+1. Create an issue using the Playlist Request template
 2. Fork the repo, create a branch (`playlist/your-playlist-name`)
 3. Add your JSON file to `custom_components/beatify/playlists/`
 4. Submit a PR
 
-### 🐛 Fix a Bug
+See [docs/PLAYLIST_ENRICHMENT_RUNBOOK.md](docs/PLAYLIST_ENRICHMENT_RUNBOOK.md) for the full playlist creation guide.
+
+### Fix a Bug
 
 1. Check [open issues](https://github.com/mholzi/beatify/issues) or report a new one
 2. Fork the repo, create a branch (`fix/issue-number-short-description`)
@@ -126,7 +168,7 @@ Playlists are JSON files in `custom_components/beatify/playlists/`. This is the 
 5. Run `pytest tests/ -v` to make sure nothing breaks
 6. Submit a PR
 
-### ✨ Add a Feature
+### Add a Feature
 
 1. Open an issue first to discuss the feature
 2. Wait for approval before starting work (to avoid wasted effort)
@@ -135,11 +177,11 @@ Playlists are JSON files in `custom_components/beatify/playlists/`. This is the 
 5. Add tests
 6. Submit a PR
 
-### 🌍 Improve Translations
+### Improve Translations
 
-Beatify supports English, German, and Spanish. Translation files:
+Beatify supports English, German, Spanish, and French. Translation files:
 
-- **Frontend (player UI):** `custom_components/beatify/www/i18n/{en,de,es}.json`
+- **Frontend (player UI):** `custom_components/beatify/www/i18n/{en,de,es,fr}.json`
 - **HA config flow:** `custom_components/beatify/translations/en.json`
 
 Want to add a new language? Create the JSON file following the English structure and submit a PR.

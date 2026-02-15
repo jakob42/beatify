@@ -354,11 +354,14 @@ class GameState:
         # Stats service reference (Story 14.4)
         self._stats_service: StatsService | None = None
 
-        # Story 19.11: Streak achievement tracking for analytics
+        # Story 19.11: Streak achievement tracking for analytics (Issue #147)
         self.streak_achievements: dict[str, int] = {
             "streak_3": 0,  # Count of 3+ streaks
             "streak_5": 0,  # Count of 5+ streaks
             "streak_7": 0,  # Count of 7+ streaks
+            "streak_15": 0,  # Count of 15+ streaks
+            "streak_20": 0,  # Count of 20+ streaks
+            "streak_25": 0,  # Count of 25+ streaks
         }
 
         # Story 19.12: Bet outcome tracking for analytics
@@ -487,8 +490,15 @@ class GameState:
         # Reset round analytics (Story 13.3)
         self.round_analytics = None
 
-        # Story 19.11: Reset streak tracking for new game
-        self.streak_achievements = {"streak_3": 0, "streak_5": 0, "streak_7": 0}
+        # Story 19.11: Reset streak tracking for new game (Issue #147)
+        self.streak_achievements = {
+            "streak_3": 0,
+            "streak_5": 0,
+            "streak_7": 0,
+            "streak_15": 0,
+            "streak_20": 0,
+            "streak_25": 0,
+        }
 
         # Story 19.12: Reset bet tracking for new game
         self.bet_tracking = {"total_bets": 0, "bets_won": 0}
@@ -775,8 +785,15 @@ class GameState:
         # Reset error detail
         self.last_error_detail = ""
 
-        # Story 19.11: Reset streak tracking
-        self.streak_achievements = {"streak_3": 0, "streak_5": 0, "streak_7": 0}
+        # Story 19.11: Reset streak tracking (Issue #147)
+        self.streak_achievements = {
+            "streak_3": 0,
+            "streak_5": 0,
+            "streak_7": 0,
+            "streak_15": 0,
+            "streak_20": 0,
+            "streak_25": 0,
+        }
 
         # Story 19.12: Reset bet tracking
         self.bet_tracking = {"total_bets": 0, "bets_won": 0}

@@ -57,3 +57,4 @@ config/*
 !config/configuration.yaml
 community-post.md
 *.bak
+beatify/
