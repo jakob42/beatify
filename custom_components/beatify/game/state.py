@@ -1276,17 +1276,23 @@ class GameState:
         if not self.all_submitted():
             return False
 
-        # If artist challenge enabled and active, also check artist guesses
+        # If artist challenge enabled and active, check artist guesses
+        # Skip check if challenge already has a winner (buttons disabled for others)
         if self.artist_challenge_enabled and self.artist_challenge:
-            for player in self.players.values():
-                if player.connected and not player.has_artist_guess:
-                    return False
+            has_winner = getattr(self.artist_challenge, "winner", None) is not None
+            if not has_winner:
+                for player in self.players.values():
+                    if player.connected and not player.has_artist_guess:
+                        return False
 
-        # Issue #28: If movie quiz enabled and active, also check movie guesses
+        # Issue #28: If movie quiz enabled and active, check movie guesses
+        # Skip check if all connected players already guessed (buttons disabled after guess)
         if self.movie_quiz_enabled and self.movie_challenge:
-            for player in self.players.values():
-                if player.connected and not player.has_movie_guess:
-                    return False
+            has_winner = len(self.movie_challenge.correct_guesses) > 0
+            if not has_winner:
+                for player in self.players.values():
+                    if player.connected and not player.has_movie_guess:
+                        return False
 
         return True
 
