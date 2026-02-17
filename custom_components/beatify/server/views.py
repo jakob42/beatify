@@ -37,20 +37,17 @@ if TYPE_CHECKING:
 
 _LOGGER = logging.getLogger(__name__)
 
-# Cache the version at module load time
-_VERSION: str | None = None
+# Read version at module load time (not in event loop) to avoid blocking I/O
+try:
+    _VERSION = json.loads(
+        (Path(__file__).parent.parent / "manifest.json").read_text(encoding="utf-8")
+    ).get("version", "unknown")
+except Exception:  # noqa: BLE001
+    _VERSION = "unknown"
 
 
 def _get_version() -> str:
-    """Get the version from manifest.json (cached)."""
-    global _VERSION  # noqa: PLW0603
-    if _VERSION is None:
-        try:
-            manifest_path = Path(__file__).parent.parent / "manifest.json"
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            _VERSION = manifest.get("version", "unknown")
-        except Exception:  # noqa: BLE001
-            _VERSION = "unknown"
+    """Get the version from manifest.json (cached at import time)."""
     return _VERSION
 
 
