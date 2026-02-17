@@ -74,7 +74,7 @@ def get_platform_capabilities(platform: str) -> dict[str, Any]:
 
 
 # Timeout for pre-flight connectivity check (seconds)
-PREFLIGHT_TIMEOUT = 2.0
+PREFLIGHT_TIMEOUT = 3.0
 
 # Timeout for play_song service calls (seconds) - prevents long hangs (#179)
 PLAYBACK_TIMEOUT = 8.0
@@ -165,9 +165,16 @@ class MediaPlayerService:
             else:
                 _LOGGER.error("Unsupported platform: %s", self._platform)
                 return False
+        except TimeoutError:
+            _LOGGER.error(
+                "Playback timed out after %ss for %s: %s",
+                PLAYBACK_TIMEOUT, uri, song.get("title", "?"),
+            )
+            self._record_error("PLAYBACK_TIMEOUT", f"Timed out playing: {uri}")
+            return False
         except Exception as err:  # noqa: BLE001
-            _LOGGER.error("Playback failed: %s", err)  # noqa: TRY400
-            self._record_error("PLAYBACK_FAILURE", f"Failed to play: {err}")
+            _LOGGER.error("Playback failed for %s: %s", uri, err)  # noqa: TRY400
+            self._record_error("PLAYBACK_FAILURE", f"Failed to play {uri}: {err}")
             return False
 
     @staticmethod
