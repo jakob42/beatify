@@ -142,8 +142,11 @@ async function loadStatus() {
         updateStartButtonState();
 
         // Check for active game and show appropriate view
-        // If game is in END phase, treat as no active game (allow new game setup)
-        if (status.active_game && status.active_game.phase !== 'END') {
+        if (status.active_game && status.active_game.phase === 'LOBBY') {
+            // Show lobby view (e.g. after rematch) with QR code and start button
+            showLobbyView(status.active_game);
+        } else if (status.active_game && status.active_game.phase !== 'END') {
+            // Show existing game stub for PLAYING/REVEAL/PAUSED phases
             showExistingGameView(status.active_game);
         } else {
             showSetupView();
@@ -1529,8 +1532,9 @@ async function confirmRematch() {
     try {
         var response = await fetch('/beatify/api/rematch-game', { method: 'POST' });
         if (response.ok) {
-            // Transition to setup view for playlist selection
-            showSetupView();
+            // Rematch puts game back in LOBBY with players still connected
+            // Reload status to get the new game data and show lobby
+            await loadStatus();
         } else {
             var data = await response.json();
             alert(data.message || 'Failed to start rematch');
