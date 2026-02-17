@@ -386,6 +386,7 @@ class GameState:
         self.is_intro_round: bool = False  # Set per-round randomly
         self.intro_stopped: bool = False  # Track if 10s cutoff hit
         self._intro_stop_task: asyncio.Task | None = None
+        self._rounds_since_intro: int = 0  # Track rounds without intro for guaranteed minimum
         self._intro_round_start_time: float | None = None  # Track round start for bonus calc
 
         # Issue #42: Async metadata for fast transitions
@@ -516,6 +517,7 @@ class GameState:
         self.is_intro_round = False
         self.intro_stopped = False
         self._intro_round_start_time = None
+        self._rounds_since_intro = 0
         self._cancel_intro_timer()
 
         # Reset timer task for new game
@@ -1595,20 +1597,30 @@ class GameState:
         self._cancel_intro_timer()
 
         if self.intro_mode_enabled:
-            # ~20% chance of intro round
-            if random.random() < INTRO_ROUND_CHANCE:
+            # Guarantee at least one intro round every 4 rounds
+            # Use random chance normally, but force it if too many rounds without one
+            force_intro = self._rounds_since_intro >= 3
+            if force_intro or random.random() < INTRO_ROUND_CHANCE:
                 # Skip intro mode for very short songs (<10s)
                 song_duration_ms = song.get("duration_ms", 999999)
                 if song_duration_ms >= INTRO_DURATION_SECONDS * 1000:
                     self.is_intro_round = True
+                    self._rounds_since_intro = 0
                     self._intro_round_start_time = self._now()
                     # Schedule auto-stop after intro duration
                     self._intro_stop_task = asyncio.create_task(
                         self._intro_auto_stop(INTRO_DURATION_SECONDS)
                     )
-                    _LOGGER.info("Intro round activated for round %d", self.round + 1)
+                    _LOGGER.info(
+                        "Intro round activated for round %d%s",
+                        self.round + 1,
+                        " (forced)" if force_intro else "",
+                    )
                 else:
+                    self._rounds_since_intro += 1
                     _LOGGER.info("Skipping intro mode for short song (%dms)", song_duration_ms)
+            else:
+                self._rounds_since_intro += 1
 
         # Update round tracking
         self.round += 1
