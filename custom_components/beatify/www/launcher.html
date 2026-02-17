@@ -35,7 +35,7 @@
         .logo {
             font-size: 48px;
             font-weight: 700;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .logo .beat {
@@ -53,35 +53,60 @@
             font-size: 18px;
             color: var(--color-text-muted);
             margin-bottom: 32px;
+            line-height: 1.5;
         }
 
         .btn {
-            display: inline-block;
-            padding: 16px 32px;
-            background: var(--color-accent-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, var(--color-accent-primary), #ff6b9d);
             color: white;
             text-decoration: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 14px;
+            font-size: 18px;
             font-weight: 600;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
             border: none;
+            letter-spacing: 0.02em;
         }
 
         .btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px var(--color-accent-primary);
+            transform: scale(1.03);
+            box-shadow: 0 0 30px rgba(255, 45, 106, 0.4);
         }
 
         .btn:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
+        }
+
+        .btn-icon {
+            font-size: 22px;
         }
 
         .hint {
             margin-top: 24px;
             font-size: 14px;
             color: var(--color-text-muted);
+            min-height: 20px;
+        }
+
+        .status {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--color-text-muted);
+            opacity: 0.6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .opening {
+            animation: pulse 1.5s ease-in-out infinite;
         }
     </style>
 </head>
@@ -89,34 +114,62 @@
     <div class="logo">
         <span class="beat">Beat</span><span class="ify">ify</span>
     </div>
-    <p class="message" id="message" data-i18n="launcher.openingInNewTab">Opening Beatify in a new tab...</p>
-    <button class="btn" id="openBtn" onclick="openBeatify()" data-i18n="launcher.openBeatify">Open Beatify</button>
+    <p class="message" id="message" data-i18n="launcher.clickToLaunch">Launch the game in fullscreen — no distractions.</p>
+    <button class="btn" id="openBtn" onclick="openBeatify()">
+        <span class="btn-icon">🎵</span>
+        <span data-i18n="launcher.openBeatify">Open Beatify</span>
+    </button>
     <p class="hint" id="hint"></p>
+    <p class="status" id="status"></p>
 
     <script src="/beatify/static/js/i18n.js"></script>
     <script>
+        var beatifyWindow = null;
+
         function openBeatify() {
             var adminUrl = window.location.origin + '/beatify/admin';
-            var newWindow = window.open(adminUrl, '_blank', 'noopener,noreferrer');
+
+            // If we already have an open window, focus it
+            if (beatifyWindow && !beatifyWindow.closed) {
+                beatifyWindow.focus();
+                updateUI('focused');
+                return;
+            }
 
             var messageEl = document.getElementById('message');
-            var hintEl = document.getElementById('hint');
+            messageEl.classList.add('opening');
 
-            if (newWindow) {
-                messageEl.textContent = BeatifyI18n.t('launcher.openedInNewTab');
-                hintEl.textContent = BeatifyI18n.t('launcher.clickToOpenAnother');
+            beatifyWindow = window.open(adminUrl, 'beatify_game', 'noopener');
+
+            if (beatifyWindow) {
+                updateUI('opened');
             } else {
-                messageEl.textContent = BeatifyI18n.t('launcher.popupBlocked');
-                hintEl.textContent = BeatifyI18n.t('launcher.allowPopups');
+                updateUI('blocked');
             }
         }
 
-        // Initialize i18n and auto-open
+        function updateUI(state) {
+            var messageEl = document.getElementById('message');
+            var hintEl = document.getElementById('hint');
+            var btnEl = document.getElementById('openBtn');
+            messageEl.classList.remove('opening');
+
+            if (state === 'opened') {
+                messageEl.textContent = BeatifyI18n.t('launcher.openedInNewTab') || 'Beatify is running in a new tab! 🎶';
+                hintEl.textContent = BeatifyI18n.t('launcher.clickToFocus') || 'Click again to focus the game tab';
+                btnEl.querySelector('[data-i18n]').textContent = BeatifyI18n.t('launcher.focusBeatify') || 'Focus Beatify';
+            } else if (state === 'focused') {
+                messageEl.textContent = BeatifyI18n.t('launcher.focusedTab') || 'Switched to Beatify tab! 🎯';
+            } else if (state === 'blocked') {
+                messageEl.textContent = BeatifyI18n.t('launcher.popupBlocked') || 'Pop-up was blocked by your browser.';
+                hintEl.innerHTML = BeatifyI18n.t('launcher.allowPopups') || 'Allow pop-ups for this site, or <a href="' + window.location.origin + '/beatify/admin" target="_blank" style="color: var(--color-accent-secondary);">click here</a> to open directly.';
+            }
+        }
+
+        // Initialize i18n
         window.addEventListener('load', async function() {
             await BeatifyI18n.init();
             BeatifyI18n.initPageTranslations();
-            // Small delay to ensure the page is fully rendered
-            setTimeout(openBeatify, 100);
         });
     </script>
 </body>

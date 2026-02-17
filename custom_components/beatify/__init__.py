@@ -138,14 +138,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await async_register_static_paths(hass)
 
     # Register sidebar panel (Story 10.3)
-    # Direct to admin page - works in mobile app WebView (no popup needed)
+    # Points to launcher page which opens game in a new tab (fullscreen, no HA chrome)
     async_register_built_in_panel(
         hass,
         component_name="iframe",
         sidebar_title="Beatify",
         sidebar_icon="mdi:music-circle",
         frontend_url_path="beatify",
-        config={"url": "/beatify/admin"},
+        config={"url": "/beatify/launcher"},
         require_admin=False,
     )
     _LOGGER.debug("Beatify sidebar panel registered")
