@@ -1,22 +1,42 @@
 # ===========================================
-# Beatify - Only integration files in repo
+# Beatify — HACS-ready repo
+# Only keep files required for HACS install:
+#   custom_components/beatify/  hacs.json
+#   README.md  LICENSE  images/
 # ===========================================
 
-# BMAD Development Framework
+# ---- Dev / build frameworks ----
 _bmad/
 _bmad-output/
-
-# Claude Code
+.agentforce/
 .claude/
-
-# Development files
 scripts/
-pyproject.toml
+docs/
 
-# Node
+# ---- Duplicate deployed copy ----
+beatify/
+
+# ---- Config & tooling ----
+pyproject.toml
+package.json
+package-lock.json
+requirements.txt
+requirements_test.txt
+.ruff.toml
+
+# ---- Tests ----
+tests/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+
+# ---- Node ----
 node_modules/
 
-# Python artifacts
+# ---- Python artifacts ----
 __pycache__/
 *.py[cod]
 *$py.class
@@ -28,33 +48,30 @@ build/
 eggs/
 .eggs/
 
-# Testing
-.pytest_cache/
-.pytest/
-.coverage
-coverage.xml
-htmlcov/
-.tox/
-.nox/
-
-# Linting/Formatting
+# ---- Linting ----
 .ruff_cache/
 .mypy_cache/
 
-# IDE
+# ---- IDE ----
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# ---- OS ----
 .DS_Store
 Thumbs.db
 
-# Home Assistant dev config
+# ---- Misc ----
 config/*
 !config/configuration.yaml
 community-post.md
 *.bak
-beatify/
+
+# ---- Release notes (keep CHANGELOG.md) ----
+RELEASE_NOTES_*.md
+CONTRIBUTING.md
+
+# ---- GitHub workflows (not needed in HACS release) ----
+# .github/ is kept — needed for CI and HACS validation
