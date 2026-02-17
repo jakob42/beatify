@@ -139,14 +139,71 @@
     "offByYears": "Off by {years} years!",
     "offByYear": "Off by 1 year!",
     "emotions": {
-      "exact": ["NAILED IT!", "PERFECT!", "BULLSEYE!", "GENIUS!", "LEGENDARY!", "AMAZING!", "INCREDIBLE!"],
-      "exactSub": ["Perfect guess!", "You absolute legend!", "Music historian!", "Take a bow!", "Hall of fame!"],
-      "close": ["SO CLOSE!", "ALMOST!", "NEARLY!", "NICE TRY!", "GOOD EAR!", "NOT BAD!", "OOH!", "AHH!"],
-      "closeSub": ["So close!", "Almost had it!", "Right neighborhood!", "Solid guess!", "Points on the board!"],
-      "wrong": ["OOPS!", "YIKES!", "UH OH!", "WAY OFF!", "WRONG ERA!", "WHOOPS!", "OOF!", "RIP!"],
-      "wrongSub": ["Bold strategy!", "Time machine needed!", "Shake it off!", "Next round is yours!", "Happens to the best!"],
-      "missed": ["NO GUESS", "TIME'S UP!", "TOO SLOW!", "MISSED IT!", "HELLO?", "AFK!", "TIMED OUT!"],
-      "missedSub": ["Time ran out!", "The clock waits for no one!", "Better luck next round!", "Overthinking it!"]
+      "exact": [
+        "NAILED IT!",
+        "PERFECT!",
+        "BULLSEYE!",
+        "GENIUS!",
+        "LEGENDARY!",
+        "AMAZING!",
+        "INCREDIBLE!"
+      ],
+      "exactSub": [
+        "Perfect guess!",
+        "You absolute legend!",
+        "Music historian!",
+        "Take a bow!",
+        "Hall of fame!"
+      ],
+      "close": [
+        "SO CLOSE!",
+        "ALMOST!",
+        "NEARLY!",
+        "NICE TRY!",
+        "GOOD EAR!",
+        "NOT BAD!",
+        "OOH!",
+        "AHH!"
+      ],
+      "closeSub": [
+        "So close!",
+        "Almost had it!",
+        "Right neighborhood!",
+        "Solid guess!",
+        "Points on the board!"
+      ],
+      "wrong": [
+        "OOPS!",
+        "YIKES!",
+        "UH OH!",
+        "WAY OFF!",
+        "WRONG ERA!",
+        "WHOOPS!",
+        "OOF!",
+        "RIP!"
+      ],
+      "wrongSub": [
+        "Bold strategy!",
+        "Time machine needed!",
+        "Shake it off!",
+        "Next round is yours!",
+        "Happens to the best!"
+      ],
+      "missed": [
+        "NO GUESS",
+        "TIME'S UP!",
+        "TOO SLOW!",
+        "MISSED IT!",
+        "HELLO?",
+        "AFK!",
+        "TIMED OUT!"
+      ],
+      "missedSub": [
+        "Time ran out!",
+        "The clock waits for no one!",
+        "Better luck next round!",
+        "Overthinking it!"
+      ]
     },
     "chartBillboard": "Billboard Hot 100",
     "chartGerman": "German Charts",
@@ -447,7 +504,9 @@
     "points": "pts in final 3",
     "closeGuesses": "close guesses",
     "intro_bonuses": "intro bonuses",
-    "improvement": "avg improvement"
+    "improvement": "avg improvement",
+    "film_buff": "🎬 Film Buff",
+    "movie_bonus": "movie songs"
   },
   "stats": {
     "firstGame": "First game! Setting the benchmark",

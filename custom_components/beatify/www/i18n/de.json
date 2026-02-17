@@ -139,14 +139,71 @@
     "offByYears": "{years} Jahre daneben!",
     "offByYear": "1 Jahr daneben!",
     "emotions": {
-      "exact": ["VOLLTREFFER!", "PERFEKT!", "GENIAL!", "LEGENDÄR!", "UNGLAUBLICH!", "WAHNSINN!", "BINGO!"],
-      "exactSub": ["Perfekter Tipp!", "Du bist eine Legende!", "Musikexperte!", "Verneig dich!", "Hall of Fame!"],
-      "close": ["SO NAH!", "FAST!", "KNAPP!", "GUTER VERSUCH!", "NICHT SCHLECHT!", "SOLIDE!", "OOH!", "AHH!"],
-      "closeSub": ["So nah dran!", "Fast gehabt!", "Richtige Richtung!", "Solider Tipp!", "Punkte gesichert!"],
-      "wrong": ["OOPS!", "AUTSCH!", "UH OH!", "WEIT WEG!", "FALSCHE ÄRA!", "HOPPLA!", "OOF!", "RIP!"],
-      "wrongSub": ["Mutige Strategie!", "Zeitmaschine nötig!", "Schüttel es ab!", "Nächste Runde gehört dir!", "Passiert den Besten!"],
-      "missed": ["KEIN TIPP", "ZEIT UM!", "ZU LANGSAM!", "VERPASST!", "HALLO?", "AFK!", "TIMEOUT!"],
-      "missedSub": ["Zeit abgelaufen!", "Die Uhr wartet nicht!", "Nächstes Mal mehr Glück!", "Zu lange überlegt!"]
+      "exact": [
+        "VOLLTREFFER!",
+        "PERFEKT!",
+        "GENIAL!",
+        "LEGENDÄR!",
+        "UNGLAUBLICH!",
+        "WAHNSINN!",
+        "BINGO!"
+      ],
+      "exactSub": [
+        "Perfekter Tipp!",
+        "Du bist eine Legende!",
+        "Musikexperte!",
+        "Verneig dich!",
+        "Hall of Fame!"
+      ],
+      "close": [
+        "SO NAH!",
+        "FAST!",
+        "KNAPP!",
+        "GUTER VERSUCH!",
+        "NICHT SCHLECHT!",
+        "SOLIDE!",
+        "OOH!",
+        "AHH!"
+      ],
+      "closeSub": [
+        "So nah dran!",
+        "Fast gehabt!",
+        "Richtige Richtung!",
+        "Solider Tipp!",
+        "Punkte gesichert!"
+      ],
+      "wrong": [
+        "OOPS!",
+        "AUTSCH!",
+        "UH OH!",
+        "WEIT WEG!",
+        "FALSCHE ÄRA!",
+        "HOPPLA!",
+        "OOF!",
+        "RIP!"
+      ],
+      "wrongSub": [
+        "Mutige Strategie!",
+        "Zeitmaschine nötig!",
+        "Schüttel es ab!",
+        "Nächste Runde gehört dir!",
+        "Passiert den Besten!"
+      ],
+      "missed": [
+        "KEIN TIPP",
+        "ZEIT UM!",
+        "ZU LANGSAM!",
+        "VERPASST!",
+        "HALLO?",
+        "AFK!",
+        "TIMEOUT!"
+      ],
+      "missedSub": [
+        "Zeit abgelaufen!",
+        "Die Uhr wartet nicht!",
+        "Nächstes Mal mehr Glück!",
+        "Zu lange überlegt!"
+      ]
     },
     "chartBillboard": "Billboard Hot 100",
     "chartGerman": "Deutsche Charts",
@@ -447,7 +504,9 @@
     "points": "Pkt in letzten 3",
     "closeGuesses": "knappe Tipps",
     "intro_bonuses": "Intro-Boni",
-    "improvement": "Verbesserung"
+    "improvement": "Verbesserung",
+    "film_buff": "🎬 Filmkenner",
+    "movie_bonus": "Film-Songs"
   },
   "stats": {
     "firstGame": "Erstes Spiel! Maßstab gesetzt",

@@ -139,14 +139,71 @@
     "offByYears": "{years} ans d'écart !",
     "offByYear": "1 an d'écart !",
     "emotions": {
-      "exact": ["PARFAIT !", "EXACT !", "EN PLEIN DANS LE MILLE !", "GÉNIE !", "LÉGENDAIRE !", "INCROYABLE !", "EXTRAORDINAIRE !"],
-      "exactSub": ["Réponse parfaite !", "Tu es une légende !", "Historien musical !", "Félicitations !", "Hall of Fame !"],
-      "close": ["SI PROCHE !", "PRESQUE !", "PAS LOIN !", "BIEN JOUÉ !", "BIEN VU !", "PAS MAL !", "OUH !", "AAH !"],
-      "closeSub": ["Vraiment proche !", "Tu y étais presque !", "Dans le bon quartier !", "Réponse solide !", "Points au compteur !"],
-      "wrong": ["OUPS !", "AÏE !", "OH NON !", "TROP LOIN !", "C'EST RATÉ !", "HÉ !", "OUF !", "RIP !"],
-      "wrongSub": ["Stratégie audacieuse !", "Il te faut une machine à remonter le temps !", "Secoue la poussière !", "La prochaine est pour toi !", "Ça arrive aux meilleurs !"],
-      "missed": ["PAS DE RÉPONSE", "TEMPS ÉCOULÉ !", "TROP LENT !", "MANQUÉ !", "ALLÔ ?", "AFK !", "TIMEOUT !"],
-      "missedSub": ["Le temps est écoulé !", "L'horloge n'attend pas !", "Meilleure chance à la prochaine !", "Tu as trop réfléchi !"]
+      "exact": [
+        "PARFAIT !",
+        "EXACT !",
+        "EN PLEIN DANS LE MILLE !",
+        "GÉNIE !",
+        "LÉGENDAIRE !",
+        "INCROYABLE !",
+        "EXTRAORDINAIRE !"
+      ],
+      "exactSub": [
+        "Réponse parfaite !",
+        "Tu es une légende !",
+        "Historien musical !",
+        "Félicitations !",
+        "Hall of Fame !"
+      ],
+      "close": [
+        "SI PROCHE !",
+        "PRESQUE !",
+        "PAS LOIN !",
+        "BIEN JOUÉ !",
+        "BIEN VU !",
+        "PAS MAL !",
+        "OUH !",
+        "AAH !"
+      ],
+      "closeSub": [
+        "Vraiment proche !",
+        "Tu y étais presque !",
+        "Dans le bon quartier !",
+        "Réponse solide !",
+        "Points au compteur !"
+      ],
+      "wrong": [
+        "OUPS !",
+        "AÏE !",
+        "OH NON !",
+        "TROP LOIN !",
+        "C'EST RATÉ !",
+        "HÉ !",
+        "OUF !",
+        "RIP !"
+      ],
+      "wrongSub": [
+        "Stratégie audacieuse !",
+        "Il te faut une machine à remonter le temps !",
+        "Secoue la poussière !",
+        "La prochaine est pour toi !",
+        "Ça arrive aux meilleurs !"
+      ],
+      "missed": [
+        "PAS DE RÉPONSE",
+        "TEMPS ÉCOULÉ !",
+        "TROP LENT !",
+        "MANQUÉ !",
+        "ALLÔ ?",
+        "AFK !",
+        "TIMEOUT !"
+      ],
+      "missedSub": [
+        "Le temps est écoulé !",
+        "L'horloge n'attend pas !",
+        "Meilleure chance à la prochaine !",
+        "Tu as trop réfléchi !"
+      ]
     },
     "chartBillboard": "Billboard Hot 100",
     "chartGerman": "Charts allemands",
@@ -447,7 +504,9 @@
     "points": "pts sur les 3 dernières",
     "closeGuesses": "réponses proches",
     "intro_bonuses": "bonus d'intro",
-    "improvement": "amélioration moy."
+    "improvement": "amélioration moy.",
+    "film_buff": "🎬 Cinéphile",
+    "movie_bonus": "chansons de film"
   },
   "stats": {
     "firstGame": "Première partie ! On établit la référence",

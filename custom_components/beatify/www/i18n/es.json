@@ -139,14 +139,71 @@
     "offByYears": "{years} anos de diferencia!",
     "offByYear": "1 ano de diferencia!",
     "emotions": {
-      "exact": ["PERFECTO!", "EXACTO!", "DIANA!", "GENIO!", "LEGENDARIO!", "INCREIBLE!", "ASOMBROSO!"],
-      "exactSub": ["Respuesta perfecta!", "Eres una leyenda!", "Historiador musical!", "Felicitaciones!", "Salon de la fama!"],
-      "close": ["TAN CERCA!", "CASI!", "POR POCO!", "BUEN INTENTO!", "BIEN AHI!", "NADA MAL!", "UUH!", "AAH!"],
-      "closeSub": ["Muy cerca!", "Casi lo tienes!", "Buen vecindario!", "Solida respuesta!", "Puntos al marcador!"],
-      "wrong": ["OOPS!", "AUCH!", "OH NO!", "MUY LEJOS!", "ERA EQUIVOCADA!", "EPA!", "UFF!", "RIP!"],
-      "wrongSub": ["Estrategia audaz!", "Necesitas una maquina del tiempo!", "Sacudete el polvo!", "La proxima es tuya!", "Le pasa a los mejores!"],
-      "missed": ["SIN RESPUESTA", "TIEMPO!", "MUY LENTO!", "PERDIDO!", "HOLA?", "AFK!", "TIMEOUT!"],
-      "missedSub": ["Se acabo el tiempo!", "El reloj no espera!", "Mejor suerte en la proxima!", "Lo pensaste demasiado!"]
+      "exact": [
+        "PERFECTO!",
+        "EXACTO!",
+        "DIANA!",
+        "GENIO!",
+        "LEGENDARIO!",
+        "INCREIBLE!",
+        "ASOMBROSO!"
+      ],
+      "exactSub": [
+        "Respuesta perfecta!",
+        "Eres una leyenda!",
+        "Historiador musical!",
+        "Felicitaciones!",
+        "Salon de la fama!"
+      ],
+      "close": [
+        "TAN CERCA!",
+        "CASI!",
+        "POR POCO!",
+        "BUEN INTENTO!",
+        "BIEN AHI!",
+        "NADA MAL!",
+        "UUH!",
+        "AAH!"
+      ],
+      "closeSub": [
+        "Muy cerca!",
+        "Casi lo tienes!",
+        "Buen vecindario!",
+        "Solida respuesta!",
+        "Puntos al marcador!"
+      ],
+      "wrong": [
+        "OOPS!",
+        "AUCH!",
+        "OH NO!",
+        "MUY LEJOS!",
+        "ERA EQUIVOCADA!",
+        "EPA!",
+        "UFF!",
+        "RIP!"
+      ],
+      "wrongSub": [
+        "Estrategia audaz!",
+        "Necesitas una maquina del tiempo!",
+        "Sacudete el polvo!",
+        "La proxima es tuya!",
+        "Le pasa a los mejores!"
+      ],
+      "missed": [
+        "SIN RESPUESTA",
+        "TIEMPO!",
+        "MUY LENTO!",
+        "PERDIDO!",
+        "HOLA?",
+        "AFK!",
+        "TIMEOUT!"
+      ],
+      "missedSub": [
+        "Se acabo el tiempo!",
+        "El reloj no espera!",
+        "Mejor suerte en la proxima!",
+        "Lo pensaste demasiado!"
+      ]
     },
     "chartBillboard": "Billboard Hot 100",
     "chartGerman": "Charts alemanes",
@@ -447,7 +504,9 @@
     "points": "pts en ultimas 3",
     "closeGuesses": "respuestas cercanas",
     "intro_bonuses": "bonos de intro",
-    "improvement": "mejora promedio"
+    "improvement": "mejora promedio",
+    "film_buff": "🎬 Cinéfilo",
+    "movie_bonus": "canciones de cine"
   },
   "stats": {
     "firstGame": "Primer juego! Estableciendo el punto de referencia",

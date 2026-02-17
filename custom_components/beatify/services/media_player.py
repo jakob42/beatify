@@ -77,7 +77,7 @@ def get_platform_capabilities(platform: str) -> dict[str, Any]:
 PREFLIGHT_TIMEOUT = 2.0
 
 # Timeout for play_song service calls (seconds) - prevents long hangs (#179)
-PLAYBACK_TIMEOUT = 3.0
+PLAYBACK_TIMEOUT = 8.0
 
 # Timeout for waiting for metadata to update after playing (seconds)
 METADATA_WAIT_TIMEOUT = 5.0
