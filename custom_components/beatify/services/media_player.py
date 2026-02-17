@@ -160,9 +160,44 @@ class MediaPlayerService:
             self._record_error("PLAYBACK_FAILURE", f"Failed to play: {err}")
             return False
 
+    @staticmethod
+    def _convert_uri_for_ma(uri: str) -> str:
+        """
+        Convert Beatify-internal URIs to formats Music Assistant understands.
+
+        Beatify playlists store URIs in internal formats:
+        - applemusic://track/<id>  → https://music.apple.com/song/<id>
+        - tidal://track/<id>       → https://tidal.com/browse/track/<id>
+        - spotify:track:<id>       → unchanged (MA native format)
+        - https://music.youtube.com/... → unchanged (already a URL)
+
+        Args:
+            uri: Beatify-internal URI string
+
+        Returns:
+            URI converted to a format Music Assistant can resolve
+
+        """
+        if not uri:
+            return uri
+
+        if uri.startswith("applemusic://track/"):
+            track_id = uri.removeprefix("applemusic://track/")
+            return f"https://music.apple.com/song/{track_id}"
+
+        if uri.startswith("tidal://track/"):
+            track_id = uri.removeprefix("tidal://track/")
+            return f"https://tidal.com/browse/track/{track_id}"
+
+        # spotify:track:<id> and https:// URLs are passed through unchanged
+        return uri
+
     async def _play_via_music_assistant(self, song: dict[str, Any]) -> bool:
         """Play via Music Assistant (URI-based)."""
-        uri = song.get("_resolved_uri")
+        raw_uri = song.get("_resolved_uri")
+        uri = self._convert_uri_for_ma(raw_uri)
+        if uri != raw_uri:
+            _LOGGER.debug("MA URI converted: %s → %s", raw_uri, uri)
         _LOGGER.debug("MA playback: %s on %s", uri, self._entity_id)
 
         await self._hass.services.async_call(
