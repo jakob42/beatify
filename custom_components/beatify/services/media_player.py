@@ -76,6 +76,9 @@ def get_platform_capabilities(platform: str) -> dict[str, Any]:
 # Timeout for pre-flight connectivity check (seconds)
 PREFLIGHT_TIMEOUT = 2.0
 
+# Timeout for play_song service calls (seconds) - prevents long hangs (#179)
+PLAYBACK_TIMEOUT = 3.0
+
 # Timeout for waiting for metadata to update after playing (seconds)
 METADATA_WAIT_TIMEOUT = 5.0
 METADATA_POLL_INTERVAL = 0.3
@@ -201,13 +204,14 @@ class MediaPlayerService:
             _LOGGER.debug("MA URI converted: %s → %s", raw_uri, uri)
         _LOGGER.debug("MA playback: %s on %s", uri, self._entity_id)
 
-        await self._hass.services.async_call(
-            "music_assistant",
-            "play_media",
-            {"media_id": uri, "media_type": "track"},
-            target={"entity_id": self._entity_id},
-            blocking=False,
-        )
+        async with asyncio.timeout(PLAYBACK_TIMEOUT):
+            await self._hass.services.async_call(
+                "music_assistant",
+                "play_media",
+                {"media_id": uri, "media_type": "track"},
+                target={"entity_id": self._entity_id},
+                blocking=True,
+            )
         return True
 
     async def _play_via_sonos(self, song: dict[str, Any]) -> bool:
@@ -215,16 +219,17 @@ class MediaPlayerService:
         uri = song.get("_resolved_uri")
         _LOGGER.debug("Sonos playback: %s on %s", uri, self._entity_id)
 
-        await self._hass.services.async_call(
-            "media_player",
-            "play_media",
-            {
-                "entity_id": self._entity_id,
-                "media_content_id": uri,
-                "media_content_type": "music",
-            },
-            blocking=False,
-        )
+        async with asyncio.timeout(PLAYBACK_TIMEOUT):
+            await self._hass.services.async_call(
+                "media_player",
+                "play_media",
+                {
+                    "entity_id": self._entity_id,
+                    "media_content_id": uri,
+                    "media_content_type": "music",
+                },
+                blocking=True,
+            )
         return True
 
     async def _play_via_alexa(self, song: dict[str, Any]) -> bool:
@@ -239,16 +244,17 @@ class MediaPlayerService:
             self._entity_id,
         )
 
-        await self._hass.services.async_call(
-            "media_player",
-            "play_media",
-            {
-                "entity_id": self._entity_id,
-                "media_content_id": search_text,
-                "media_content_type": content_type,
-            },
-            blocking=False,
-        )
+        async with asyncio.timeout(PLAYBACK_TIMEOUT):
+            await self._hass.services.async_call(
+                "media_player",
+                "play_media",
+                {
+                    "entity_id": self._entity_id,
+                    "media_content_id": search_text,
+                    "media_content_type": content_type,
+                },
+                blocking=True,
+            )
         return True
 
     def _get_alexa_search_text(self, song: dict[str, Any]) -> str:
