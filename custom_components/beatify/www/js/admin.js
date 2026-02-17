@@ -142,7 +142,8 @@ async function loadStatus() {
         updateStartButtonState();
 
         // Check for active game and show appropriate view
-        if (status.active_game) {
+        // If game is in END phase, treat as no active game (allow new game setup)
+        if (status.active_game && status.active_game.phase !== 'END') {
             showExistingGameView(status.active_game);
         } else {
             showSetupView();
@@ -2263,8 +2264,10 @@ async function renderRequestsList() {
         return;
     }
 
-    // Always show section so users can request playlists
-    section?.classList.remove('hidden');
+    // Only show section in setup view (not during active/existing game)
+    if (currentView === 'setup') {
+        section?.classList.remove('hidden');
+    }
 
     // Load requests from backend (async)
     const requests = await window.PlaylistRequests.getRequestsForDisplayAsync();
