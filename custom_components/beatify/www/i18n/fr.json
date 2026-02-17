@@ -86,7 +86,8 @@
     "difficultyNormal": "Normal",
     "difficultyHard": "Difficile",
     "introRound": "MANCHE INTRO",
-    "introStopped": "Intro terminée !"
+    "introStopped": "Intro terminée !",
+    "introHint": "Seulement 10 secondes !"
   },
   "steal": {
     "available": "Vol disponible !",

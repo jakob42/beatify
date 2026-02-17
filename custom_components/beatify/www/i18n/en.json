@@ -86,7 +86,8 @@
     "difficultyNormal": "Normal",
     "difficultyHard": "Hard",
     "introRound": "INTRO ROUND",
-    "introStopped": "Intro complete!"
+    "introStopped": "Intro complete!",
+    "introHint": "Only 10 seconds!"
   },
   "steal": {
     "available": "Steal Available!",

@@ -1911,8 +1911,9 @@
             }
         }
 
-        // Issue #23: Show/hide intro round badge
+        // Issue #23: Show/hide intro round badge + splash overlay
         var introBadge = document.getElementById('intro-badge');
+        var introSplash = document.getElementById('intro-splash');
         if (introBadge) {
             if (data.is_intro_round) {
                 introBadge.classList.remove('hidden');
@@ -1930,10 +1931,23 @@
                         badgeText.setAttribute('data-i18n', 'game.introRound');
                         badgeText.textContent = utils.t('game.introRound') || 'INTRO ROUND';
                     }
+                    // Show fullscreen splash on new intro round (not when stopped)
+                    if (introSplash && !introSplash._shown) {
+                        introSplash._shown = true;
+                        introSplash.classList.remove('hidden');
+                        // Auto-hide after animation (2s total)
+                        setTimeout(function() {
+                            introSplash.classList.add('hidden');
+                        }, 2000);
+                    }
                 }
             } else {
                 introBadge.classList.add('hidden');
                 introBadge.classList.remove('intro-badge--stopped');
+                if (introSplash) {
+                    introSplash.classList.add('hidden');
+                    introSplash._shown = false;
+                }
             }
         }
 
