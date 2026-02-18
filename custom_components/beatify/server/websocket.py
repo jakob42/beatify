@@ -522,7 +522,7 @@ class BeatifyWebSocketHandler:
                     return
 
                 language = data.get("language", "en")
-                if language not in ("en", "de", "es"):
+                if language not in ("en", "de", "es", "fr"):
                     language = "en"  # Default to English for invalid codes
 
                 game_state.language = language
