@@ -15,7 +15,7 @@ LOBBY_DISCONNECT_GRACE_PERIOD = 5  # seconds before removing disconnected player
 
 # Year range for guesses
 YEAR_MIN = 1950
-YEAR_MAX = 2025
+YEAR_MAX = 2026
 
 # Volume control step (10%) - Story 6.4
 VOLUME_STEP = 0.1
