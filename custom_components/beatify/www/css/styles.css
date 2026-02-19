@@ -8258,6 +8258,38 @@ body.device-tier-low .reveal-skip-hint {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Admin share player tabs (Issue #208) */
+.admin-share-player-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.admin-share-tab {
+    padding: 0.3rem 0.85rem;
+    border-radius: 20px;
+    border: 1px solid var(--color-border-light);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.admin-share-tab:hover {
+    border-color: var(--color-accent-brand);
+    color: var(--color-accent-brand);
+}
+
+.admin-share-tab.active {
+    background: var(--color-accent-brand);
+    border-color: var(--color-accent-brand);
+    color: #fff;
+    font-weight: var(--font-weight-semibold);
+}
+
 @media (max-width: 480px) {
     .share-buttons {
         flex-direction: column;
